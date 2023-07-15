@@ -2,22 +2,73 @@ const bcrypt = require('bcrypt')
 const Organization = require('../models/Organization');
 const User = require('../models/User');
 const Project = require('../models/Project');
+const config = require('../configs/config');
+const jwt = require('jsonwebtoken')
+
+
+//generate token
+async function generateToken (user){
+    console.log(config.jwtSecret)
+    const token = await jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: '5d' });
+    return token;
+}
+
+//add user to db
+async function addUserToDb (firstName, lastName, email, password){
+    try {
+        const user = new User({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: bcrypt.hashSync(password, 10)
+        });
+        await user.save();
+        return user;
+    } catch (error) {
+        throw new Error(`Cant add user to db ${error}`);
+    }
+}
+
 
 
 // check if user exists and verify in db
-async function findAndVerifyUser (phoneNumber, password){
-    const user = await User.findOne({ phoneNumber: phoneNumber });
-    if (!user) {
-        throw new Error('user not found');
-    }
-
-    //password check
-    if (!bcrypt.compareSync(password, user.password)) {
-        throw new Error('invalid credentials');
+async function findAndVerifyUser (email, password){
+    const user = await User.findOne({ email: email });
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+        return false;
     }
 
     return user;
 }
+
+//get user's organization
+async function getUserOrganization (email){
+    try {
+        const user = await User.findOne({ email: email });
+        const UserOrganizationDetails = await Organization.findById(user.organization_id);
+        return UserOrganizationDetails;
+    } catch (error) {
+        return false
+    }
+}
+
+//edit user profile
+async function editUserProfile (firstName, lastName, email, password){
+    try {
+        await User.updateOne({email:email},{
+            $set:{
+                firstName:firstName,
+                lastName:lastName,
+                password: bcrypt.hashSync(password, 10)
+            }
+        })
+        return true;
+    } catch (error) {
+        return false
+    }
+}
+
+
 
 //get user details
 async function getUserById (id){
@@ -39,16 +90,7 @@ async function getUserByPhoneNumber (phoneNumber){
     }
 }
 
-//get user's organization
-async function getUserOrganization (phoneNumber){
-    try {
-        const user = await User.findOne({ phoneNumber: phoneNumber });
-        const UserOrganizationDetails = await Organization.findOne({_id:user.organization_id});
-        return UserOrganizationDetails;
-    } catch (error) {
-        throw new Error(`Cant get user's organization ${error}`);
-    }
-}
+
 
 // check if user exists
 async function checkUserExistsInDb (phoneNumber){
@@ -59,22 +101,6 @@ async function checkUserExistsInDb (phoneNumber){
     return false;
 }
 
-//edit user profile
-async function editUserProfile (firstName, lastName, phoneNumber, password){
-    try {
-        const profile = await User.find({phoneNumber:phoneNumber});
-        await User.updateOne({phoneNumber:phoneNumber},{
-            $set:{
-                firstName:firstName,
-                lastName:lastName,
-                password: bcrypt.hashSync(password, 10)
-            }
-        })
-        return true;
-    } catch (error) {
-        throw new Error(`Cant edit user profile ${error}`);
-    }
-}
 
 //get all users in an organization
 async function getAllUsersInOrganization(organizationId){
@@ -112,5 +138,5 @@ async function getProjectsForUser(userId,organization, admin) {
 
 
 
-module.exports = { findAndVerifyUser, getUserOrganization , checkUserExistsInDb, getUserById
+module.exports = { generateToken, addUserToDb,findAndVerifyUser, getUserOrganization , checkUserExistsInDb, getUserById
 , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser}

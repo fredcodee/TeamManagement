@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     lastName: {
         type: String,
     },
-    phoneNumber: {
+    email: {
         type: String,
         required: true,
         unique: true
@@ -20,15 +20,11 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    organization_id: {
+    organization_id: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Organization',
         required: true  
-    },
-    organization_admin: {
-        type: Boolean,
-        default: false
-    },
+    }],
     projects: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project'
