@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 const User  = require('../models/User')
+const config = require('../configs/config');
+const userService = require('../services/userServices')
 
 
 
@@ -13,24 +15,16 @@ const adminAuth = async (req, res, next) => {
       }
 
       token = req.header('Authorization').replace('Bearer ', '')
-      const decodedToken = jwt.decode(token, { complete: true })
-      const phoneNumber = decodedToken.payload.preferred_username
-  
-      // Check if user is admin
-      // const user = await User.findOne({ phoneNumber })
-      // if (!user || !user.organization_admin) {
-      //   return res.status(401).send({ error: 'Request Not Authorized.' })
-      // }
-  
-      // Verify token with Keycloak
-      // const checkKeycloak = await keycloak.isTokenValid(token)
-      // if (!checkKeycloak) {
-      //   return res.status(401).send({ error: 'Request Not Authorized.' })
-      // }
-  
-      // req.admin = user.organization_admin
-      // req.user = user
-      // next()
+      const decoded = jwt.verify(token, config.jwtSecret)
+      
+      //Check if user is admin
+      const user = await userService.getUserById(decoded._id)
+      const check  = await userService.checkUserIsAdmin(user._id)
+      if (!user || !check) {
+        return res.status(401).send({ error: 'Request Not Authorized.' })
+      }
+      req.user = user
+      next()
     } catch (e) {
       next(e)
     }
@@ -44,23 +38,12 @@ const adminAuth = async (req, res, next) => {
       }
       
       token = token.replace('Bearer ', '')
-      const decodedToken = jwt.decode(token, { complete: true })
-      const phoneNumber = decodedToken.payload.preferred_username
-  
-      // Find user by phone number
-      // const user = await User.findOne({ phoneNumber })
-      // if (!user) {
-      //   return res.status(401).send({ error: 'Request Not Authorized.' })
-      // }
-  
-      // Verify token with Keycloak
-      // const checkKeycloak = await keycloak.isTokenValid(token)
-      // if (!checkKeycloak) {
-      //   return res.status(401).send({ error: 'Request Not Authorized.' })
-      // }
-  
-      // req.user = user
-      // req.admin = user.organization_admin
+      const decoded = jwt.verify(token, config.jwtSecret)
+      const user = await userService.getUserById(decoded._id)
+      if (!user) {
+        return res.status(401).send({ error: 'Request Not Authorized.' })
+      }
+      req.user = user
       next()
     } catch (e) {
       next(e)

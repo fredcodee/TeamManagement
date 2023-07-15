@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt')
 const Organization = require('../models/Organization');
 const User = require('../models/User');
 const Project = require('../models/Project');
+const Role = require('../models/Role');
+const UserRoles = require('../models/UserRoles');
 const config = require('../configs/config');
 const jwt = require('jsonwebtoken')
 
@@ -101,6 +103,22 @@ async function checkUserExistsInDb (phoneNumber){
     return false;
 }
 
+//check if user is admin
+async function checkUserIsAdmin (userId){
+    try {
+        const user = await UserRoles.findOne({ user_id: userId });
+        const role = await Role.findById(user.role_id);
+        if (role.name == 'admin') {
+            return true;
+        }
+        return false;
+    }
+    catch (error) {
+        return false
+    }
+}
+
+
 
 //get all users in an organization
 async function getAllUsersInOrganization(organizationId){
@@ -139,4 +157,4 @@ async function getProjectsForUser(userId,organization, admin) {
 
 
 module.exports = { generateToken, addUserToDb,findAndVerifyUser, getUserOrganization , checkUserExistsInDb, getUserById
-, getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser}
+, getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser, checkUserIsAdmin}
