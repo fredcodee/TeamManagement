@@ -62,7 +62,11 @@ const addUserToRole = async (req, res) => {
         const roleId = req.body.roleId;
         // check permissions
         await checkUserIsAdmin(req.user, teamId, res);
-        //add user to role
+        //check if user has role already
+        const userHasRole = await appService.checkUserHasRoleInOrganization(userId, teamId);
+        if (userHasRole) {
+            return res.status(401).json({ message: 'user already has a role in team' });
+        }
         await appService.addUserToRole(userId, roleId, teamId);
         res.json({ message: 'user added to role successfully' });
     } catch (error) {

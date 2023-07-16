@@ -90,6 +90,18 @@ async function inviteUserToOrganization(email, organizationId) {
     }
 }
 
+// check if user has role in organization
+async function checkUserHasRoleInOrganization(userId, organizationId) {
+    try {
+        const userRole = await UserRoles.findOne({ user_id: userId, organization_id: organizationId });
+        return !!userRole;
+    } catch (error) {
+        throw new Error(`Cant check if user has role in organization ${error}`);
+    }
+}
+
+
+
 
 //get all team (remove later)
 async function getAllOrganizations() {
@@ -107,5 +119,5 @@ async function getAllOrganizations() {
 
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
-    getAllOrganizations
+    getAllOrganizations, checkUserHasRoleInOrganization
 }
