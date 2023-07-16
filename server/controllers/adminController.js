@@ -74,6 +74,26 @@ const addUserToRole = async (req, res) => {
     }
 }
 
+//remove user from role
+const removeUserFromRole = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const userId = req.body.userId;
+        const roleId = req.body.roleId;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //check if user has role already
+        const userHasRole = await appService.checkUserHasRoleInOrganization(userId, teamId);
+        if (!userHasRole) {
+            return res.status(401).json({ message: 'user does not have a role in team' });
+        }
+        await appService.removeUserFromRole(userId, roleId, teamId);
+        res.json({ message: 'user removed from role successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 
 
 
@@ -369,4 +389,4 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 //   }
 
 
-module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole }
+module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole }
