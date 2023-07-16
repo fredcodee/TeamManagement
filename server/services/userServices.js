@@ -11,7 +11,6 @@ const jwt = require('jsonwebtoken')
 //generate token
 async function generateToken(user) {
     try {
-        console.log(config.jwtSecret)
         const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: '5d' });
         return token;
     }
@@ -24,11 +23,14 @@ async function generateToken(user) {
 //add user to db
 async function addUserToDb(firstName, lastName, email, password) {
     try {
+        if (password != null) {
+           password = bcrypt.hashSync(password, 10)
+        }
         const user = new User({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: bcrypt.hashSync(password, 10),
+            firstName: firstName || null,
+            lastName: lastName  || null,
+            email: email || null,
+            password: password || null,
             organization_id: null,
         });
         await user.save();
@@ -106,10 +108,23 @@ async function getUserById(id) {
     }
 }
 
-//check if user is admin
-async function checkUserIsAdmin(userId) {
+//get user by email
+async function getUserByEmail(email) {
     try {
-        const user = await UserRoles.findOne({ user_id: userId });
+        const user = await User.findOne({ email: email });
+        if (user){
+            return user
+        }
+        return false;
+    } catch (error) {
+        throw new Error(`Cant get user details ${error}`);
+    }
+}
+
+//check if user is admin
+async function checkUserIsAdmin(userId, organizationId) {
+    try {
+        const user = await UserRoles.findOne({ user_id: userId, organization_id:organizationId });
         const role = await Role.findById(user.role_id);
         if (role.name == 'admin') {
             return true;
@@ -120,6 +135,29 @@ async function checkUserIsAdmin(userId) {
         return false
     }
 }
+
+
+//check if user is in orgamization/team
+async function checkUserIsInOrganization(userId, organizationId) {
+    try {
+        const user = await User.findOne({_id: userId, organization_id: organizationId});
+        return !!user;}
+    catch (error) {
+        return false
+    }
+}
+
+
+// get all users(remove later)
+async function getAllUsers() {
+    try {
+        const allUser = await User.find();
+        return allUser;
+    } catch (error) {
+        throw new Error(`Cant get all users ${error}`);
+    }
+}
+
 
 //---------------------------------------------------------------
 
@@ -198,5 +236,5 @@ async function getProjectsForUser(userId, organization, admin) {
 module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserOrganization, checkUserExistsInDb, getUserById
     , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser, checkUserIsAdmin
-    , checkIfUserWasInvited, checkIfUserIsRegistered
+    , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
 }

@@ -1,7 +1,9 @@
+const userService = require('./userServices');
 const Organization = require('../models/Organization');
 const User = require('../models/User');
 const Role = require('../models/Role');
 const UserRoles = require('../models/UserRoles');
+
 
 
 
@@ -74,7 +76,36 @@ async function addUserToRole(userId, roleId, organizationId) {
     }
 }
 
+//invite user to organization/team
+async function inviteUserToOrganization(email, organizationId) {
+    try {
+        //add user to db
+        const user = await userService.addUserToDb(null,null,email,null);
+        //add organization to user
+        await addOrganizationToUser(user._id, organizationId);
+
+        return user._id;
+    } catch (error) {
+        throw new Error(`Cant invite user to organization ${error}`);
+    }
+}
+
+
+//get all team (remove later)
+async function getAllOrganizations() {
+    try {
+        const organizations = await Organization.find();
+        return organizations;
+    } catch (error) {
+        throw new Error(`Cant get organizations ${error}`);
+    }
+}
+
+
+
+
 
 module.exports = {
-    createOrganization, addOrganizationToUser, createRole, addUserToRole
+    createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
+    getAllOrganizations
 }

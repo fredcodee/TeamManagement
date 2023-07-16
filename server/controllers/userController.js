@@ -22,8 +22,6 @@ const createTeam = async (req, res) => {
 }
 
 
-        
-
 
 
 //get user projects

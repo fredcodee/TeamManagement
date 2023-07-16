@@ -13,6 +13,7 @@ const config = require('./config');
 //routes
 const appRoutes = require("../routes/appRoutes")
 const  userRoutes = require("../routes/userRoutes")
+const admin = require("../routes/adminRoutes")
 
 
 const app = express();
@@ -43,6 +44,7 @@ app.use(cors());
 // API router
 app.use('/api', appRoutes); //for app actions 
 app.use('/api/user', userRoutes); //for user actions
+app.use('/api/admin', admin); //for admin actions
 
 
 // catch 404 and forward to error handler
