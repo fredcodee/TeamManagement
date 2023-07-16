@@ -96,6 +96,31 @@ async function checkIfUserIsRegistered(email) {
     }
 }
 
+//get user details
+async function getUserById(id) {
+    try {
+        const user = User.findById(id);
+        return user;
+    } catch (error) {
+        throw new Error(`Cant get user details ${error}`);
+    }
+}
+
+//check if user is admin
+async function checkUserIsAdmin(userId) {
+    try {
+        const user = await UserRoles.findOne({ user_id: userId });
+        const role = await Role.findById(user.role_id);
+        if (role.name == 'admin') {
+            return true;
+        }
+        return false;
+    }
+    catch (error) {
+        return false
+    }
+}
+
 //---------------------------------------------------------------
 
 //get user's organization
@@ -106,18 +131,6 @@ async function getUserOrganization(email) {
         return UserOrganizationDetails;
     } catch (error) {
         return false
-    }
-}
-
-
-
-//get user details
-async function getUserById(id) {
-    try {
-        const user = User.findById(id);
-        return user;
-    } catch (error) {
-        throw new Error(`Cant get user details ${error}`);
     }
 }
 
@@ -142,20 +155,7 @@ async function checkUserExistsInDb(phoneNumber) {
     return false;
 }
 
-//check if user is admin
-async function checkUserIsAdmin(userId) {
-    try {
-        const user = await UserRoles.findOne({ user_id: userId });
-        const role = await Role.findById(user.role_id);
-        if (role.name == 'admin') {
-            return true;
-        }
-        return false;
-    }
-    catch (error) {
-        return false
-    }
-}
+
 
 
 

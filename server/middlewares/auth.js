@@ -39,7 +39,7 @@ const adminAuth = async (req, res, next) => {
       
       token = token.replace('Bearer ', '')
       const decoded = jwt.verify(token, config.jwtSecret)
-      const user = await userService.getUserById(decoded._id)
+      const user = await userService.getUserById(decoded.id)
       if (!user) {
         return res.status(401).send({ error: 'Request Not Authorized.' })
       }
