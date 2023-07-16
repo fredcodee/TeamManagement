@@ -4,6 +4,8 @@ const {userAuth} = require('../middlewares/auth');
 
 
 router.post('/invite/user',userAuth, adminController.inviteUser)
+router.post('/create/role',userAuth, adminController.createRole)
+router.post('/add/user/role',userAuth, adminController.addUserToRole)
 
 //remove later
 router.post('/get/all/users', userAuth, adminController.getAllUsers)

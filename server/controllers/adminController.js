@@ -38,6 +38,40 @@ const inviteUser = async (req, res) => {
 }
 
 
+//create roles
+const createRole = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const roleName = req.body.roleName;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //create role
+        const role = await appService.createRole(teamId, roleName);
+        res.json(role);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+//add user to role
+const addUserToRole = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const userId = req.body.userId;
+        const roleId = req.body.roleId;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //add user to role
+        await appService.addUserToRole(userId, roleId, teamId);
+        res.json({ message: 'user added to role successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 
@@ -75,91 +109,6 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 }
 
 
-// const addOrganization = async (req, res) => {
-//     try {
-//         let name = req.body.name;
-//         name = toTitleCase(name);
-//         const organizationExists = await adminService.checkOrganizationExistsInDb(name);
-//         if (!organizationExists) {
-//             //create organization in keycloak realm
-//             const token = await keycloak.connectToAdminCLI();
-//             const keycloakRealm = await keycloak.createKeycloakRealm(name, token.data.access_token);
-//             const organization = await adminService.addNewOrganizationToDb(name);
-//             res.json({message: 'Organization added successfully'});
-//         }else{
-//             res.status(406).json({message: 'Organization already exists'});
-//         }
-//     } catch (error) {
-//         errorHandler.errorHandler(error, res)
-//     }
-// };
-
-
-// const createAdminUser = async (req, res) => {
-//     try {
-//         const firstName = req.body.firstName;
-//         const lastName = req.body.lastName;
-//         const password = req.body.password;
-//         let organization = req.body.organization;
-//         organization = toTitleCase(organization);
-//         const phoneNumber = req.body.phoneNumber;
-//         const role = "Admin"
-
-//         //keycloak token
-//         const token = await keycloak.connectToAdminCLI();
-
-//         //check if organization exists(keycloak realm and db )
-//         const realmExists = await keycloak.checkRealmExists(organization, token.data.access_token);
-//         const organizationExists = await adminService.checkOrganizationExistsInDb(organization);
-//         if (realmExists && organizationExists) {
-//             //check if admin role aready exists else create it
-//             const adminRoleExists = await keycloak.checkOrCreateRealmRole(organization, role, token.data.access_token);
-//             if (adminRoleExists) {
-//                 //create account in keycloak realm
-//                 await keycloak.addUserToKeycloak(organization, phoneNumber,firstName, lastName, password, token.data.access_token);
-//                 //create account in localdb
-//                 await adminService.addNewUserToDb(firstName, lastName, bcrypt.hashSync(password, 10), organization, phoneNumber, true);
-//                 //and assign admin role to user
-//                 await keycloak.assignRealmRoleToUser(organization, phoneNumber, role, token.data.access_token);
-//                 res.json({message: 'Admin Account created successfully'});
-//             }else
-//             {
-//                 res.status(406).json({message: 'Admin role could not be created'});
-//             }
-//         }else
-//         {
-//             res.status(406).json({message: 'Organization does not exist'});
-//         }
-//     } catch (error) {
-//         errorHandler.errorHandler(error, res)
-//     }
-// };
-
-
-
-// const createUserAccount = async (req, res) => {
-//     try {        
-//         const phoneNumber = req.body.phoneNumber;
-//         const adminUser = req.user;
-//         const organization = await userService.getUserOrganization(adminUser.phoneNumber);//get Admin user's organization
-
-//         //check if user already exists
-//         const userExists = await userService.checkUserExistsInDb(phoneNumber);
-//         if (!userExists) {
-//             //keycloak token
-//             const token = await keycloak.connectToAdminCLI();
-//             //create account in keycloak realm
-//             await keycloak.addUserToKeycloakWithOutPassword(organization.name, phoneNumber, token.data.access_token);
-//             //create account in localdb
-//             const newUser = await adminService.addNewUserToDb("", "", "", organization.name, phoneNumber, false);
-//             res.json({message: 'User Account created successfully', inviteID: newUser._id});
-//         }else{
-//             res.status(406).json({message: 'User already exists'});
-//         }
-//     } catch (error) {
-//         errorHandler.errorHandler(error, res)
-//     }
-// };
 
 // //get user invite id
 // const getUserInviteId = async (req, res) => {
@@ -416,4 +365,4 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 //   }
 
 
-module.exports = {inviteUser, getAllUsers, getAllTeams}
+module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole }
