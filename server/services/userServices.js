@@ -147,6 +147,17 @@ async function checkUserIsInOrganization(userId, organizationId) {
     }
 }
 
+//check if user is in project
+async function checkUserIsInProject(userId, projectId) {
+    try {
+        const user = await User.findOne({_id: userId, projects: projectId});
+        return !!user;}
+    catch (error) {
+        return false
+    }
+}
+
+
 
 // get all users(remove later)
 async function getAllUsers() {
@@ -237,4 +248,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserOrganization, checkUserExistsInDb, getUserById
     , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
+    , checkUserIsInProject
 }

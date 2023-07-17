@@ -152,6 +152,24 @@ async function createProject(organizationId, name, info) {
     }
 }
 
+//add user to project
+async function addUserToProject(userId, projectId) {
+    try {
+        const user = await User.findById(userId);
+        const project= await Project.findById(projectId);
+        if (user) {
+            // Add the organization ID to the user's organization_id array
+            user.projects.push(project._id);
+            await user.save();
+            return true;
+      }
+    }
+    catch (error) {
+        throw new Error(`Cant add user to project ${error}`);
+      }
+    }
+
+
 
 
 
@@ -174,5 +192,5 @@ async function getAllOrganizations() {
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
-    , removeUserFromOrganization, createProject
+    , removeUserFromOrganization, createProject, addUserToProject
 }

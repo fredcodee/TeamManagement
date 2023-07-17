@@ -142,6 +142,35 @@ const createProject = async (req, res) => {
     }}
 
 
+//add user to project
+const addUserToProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const userId = req.body.userId;
+        const projectId = req.body.projectId;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'user is not in team' });
+        }
+        //check if user is already in project
+        const userInProject = await userService.checkUserIsInProject(userId, projectId);
+        if (userInProject) {
+            return res.status(401).json({ message: 'user is already in project' });
+        }
+        //add user to project
+        await appService.addUserToProject(userId, projectId);
+        res.json({ message: 'user added to project successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }}
+
+
+
+
+
 
 
 
@@ -441,5 +470,5 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 
 
 module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole 
-, editTeamDetails, removeUserFromTeam, createProject
+, editTeamDetails, removeUserFromTeam, createProject, addUserToProject
 }
