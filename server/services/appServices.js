@@ -110,6 +110,18 @@ async function checkUserHasRoleInOrganization(userId, organizationId) {
         throw new Error(`Cant check if user has role in organization ${error}`);
     }
 }
+//edit organization/team details
+async function editOrganizationDetails(teamId, name) {
+    try {
+        const team  = await Organization.findById(teamId);
+        team.name = name;
+        await team.save();
+        return team;
+    } catch (error) {
+        throw new Error(`Cant edit organization details ${error}`);
+    }
+}
+
 
 
 
@@ -130,5 +142,5 @@ async function getAllOrganizations() {
 
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
-    getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole
+    getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
 }

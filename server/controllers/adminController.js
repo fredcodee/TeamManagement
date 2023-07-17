@@ -95,6 +95,24 @@ const removeUserFromRole = async (req, res) => {
 }
 
 
+//edit team details
+const editTeamDetails = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const teamName = req.body.teamName;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //edit team details
+        await appService.editOrganizationDetails(teamId, teamName);
+        res.json({ message: 'team details edited successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
 
 
 
@@ -389,4 +407,5 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 //   }
 
 
-module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole }
+module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole 
+, editTeamDetails}
