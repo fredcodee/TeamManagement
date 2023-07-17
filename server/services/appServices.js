@@ -122,6 +122,20 @@ async function editOrganizationDetails(teamId, name) {
     }
 }
 
+//remove user from organization/team
+async function removeUserFromOrganization(userId, organizationId) {
+    try {
+        //remove user from organization
+        await User.findOneAndUpdate({ _id: userId }, { $pull: { organization_id: organizationId } });
+        //remove user from all roles in organization
+        await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
+        return true;
+    } catch (error) {
+        throw new Error(`Cant remove user from organization ${error}`);
+    }
+}
+
+
 
 
 
@@ -143,4 +157,5 @@ async function getAllOrganizations() {
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
+    , removeUserFromOrganization
 }

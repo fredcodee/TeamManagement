@@ -8,6 +8,7 @@ router.post('/create/role',userAuth, adminController.createRole)
 router.post('/add/user/role',userAuth, adminController.addUserToRole)
 router.post('/remove/user/role',userAuth, adminController.removeUserFromRole)
 router.post('/edit/team', userAuth, adminController.editTeamDetails)
+router.post('/remove/user/team', userAuth, adminController.removeUserFromTeam)
 
 //remove later
 router.post('/get/all/users', userAuth, adminController.getAllUsers)

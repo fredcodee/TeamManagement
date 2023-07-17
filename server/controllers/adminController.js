@@ -111,6 +111,21 @@ const editTeamDetails = async (req, res) => {
 }
 
 
+//remove user from team
+const removeUserFromTeam = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const userId = req.body.userId;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //remove user from team
+        await appService.removeUserFromOrganization(userId, teamId);
+        res.json({ message: 'user removed from team successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }}
+
+
 
 
 
@@ -408,4 +423,5 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 
 
 module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole 
-, editTeamDetails}
+, editTeamDetails, removeUserFromTeam
+}
