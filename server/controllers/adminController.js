@@ -1,4 +1,4 @@
-const errorHandler  = require('../configs/errorHandler')
+const errorHandler = require('../configs/errorHandler')
 const userService = require('../services/userServices')
 const appService = require('../services/appServices')
 
@@ -123,7 +123,8 @@ const removeUserFromTeam = async (req, res) => {
         res.json({ message: 'user removed from team successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
-    }}
+    }
+}
 
 
 //create project
@@ -139,7 +140,8 @@ const createProject = async (req, res) => {
         res.json(project);
     } catch (error) {
         errorHandler.errorHandler(error, res)
-    }}
+    }
+}
 
 
 //add user to project
@@ -165,7 +167,57 @@ const addUserToProject = async (req, res) => {
         res.json({ message: 'user added to project successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
-    }}
+    }
+}
+
+//remove user from project
+const removeUserFromProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const userId = req.body.userId;
+        const projectId = req.body.projectId;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'user is not in team' });
+        }
+        //check if user is already in project
+        const userInProject = await userService.checkUserIsInProject(userId, projectId);
+        if (!userInProject) {
+            return res.status(401).json({ message: 'user is not in project' });
+        }
+        //remove user from project
+        await appService.removeUserFromProject(userId, projectId);
+        res.json({ message: 'user removed from project successfully' });
+
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+//get all projects in team
+const getAllProjectsInTeam = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(req.user._id, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'access denied user is not in team' });
+        }
+        //get all projects in team
+        const projects = await appService.getAllProjects(teamId);
+        res.json(projects);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
 
 
 
@@ -187,7 +239,8 @@ const getAllUsers = async (req, res) => {
         res.json(users);
     } catch (error) {
         errorHandler.errorHandler(error, res)
-    }}
+    }
+}
 
 //get all teams(remove later)
 const getAllTeams = async (req, res) => {
@@ -196,12 +249,13 @@ const getAllTeams = async (req, res) => {
         res.json(teams);
     } catch (error) {
         errorHandler.errorHandler(error, res)
-    }}
+    }
+}
 
 
 
 //check if user is admin
-const checkUserIsAdmin = async (user, teamId ,res) => {
+const checkUserIsAdmin = async (user, teamId, res) => {
     try {
         const userIsAdmin = await userService.checkUserIsAdmin(user._id, teamId);
         if (!userIsAdmin) {
@@ -411,7 +465,7 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 //         res.json({ message: `removed ${user.firstName} as ${role} in ${project.name}` });
 //     } catch (error) {
 //         errorHandler.errorHandler(error, res)
-            
+
 //     }
 // };
 
@@ -469,6 +523,8 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 //   }
 
 
-module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole 
-, editTeamDetails, removeUserFromTeam, createProject, addUserToProject
+module.exports = {
+    inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
+    , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
+    ,getAllProjectsInTeam
 }

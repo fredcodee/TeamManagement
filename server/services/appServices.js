@@ -169,6 +169,28 @@ async function addUserToProject(userId, projectId) {
       }
     }
 
+//remove user from project
+async function removeUserFromProject(userId, projectId) {
+    try {
+        await User.findOneAndUpdate({ _id: userId }, { $pull: { projects: projectId } });
+        return true;
+    } catch (error) {
+        throw new Error(`Cant remove user from project ${error}`);
+    }
+}
+
+
+//get all organization/team projects
+async function getAllProjects(organizationId) {
+    try {
+        const projects = await Project.find({ organization_id: organizationId });
+        return projects;
+    } catch (error) {
+        throw new Error(`Cant get projects ${error}`);
+    }
+}
+
+
 
 
 
@@ -192,5 +214,5 @@ async function getAllOrganizations() {
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
-    , removeUserFromOrganization, createProject, addUserToProject
+    , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
 }
