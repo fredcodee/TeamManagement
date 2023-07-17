@@ -126,6 +126,24 @@ const removeUserFromTeam = async (req, res) => {
     }}
 
 
+//create project
+const createProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const projectName = req.body.projectName;
+        const projectDescription = req.body.projectDescription;
+        // check permissions
+        await checkUserIsAdmin(req.user, teamId, res);
+        //create project
+        const project = await appService.createProject(teamId, projectName, projectDescription);
+        res.json(project);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }}
+
+
+
+
 
 
 
@@ -423,5 +441,5 @@ const checkUserIsAdmin = async (user, teamId ,res) => {
 
 
 module.exports = {inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole 
-, editTeamDetails, removeUserFromTeam
+, editTeamDetails, removeUserFromTeam, createProject
 }

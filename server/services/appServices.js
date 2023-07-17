@@ -3,6 +3,7 @@ const Organization = require('../models/Organization');
 const User = require('../models/User');
 const Role = require('../models/Role');
 const UserRoles = require('../models/UserRoles');
+const Project = require('../models/Project');
 
 
 
@@ -136,6 +137,22 @@ async function removeUserFromOrganization(userId, organizationId) {
 }
 
 
+//create project
+async function createProject(organizationId, name, info) {
+    try {
+        const project = new Project({
+            name: name,
+            organization_id: organizationId,
+            info: info
+        });
+        await project.save();
+        return project;
+    } catch (error) {
+        throw new Error(`Cant create project ${error}`);
+    }
+}
+
+
 
 
 
@@ -157,5 +174,5 @@ async function getAllOrganizations() {
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
-    , removeUserFromOrganization
+    , removeUserFromOrganization, createProject
 }
