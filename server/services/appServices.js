@@ -190,6 +190,17 @@ async function getAllProjects(organizationId) {
     }
 }
 
+//get all roles in organization/team
+async function getAllRoles(organizationId) {
+    try {
+        const roles = await Role.find({ organization_id: organizationId });
+        return roles;
+    } catch (error) {
+        throw new Error(`Cant get roles ${error}`);
+    }
+}
+
+
 
 
 
@@ -215,4 +226,5 @@ module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
+    , getAllRoles
 }

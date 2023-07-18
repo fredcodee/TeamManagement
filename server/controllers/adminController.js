@@ -279,6 +279,20 @@ const getUsersInTeamAndRoles= async (req, res) => {
     }
 };
 
+//get all roles in an organization/team
+const getAllRolesInTeam = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const roles = await appService.getAllRoles(teamId);
+        res.json(roles);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
 
 
 //check if user is admin
@@ -543,5 +557,5 @@ const checkUserIsAdmin = async (user, teamId, res) => {
 module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
-    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles
+    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam
 }
