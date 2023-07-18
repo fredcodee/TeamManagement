@@ -170,6 +170,29 @@ async function getAllUsers() {
 }
 
 
+//get all users in a organization and their roles
+async function getAllUsersInOrganizationWithRoles(organizationId) {
+    try {
+        const allUser = await User.find({ organization_id: organizationId });
+        const allUserWithRoles = [];
+        for (let i = 0; i < allUser.length; i++) {
+            const user = allUser[i];
+            const userRole = await UserRoles.findOne({ user_id: user._id, organization_id: organizationId });
+            const role = await Role.findById(userRole.role_id);
+            const userWithRole = {
+                user: user,
+                role: role
+            }
+            allUserWithRoles.push(userWithRole);
+        }
+        return allUserWithRoles;
+    } catch (error) {
+        throw new Error(`Cant get all users in an organization ${error}`);
+    }
+}
+
+
+
 //---------------------------------------------------------------
 
 //get user's organization
@@ -208,15 +231,7 @@ async function checkUserExistsInDb(phoneNumber) {
 
 
 
-//get all users in an organization
-async function getAllUsersInOrganization(organizationId) {
-    try {
-        const allUser = await User.find({ organization_id: organizationId });
-        return allUser;
-    } catch (error) {
-        throw new Error(`Cant get all users in an organization ${error}`);
-    }
-}
+
 
 
 //get user projects
@@ -267,7 +282,7 @@ async function getUserProjects(userId) {
 
 module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserOrganization, checkUserExistsInDb, getUserById
-    , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser, checkUserIsAdmin
+    , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganizationWithRoles, getProjectsForUser, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
     , checkUserIsInProject, getAllUsersInProject, getUserProjects
 }
