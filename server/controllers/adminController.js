@@ -198,7 +198,7 @@ const removeUserFromProject = async (req, res) => {
 }
 
 
-//get all projects in team
+//get all projects in teamcd
 const getAllProjectsInTeam = async (req, res) => {
     try {
         const teamId = req.body.teamId;
@@ -214,6 +214,22 @@ const getAllProjectsInTeam = async (req, res) => {
         errorHandler.errorHandler(error, res)
     }
 }
+
+// get all users in a project
+const getAllUsersInProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        //permission check
+        await checkUserIsAdmin(req.user, teamId, res);
+        //get all users in project
+        const users = await userService.getAllUsersInProject(projectId);
+        res.json(users);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 
 
 
@@ -526,5 +542,5 @@ const checkUserIsAdmin = async (user, teamId, res) => {
 module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
-    ,getAllProjectsInTeam
+    ,getAllProjectsInTeam, getAllUsersInProject 
 }

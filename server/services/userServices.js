@@ -242,11 +242,22 @@ async function getProjectsForUser(userId, organization, admin) {
     }
 };
 
+// get all users in a project
+async function getAllUsersInProject(projectId) {
+    try {
+        const allUser = await User.find({ projects: projectId });
+        return allUser;
+    } catch (error) {
+        throw new Error(`Cant get all users in a project ${error}`);
+    }
+}
+
+
 
 
 module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserOrganization, checkUserExistsInDb, getUserById
     , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
-    , checkUserIsInProject
+    , checkUserIsInProject, getAllUsersInProject
 }
