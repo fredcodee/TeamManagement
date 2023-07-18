@@ -22,27 +22,20 @@ const createTeam = async (req, res) => {
 }
 
 
-
-
 //get user projects
-// const getUserProjects = async (req, res) => {
-//     try {
-//         const user = req.user;
-//         const organization =  await userService.getUserOrganization(user.phoneNumber)
-//         const projects = await userService.getProjectsForUser(user._id,organization, req.admin);
-//         if (projects) {
-//             res.json({projects})
-//         }else{
-//             res.status(401).json({ message: 'user has no projects' });
-//         }
-//     } catch (error) {
-//         errorHandler.errorHandler(error, res)
-//     }
-// }
+const getUserProjects = async (req, res) => {
+    try {
+        const user = req.user;
+        const projects = await userService.getUserProjects(user._id);
+        res.json(projects)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 
 //view project
 
 
-module.exports = { createTeam}
+module.exports = { createTeam, getUserProjects}
 

@@ -252,6 +252,16 @@ async function getAllUsersInProject(projectId) {
     }
 }
 
+// get a user's projects
+async function getUserProjects(userId) {
+    try {
+        const userProject = await User.findById(userId).populate('projects');
+        return userProject.projects;
+    } catch (error) {
+        throw new Error(`Cant get user projects ${error}`);
+    }
+}
+        
 
 
 
@@ -259,5 +269,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserOrganization, checkUserExistsInDb, getUserById
     , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganization, getProjectsForUser, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
-    , checkUserIsInProject, getAllUsersInProject
+    , checkUserIsInProject, getAllUsersInProject, getUserProjects
 }
