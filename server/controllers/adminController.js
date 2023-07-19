@@ -95,6 +95,25 @@ const removeUserFromRole = async (req, res) => {
 }
 
 
+//get team details
+const getTeamDetails = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(req.user._id, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'access denied user is not in team' });
+        }
+        //get team details
+        const team = await appService.getOrganizationDetails(teamId);
+        res.json(team);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 //edit team details
 const editTeamDetails = async (req, res) => {
     try {
@@ -270,6 +289,12 @@ const getAllRolesInTeam = async (req, res) => {
     }
 }
 
+
+
+
+
+
+
 //get all users(remove later)
 const getAllUsers = async (req, res) => {
     try {
@@ -343,5 +368,5 @@ const checkUserIsAdmin = async (user, teamId, res) => {
 module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
-    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails
+    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails
 }

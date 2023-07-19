@@ -26,6 +26,17 @@ async function createOrganization(name) {
     }
 }
 
+//get orginization/team details
+async function getOrganizationDetails(organizationId) {
+    try{
+        const organization = await Organization.findById(organizationId);
+        return organization;
+    }
+    catch(error){
+        throw new Error(`Cant get organization details ${error}`);
+    }
+}
+
 //add organization to user
 async function addOrganizationToUser(userId, organizationId) {
     try {
@@ -254,5 +265,5 @@ module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
-    , getAllRoles, getProjectInfo, editProjectDetails
+    , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails
 }
