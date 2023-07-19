@@ -141,8 +141,10 @@ async function removeUserFromOrganization(userId, organizationId) {
         await User.findOneAndUpdate({ _id: userId }, { $pull: { organization_id: organizationId } });
         //remove user from all roles in organization
         await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
-        //remove user from all projects in organization
-        await User.findOneAndUpdate({ _id: userId }, { $pull: { projects: { organization_id: organizationId } } });
+        //remove user from all projects linked with the organization
+        for(const project of await getAllProjects(organizationId)){
+            await removeUserFromProject(userId, project._id);
+        }
         return true;
     } catch (error) {
         throw new Error(`Cant remove user from organization ${error}`);
