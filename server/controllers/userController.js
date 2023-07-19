@@ -22,7 +22,7 @@ const createTeam = async (req, res) => {
 }
 
 
-//get user projects
+//get user's projects
 const getUserProjects = async (req, res) => {
     try {
         const user = req.user;
@@ -34,8 +34,18 @@ const getUserProjects = async (req, res) => {
 }
 
 
-//view project
+//view project info
+const viewProjectInfo = async (req, res) => {
+    try {
+        const projectId = req.body.projectId;
+        const project = await appService.getProjectInfo(projectId);
+        res.json(project)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 
-module.exports = { createTeam, getUserProjects}
+
+module.exports = { createTeam, getUserProjects, viewProjectInfo}
 

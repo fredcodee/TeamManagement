@@ -180,7 +180,7 @@ async function removeUserFromProject(userId, projectId) {
 }
 
 
-//get all organization/team projects
+//get all projects in organization/team 
 async function getAllProjects(organizationId) {
     try {
         const projects = await Project.find({ organization_id: organizationId });
@@ -199,6 +199,34 @@ async function getAllRoles(organizationId) {
         throw new Error(`Cant get roles ${error}`);
     }
 }
+
+
+//get project details
+async function getProjectInfo(projectId) {
+    try{
+        const project = await Project.findById(projectId);
+        return project;
+    }
+    catch(error){
+        throw new Error(`Cant get project details ${error}`);
+    }
+    
+}
+
+//edit project details
+async function editProjectDetails(projectId, name, info) {
+    try{
+        const project =  await Project.findById(projectId);
+        project.name = name;
+        project.info = info;
+        await project.save();
+        return project;
+    }
+    catch(error){
+        throw new Error(`Cant edit project details ${error}`);
+    }
+}
+
 
 
 
@@ -226,5 +254,5 @@ module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
-    , getAllRoles
+    , getAllRoles, getProjectInfo, editProjectDetails
 }
