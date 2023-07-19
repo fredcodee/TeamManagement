@@ -157,19 +157,6 @@ async function checkUserIsInProject(userId, projectId) {
     }
 }
 
-
-
-// get all users(remove later)
-async function getAllUsers() {
-    try {
-        const allUser = await User.find();
-        return allUser;
-    } catch (error) {
-        throw new Error(`Cant get all users ${error}`);
-    }
-}
-
-
 //get all users in a organization and their roles
 async function getAllUsersInOrganizationWithRoles(organizationId) {
     try {
@@ -191,71 +178,35 @@ async function getAllUsersInOrganizationWithRoles(organizationId) {
     }
 }
 
-
-
-//---------------------------------------------------------------
-
-//get user's organization
-async function getUserOrganization(email) {
-    try {
-        const user = await User.findOne({ email: email });
-        const UserOrganizationDetails = await Organization.findById(user.organization_id);
-        return UserOrganizationDetails;
-    } catch (error) {
+//get user team
+async function getUserTeamInfo(userId){
+    try{
+        const teams = []
+        const team  = await User.findOne({ _id: userId }).populate('organization_id');
+        for (const organization of team.organization_id) {
+            const team = {
+                teamId: organization._id,
+                teamName: organization.name
+            }
+            teams.push(team)
+        }
+        return teams;
+    }
+    catch(error){
         return false
     }
 }
 
-//get user by phone number
-async function getUserByPhoneNumber(phoneNumber) {
+
+// get all users(remove later)
+async function getAllUsers() {
     try {
-        const user = User.findOne({ phoneNumber: phoneNumber });
-        return user;
+        const allUser = await User.find();
+        return allUser;
     } catch (error) {
-        throw new Error(`Cant get user details ${error}`);
+        throw new Error(`Cant get all users ${error}`);
     }
 }
-
-
-
-// check if user exists
-async function checkUserExistsInDb(phoneNumber) {
-    const user = await User.findOne({ phoneNumber: phoneNumber });
-    if (user) {
-        return true;
-    }
-    return false;
-}
-
-
-
-
-
-
-
-
-//get user projects
-async function getProjectsForUser(userId, organization, admin) {
-    try {
-        if (admin) {
-            const projects = await Project.find({ organization_id: organization });
-            return projects;
-        }
-        const user = await User.findById(userId).populate('projects');
-
-        if (!user) {
-            // Handle the case where the user is not found
-            throw new Error(`User with ID ${userId} not found`);
-        }
-
-        // Extract the list of projects from the user object
-        const projects = user.projects;
-        return projects;
-    } catch (err) {
-        // Handle any errors that occur while fetching the user and their projects
-        console.error(err);
-    }
-};
 
 // get all users in a project
 async function getAllUsersInProject(projectId) {
@@ -281,8 +232,7 @@ async function getUserProjects(userId) {
 
 
 module.exports = {
-    generateToken, addUserToDb, findAndVerifyUser, getUserOrganization, checkUserExistsInDb, getUserById
-    , getUserByPhoneNumber, editUserProfile, getAllUsersInOrganizationWithRoles, getProjectsForUser, checkUserIsAdmin
+    generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
-    , checkUserIsInProject, getAllUsersInProject, getUserProjects
+    , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo
 }

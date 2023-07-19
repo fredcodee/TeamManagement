@@ -21,6 +21,18 @@ const createTeam = async (req, res) => {
     }
 }
 
+//get team/organization info
+const getTeamInfo = async (req, res) => {
+    try{
+        const user = req.user;
+        const userTeam = await userService.getUserTeamInfo(user._id);
+        res.json(userTeam)
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 
 //get user's projects
 const getUserProjects = async (req, res) => {
@@ -47,5 +59,5 @@ const viewProjectInfo = async (req, res) => {
 
 
 
-module.exports = { createTeam, getUserProjects, viewProjectInfo}
+module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo}
 
