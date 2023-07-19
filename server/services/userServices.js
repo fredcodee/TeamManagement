@@ -157,26 +157,28 @@ async function checkUserIsInProject(userId, projectId) {
     }
 }
 
-//get all users in a organization and their roles
 async function getAllUsersInOrganizationWithRoles(organizationId) {
     try {
-        const allUser = await User.find({ organization_id: organizationId });
-        const allUserWithRoles = [];
-        for (let i = 0; i < allUser.length; i++) {
-            const user = allUser[i];
-            const userRole = await UserRoles.findOne({ user_id: user._id, organization_id: organizationId });
-            const role = await Role.findById(userRole.role_id);
-            const userWithRole = {
-                user: user,
-                role: role
-            }
-            allUserWithRoles.push(userWithRole);
-        }
-        return allUserWithRoles;
+      const allUser = await User.find({ organization_id: organizationId });
+      const allUserWithRoles = [];
+      
+      for (let i = 0; i < allUser.length; i++) {
+        const user = allUser[i];
+        const userRole = await UserRoles.findOne({ user_id: user._id, organization_id: organizationId });
+        const role = userRole ? await Role.findById(userRole.role_id) : { name: "no role" };
+        const userWithRole = {
+          user: user,
+          role: role
+        };
+        allUserWithRoles.push(userWithRole);
+      }
+      
+      return allUserWithRoles;
     } catch (error) {
-        throw new Error(`Cant get all users in an organization ${error}`);
+      throw new Error(`Can't get all users in an organization: ${error}`);
     }
-}
+  }
+  
 
 //get user team
 async function getUserTeamInfo(userId){
