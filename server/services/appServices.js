@@ -309,6 +309,17 @@ async function addPermissionToRole(roleId, permissionId, projectId, organization
         throw new Error(`Cant add permissions to role ${error}`);}
     }
 
+//remove permissions from role
+async function removePermissionFromRole(roleId, permissionId, projectId, organizationId) {
+    try{ 
+        await RolePermissions.findOneAndDelete({role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId});
+        return true;
+    }
+    catch(error){
+        throw new Error(`Cant remove permissions from role ${error}`);}
+    }
+
+
 // get all roles and their permissions in organization/team
 async function getAllRolesWithPermissions(organizationId, projectId) {
     try{
@@ -365,5 +376,5 @@ module.exports = {
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
-    , addPermissionToRole, getAllRolesWithPermissions
+    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole
 }

@@ -390,6 +390,26 @@ const addPermissionToRole = async (req, res) => {
 }
 
 // (only admins) remove permission from role
+const removePermissionFromRole = async (req, res) => {
+    try{
+        const teamId = req.body.teamId;
+        const roleId = req.body.roleId;
+        const projectId = req.body.projectId;
+        const permissionId = req.body.permissionId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if(!adminCheck){
+            return res.status(401).json({message:'user is not an admin'});
+        }
+        //remove permission from role
+        await appService.removePermissionFromRole(roleId, permissionId, projectId, teamId);
+        res.json({message:'permission removed from role successfully'});
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 //(only admins)  view all roles with permissions in an organization/team
 const getAllRolesWithPermissions = async (req, res) => {
     try{
@@ -474,5 +494,5 @@ module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
-    deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions
+    deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole
 }
