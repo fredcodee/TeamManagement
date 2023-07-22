@@ -343,6 +343,32 @@ const deleteRole = async (req, res) => {
 }
 
 
+//ADD persmissions
+const addPermissions = async (req, res) => {
+    try{
+        const list = ["Edit", "Delete","Invite","Chat","Remove"]
+        await appService.addPermissions(list)
+        res.json({message:'permissions added successfully'})
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+//get all pesmissions
+const getAllPermissions = async (req, res) => {
+    try{
+        const permissions = await appService.getAllPermissions()
+        res.json(permissions)
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
 
 
 
@@ -409,5 +435,5 @@ module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
-    deleteRole
+    deleteRole, addPermissions, getAllPermissions
 }

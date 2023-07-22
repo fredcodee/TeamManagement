@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Role = require('../models/Role');
 const UserRoles = require('../models/UserRoles');
 const Project = require('../models/Project');
+const persmissions = require('../models/Permissions');
 
 
 
@@ -258,6 +259,34 @@ async function deleteRole(roleId, organizationId) {
     }
 }
 
+//add persmissions
+async function addPermissions(listOfPermissions) {
+    try{
+        for(const permission of listOfPermissions){
+            if (await persmissions.findOne({name: permission})){
+                continue;
+            }
+            const newPermission = new persmissions({
+                name: permission
+            });
+            await newPermission.save();
+        }
+        return true;
+    }
+    catch(error){
+        throw new Error(`Cant add permissions ${error}`);}
+    }
+
+//get aall persmissions list
+async function getAllPermissions() {
+    try{
+        const permissions = await persmissions.find();
+        return permissions;
+    }
+    catch(error){
+        throw new Error(`Cant get permissions ${error}`);}
+    }
+
 
 
 
@@ -285,5 +314,5 @@ module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
-    , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole
+    , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
 }
