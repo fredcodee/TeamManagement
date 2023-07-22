@@ -343,7 +343,7 @@ const deleteRole = async (req, res) => {
 }
 
 
-//ADD persmissions
+//Add persmissions
 const addPermissions = async (req, res) => {
     try{
         const list = ["Edit", "Delete","Invite","Chat","Remove"]
@@ -368,7 +368,46 @@ const getAllPermissions = async (req, res) => {
 
 
 
+// (only admins) add permission to role
+const addPermissionToRole = async (req, res) => {
+    try{
+        const teamId = req.body.teamId;
+        const roleId = req.body.roleId;
+        const projectId = req.body.projectId;
+        const permissionId = req.body.permissionId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if(!adminCheck){
+            return res.status(401).json({message:'user is not an admin'});
+        }
+        //add permission to role
+        await appService.addPermissionToRole(roleId, permissionId, projectId, teamId);
+        res.json({message:'permission added to role successfully'});
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
 
+// (only admins) remove permission from role
+//(only admins)  view all roles with permissions in an organization/team
+const getAllRolesWithPermissions = async (req, res) => {
+    try{
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if(!adminCheck){
+            return res.status(401).json({message:'user is not an admin'});
+        }
+        //get all roles with permissions
+        const roles = await appService.getAllRolesWithPermissions(teamId, projectId);
+        res.json(roles);
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 
 
@@ -435,5 +474,5 @@ module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
-    deleteRole, addPermissions, getAllPermissions
+    deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions
 }

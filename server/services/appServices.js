@@ -5,6 +5,7 @@ const Role = require('../models/Role');
 const UserRoles = require('../models/UserRoles');
 const Project = require('../models/Project');
 const persmissions = require('../models/Permissions');
+const RolePermissions = require('../models/Role_Permissions');
 
 
 
@@ -288,6 +289,55 @@ async function getAllPermissions() {
     }
 
 
+// add permissions to role
+async function addPermissionToRole(roleId, permissionId, projectId, organizationId) {
+    try{
+        const rolePermission = await RolePermissions.findOne({role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId});
+        if (rolePermission){
+            return true;
+        }
+        const newRolePermission = new RolePermissions({
+            role_id: roleId,
+            permission_id: permissionId,
+            project_id: projectId,
+            organization_id: organizationId
+        });
+        await newRolePermission.save();
+        return true;
+    }
+    catch(error){
+        throw new Error(`Cant add permissions to role ${error}`);}
+    }
+
+// get all roles and their permissions in organization/team
+async function getAllRolesWithPermissions(organizationId, projectId) {
+    try{
+        const roles = await Role.find({organization_id: organizationId});
+        const rolesWithPermissions = [];
+
+        for (let i = 0; i < roles.length; i++) {
+            const role = roles[i];
+            const rolePermissions = await RolePermissions.find({role_id: role._id, organization_id: organizationId, project_id: projectId});
+            const permissions = [];
+            for (let j = 0; j < rolePermissions.length; j++) {
+                const rolePermission = rolePermissions[j];
+                const permission = await persmissions.findById(rolePermission.permission_id);
+                permissions.push(permission);
+            }
+            const roleWithPermissions = {
+                role: role,
+                permissions: permissions
+            };
+            rolesWithPermissions.push(roleWithPermissions);
+        }
+        return rolesWithPermissions;
+    }
+    catch(error){
+        throw new Error(`Cant get roles with permissions ${error}`);}
+    }
+
+
+
 
 
 
@@ -315,4 +365,5 @@ module.exports = {
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
+    , addPermissionToRole, getAllRolesWithPermissions
 }

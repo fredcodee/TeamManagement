@@ -20,7 +20,8 @@ router.post('/team/all/roles', userAuth, adminController.getAllRolesInTeam)
 router.post('/delete/role', userAuth, adminController.deleteRole)
 router.post('/add/permission', userAuth, adminController.addPermissions)
 router.get('/permission/list/all', userAuth, adminController.getAllPermissions)
-
+router.post('/permission/add/role', userAuth, adminController.addPermissionToRole)
+router.post('/project/roleswithpermissions', userAuth, adminController.getAllRolesWithPermissions)
 
 //remove later
 router.post('/get/all/users', userAuth, adminController.getAllUsers)
