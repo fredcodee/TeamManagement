@@ -17,6 +17,7 @@ router.post('/project/all/users', userAuth, adminController.getAllUsersInProject
 router.post('/project/edit', userAuth, adminController.editProjectDetails)
 router.post('/team/all/user&roles', userAuth, adminController.getUsersInTeamAndRoles)
 router.post('/team/all/roles', userAuth, adminController.getAllRolesInTeam)
+router.post('/delete/role', userAuth, adminController.deleteRole)
 //remove later
 router.post('/get/all/users', userAuth, adminController.getAllUsers)
 router.post('/get/all/teams',userAuth, adminController.getAllTeams)

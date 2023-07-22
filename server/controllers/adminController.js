@@ -323,6 +323,27 @@ const getAllRolesInTeam = async (req, res) => {
 }
 
 
+//delete roles in an organization/team
+const deleteRole = async (req, res) => {
+    try{
+        const teamId = req.body.teamId;
+        const roleId = req.body.roleId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if(!adminCheck){
+            return res.status(401).json({message:'user is not an admin'});
+        }
+        //delete role
+        await appService.deleteRole(roleId, teamId);
+        res.json({message:'role deleted successfully'});
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 
@@ -387,5 +408,6 @@ const getAllTeams = async (req, res) => {
 module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
-    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails
+    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
+    deleteRole
 }

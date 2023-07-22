@@ -243,6 +243,22 @@ async function editProjectDetails(projectId, name, info) {
 }
 
 
+//delete a role from organization/team
+async function deleteRole(roleId, organizationId) {
+    try {
+        //unasign all users from the role
+        await UserRoles.deleteMany({ role_id: roleId, organization_id: organizationId });
+        //delete the role
+        await Role.findByIdAndDelete(roleId);
+        return true;
+
+
+    } catch (error) {
+        throw new Error(`Cant delete roles ${error}`);
+    }
+}
+
+
 
 
 
@@ -269,5 +285,5 @@ module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
-    , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails
+    , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole
 }
