@@ -6,7 +6,8 @@ const Role = require('../models/Role');
 const UserRoles = require('../models/UserRoles');
 const config = require('../configs/config');
 const jwt = require('jsonwebtoken')
-
+const Permission = require('../models/Permissions');
+const rolePermissions = require('../models/Role_Permissions');
 
 //generate token
 async function generateToken(user) {
@@ -136,6 +137,25 @@ async function checkUserIsAdmin(userId, organizationId) {
     }
 }
 
+//check user's role permission
+async function checkUserPermission(userId, organizationId,projectId, permissionName) {
+    try {
+        const user = await UserRoles.findOne({ user_id: userId, organization_id:organizationId });
+        const role = await Role.findById(user.role_id);
+        const rolePermission = await rolePermissions.findOne({ role_id: role._id, project_id: projectId, organization_id: organizationId });
+        const permission = await Permission.findById(rolePermission.permission_id);
+        if (permission.name == permissionName) {
+            return true;
+        }
+        return false;
+    }
+    catch (error) {
+        return false
+    }
+}
+
+
+
 
 //check if user is in orgamization/team
 async function checkUserIsInOrganization(userId, organizationId) {
@@ -229,6 +249,24 @@ async function getUserProjects(userId) {
         throw new Error(`Cant get user projects ${error}`);
     }
 }
+
+//get user's role permissions in a project
+async function getUserRolePermissionsInProject(userId, projectId) {
+    try {
+        const user = await UserRoles.findOne({ user_id: userId, project_id: projectId });
+        const role = await Role.findById(user.role_id);
+        const rolePermission = await rolePermissions.find({ role_id: role._id, project_id: projectId });
+        const permissions = [];
+        for (const permission of rolePermission) {
+            const permissionName = await Permission.findById(permission.permission_id);
+            permissions.push(permissionName);
+        }
+        return permissions;
+    } catch (error) {
+        throw new Error(`Cant get user role permissions in a project ${error}`);
+    }
+}
+
         
 
 
@@ -236,5 +274,5 @@ async function getUserProjects(userId) {
 module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
-    , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo
+    , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject
 }

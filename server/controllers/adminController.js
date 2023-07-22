@@ -430,6 +430,22 @@ const getAllRolesWithPermissions = async (req, res) => {
 }
 
 
+//get users role persmissions in a project
+const getUsersRolePermissionsInProject = async (req, res) => {
+    try{
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        const userId = req.body.userId;
+        //get users role permissions in project
+        const permissions = await userService.getUserRolePermissionsInProject(userId, projectId);
+        res.json(permissions);
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
 
 
 
@@ -494,5 +510,6 @@ module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
-    deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole
+    deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
+    getUsersRolePermissionsInProject
 }
