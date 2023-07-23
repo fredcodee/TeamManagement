@@ -4,6 +4,7 @@ const {userAuth} = require('../middlewares/auth');
 
 
 router.post('/invite/user',userAuth, adminController.inviteUser)
+router.post('/user/invite/id',userAuth, adminController.getUserInviteId)
 router.post('/create/role',userAuth, adminController.createRole)
 router.post('/add/user/role',userAuth, adminController.addUserToRole)
 router.post('/remove/user/role',userAuth, adminController.removeUserFromRole)

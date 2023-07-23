@@ -473,25 +473,25 @@ const getAllTeams = async (req, res) => {
 
 
 // //get user invite id
-// const getUserInviteId = async (req, res) => {
-//     try {
-//         const user = await userService.getUserById(req.body.userId);
-//         if (user) {
-//             //check if password is set
-//             if (user.password == '') {
-//                 res.json({ inviteId: user._id })
-//             } else {
-//                 //if password is set, redirect to login page
-//                 res.json({ message: 'already registered' })
-//             }
-//         } else {
-//             //if invite id does not exist, redirect to login page
-//             res.json({ message: 'not valid' })
-//         }
-//     } catch (error) {
-//         errorHandler.errorHandler(error, res)
-//     }
-// }
+const getUserInviteId = async (req, res) => {
+    try {
+        const user = await userService.getUserById(req.body.userId);
+        if (user) {
+            //check if password is set
+            if (user.password == null) {
+                res.json({ inviteId: user._id })
+            } else {
+                //if password is set, redirect to login page
+                res.json({ message: 'already registered' })
+            }
+        } else {
+            //if invite id does not exist, redirect to login page
+            res.json({ message: 'not valid' })
+        }
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 // //get all invited users in an organization yet to accept invitation
 // const getInvitedUsersInOrganization = async (req, res) => {
@@ -511,5 +511,5 @@ module.exports = {
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
-    getUsersRolePermissionsInProject
+    getUsersRolePermissionsInProject, getUserInviteId
 }
