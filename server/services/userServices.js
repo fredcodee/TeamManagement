@@ -8,6 +8,7 @@ const config = require('../configs/config');
 const jwt = require('jsonwebtoken')
 const Permission = require('../models/Permissions');
 const rolePermissions = require('../models/Role_Permissions');
+const  Ticket = require('../models/Ticket');
 
 //generate token
 async function generateToken(user) {
@@ -267,6 +268,28 @@ async function getUserRolePermissionsInProject(userId, projectId) {
     }
 }
 
+
+//get user tickets in a project
+async function getUserTicketsInProject(userId, projectId) {
+    try {
+        const tickets = await Ticket.find({ created_by: userId, project_id: projectId });
+        return tickets;
+    } catch (error) {
+        throw new Error(`Cant get user tickets in a project ${error}`);
+    }
+}
+
+
+//get tickets assigned to user in a project
+async function getTicketsAssignedToUserInProject(userId, projectId) {
+    try {
+        const tickets = await Ticket.find({ assigned_to: userId, project_id: projectId });
+        return tickets;
+    } catch (error) {
+        throw new Error(`Cant get tickets assigned to user in a project ${error}`);
+    }
+}
+
         
 
 
@@ -274,5 +297,5 @@ async function getUserRolePermissionsInProject(userId, projectId) {
 module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
-    , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject
+    , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject, getTicketsAssignedToUserInProject, getUserTicketsInProject
 }

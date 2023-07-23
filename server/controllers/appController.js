@@ -75,10 +75,6 @@ const signupWithInviteLink = async (req, res) => {
     }
 }
 
-
-
-
-
 //invite link
 const inviteLink= async (req, res) => {
     try {

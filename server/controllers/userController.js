@@ -59,6 +59,38 @@ const viewProjectInfo = async (req, res) => {
 }
 
 
+//view user ticket in a project
+const viewUserTicket = async (req, res) => {
+    try {
+        const user = req.user;
+        const projectId = req.body.projectId;
 
-module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo}
+        const userTicket = await userService.getUserTicketsInProject(user._id, projectId);
+        res.json(userTicket)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+//get all tickets assigned to a user in a project
+const getAllUserTicketsInProject = async (req, res) => {
+    try {
+        const user = req.user;
+        const projectId = req.body.projectId;
+
+        const userTicket = await userService.getTicketsAssignedToUserInProject(user._id, projectId);
+        res.json(userTicket)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
+
+
+module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
+}
 
