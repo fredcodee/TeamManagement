@@ -59,6 +59,26 @@ const signup = async (req, res) => {
     }
 }
 
+//signup with invite link
+const signupWithInviteLink = async (req, res) => {
+    try {
+        const firstName = req.body.firstName;
+        const lastName = req.body.lastName;
+        const email = req.body.email;
+        const password = req.body.password;
+
+        // edit user profile
+        await userService.editUserProfile(firstName, lastName, email, password);
+        return res.json({ message: 'user is registered successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
+
 //invite link
 const inviteLink= async (req, res) => {
     try {
@@ -68,16 +88,16 @@ const inviteLink= async (req, res) => {
     const user = await userService.getUserById(inviteId);
     if (user) {
         //check if password is set
-        if (user.password == '') {
-            //if password is not set, redirect to verify phone number page
-            res.json({message: 'verify'})
+        if (user.password == null) {
+            //if password is not set, redirect to signup page
+            res.json(user)
         }else{
             //if password is set, redirect to login page
-            res.json({message: 'already registered'})
+            return res.json({message: 'user is already registered'})
         }
     }else{
-        //if invite id does not exist, redirect to login page
-        res.json({message: 'already registered'})
+        //if invite id does not exist
+        res.json({message: 'invalid invite link'})
     } }
     catch (error) {
         errorHandler.errorHandler(error, res)
@@ -85,5 +105,5 @@ const inviteLink= async (req, res) => {
 }    
 
 module.exports = {
-    health,login,signup,inviteLink}
+    health,login,signup,inviteLink, signupWithInviteLink}
 
