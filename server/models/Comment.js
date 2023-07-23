@@ -16,7 +16,10 @@ const commentSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    updated_at: Date,
+    updated_at:{
+        type: Date,
+        default: null
+    }
 });
 const Comment = mongoose.model('Comment', commentSchema);
 module.exports = Comment;

@@ -17,6 +17,9 @@ const TicketSchema = new mongoose.Schema({
         enum: ['low', 'medium', 'high'],
         default: 'low'
     },
+    deadLine: {
+        type: Date,
+    },
     type: {
         type: String,
         enum: ['bug', 'feature', 'task'],
@@ -37,14 +40,6 @@ const TicketSchema = new mongoose.Schema({
     assigned_to: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }],
-    comments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment'
-    }],
-    attachments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Attachment'
     }],
     created_at: {
         type: Date,

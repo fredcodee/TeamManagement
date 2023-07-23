@@ -6,6 +6,7 @@ const UserRoles = require('../models/UserRoles');
 const Project = require('../models/Project');
 const persmissions = require('../models/Permissions');
 const RolePermissions = require('../models/Role_Permissions');
+const Ticket = require('../models/Ticket');
 
 
 
@@ -30,11 +31,11 @@ async function createOrganization(name) {
 
 //get orginization/team details
 async function getOrganizationDetails(organizationId) {
-    try{
+    try {
         const organization = await Organization.findById(organizationId);
         return organization;
     }
-    catch(error){
+    catch (error) {
         throw new Error(`Cant get organization details ${error}`);
     }
 }
@@ -48,17 +49,17 @@ async function addOrganizationToUser(userId, organizationId) {
             // Check if the organization_id field is null and initialize it as an empty array if needed
             if (!user.organization_id) {
                 user.organization_id = [];
-              }
+            }
             // Add the organization ID to the user's organization_id array
             user.organization_id.push(team._id);
             await user.save();
             return true;
-      }
+        }
     }
     catch (error) {
         throw new Error(`Cant add organization to user db ${error}`);
-      }
     }
+}
 
 //create role
 async function createRole(organizationId, roleName) {
@@ -105,7 +106,7 @@ async function removeUserFromRole(userId, roleId, organizationId) {
 async function inviteUserToOrganization(email, organizationId) {
     try {
         //add user to db
-        const user = await userService.addUserToDb(null,null,email,null);
+        const user = await userService.addUserToDb(null, null, email, null);
         //add organization to user
         await addOrganizationToUser(user._id, organizationId);
 
@@ -127,7 +128,7 @@ async function checkUserHasRoleInOrganization(userId, organizationId) {
 //edit organization/team details
 async function editOrganizationDetails(teamId, name) {
     try {
-        const team  = await Organization.findById(teamId);
+        const team = await Organization.findById(teamId);
         team.name = name;
         await team.save();
         return team;
@@ -144,7 +145,7 @@ async function removeUserFromOrganization(userId, organizationId) {
         //remove user from all roles in organization
         await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
         //remove user from all projects linked with the organization
-        for(const project of await getAllProjects(organizationId)){
+        for (const project of await getAllProjects(organizationId)) {
             await removeUserFromProject(userId, project._id);
         }
         return true;
@@ -173,18 +174,18 @@ async function createProject(organizationId, name, info) {
 async function addUserToProject(userId, projectId) {
     try {
         const user = await User.findById(userId);
-        const project= await Project.findById(projectId);
+        const project = await Project.findById(projectId);
         if (user) {
             // Add the organization ID to the user's organization_id array
             user.projects.push(project._id);
             await user.save();
             return true;
-      }
+        }
     }
     catch (error) {
         throw new Error(`Cant add user to project ${error}`);
-      }
     }
+}
 
 //remove user from project
 async function removeUserFromProject(userId, projectId) {
@@ -220,26 +221,26 @@ async function getAllRoles(organizationId) {
 
 //get project details
 async function getProjectInfo(projectId) {
-    try{
+    try {
         const project = await Project.findById(projectId);
         return project;
     }
-    catch(error){
+    catch (error) {
         throw new Error(`Cant get project details ${error}`);
     }
-    
+
 }
 
 //edit project details
 async function editProjectDetails(projectId, name, info) {
-    try{
-        const project =  await Project.findById(projectId);
+    try {
+        const project = await Project.findById(projectId);
         project.name = name;
         project.info = info;
         await project.save();
         return project;
     }
-    catch(error){
+    catch (error) {
         throw new Error(`Cant edit project details ${error}`);
     }
 }
@@ -262,9 +263,9 @@ async function deleteRole(roleId, organizationId) {
 
 //add persmissions
 async function addPermissions(listOfPermissions) {
-    try{
-        for(const permission of listOfPermissions){
-            if (await persmissions.findOne({name: permission})){
+    try {
+        for (const permission of listOfPermissions) {
+            if (await persmissions.findOne({ name: permission })) {
                 continue;
             }
             const newPermission = new persmissions({
@@ -274,26 +275,28 @@ async function addPermissions(listOfPermissions) {
         }
         return true;
     }
-    catch(error){
-        throw new Error(`Cant add permissions ${error}`);}
+    catch (error) {
+        throw new Error(`Cant add permissions ${error}`);
     }
+}
 
 //get aall persmissions list
 async function getAllPermissions() {
-    try{
+    try {
         const permissions = await persmissions.find();
         return permissions;
     }
-    catch(error){
-        throw new Error(`Cant get permissions ${error}`);}
+    catch (error) {
+        throw new Error(`Cant get permissions ${error}`);
     }
+}
 
 
 // add permissions to role
 async function addPermissionToRole(roleId, permissionId, projectId, organizationId) {
-    try{
-        const rolePermission = await RolePermissions.findOne({role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId});
-        if (rolePermission){
+    try {
+        const rolePermission = await RolePermissions.findOne({ role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId });
+        if (rolePermission) {
             return true;
         }
         const newRolePermission = new RolePermissions({
@@ -305,30 +308,32 @@ async function addPermissionToRole(roleId, permissionId, projectId, organization
         await newRolePermission.save();
         return true;
     }
-    catch(error){
-        throw new Error(`Cant add permissions to role ${error}`);}
+    catch (error) {
+        throw new Error(`Cant add permissions to role ${error}`);
     }
+}
 
 //remove permissions from role
 async function removePermissionFromRole(roleId, permissionId, projectId, organizationId) {
-    try{ 
-        await RolePermissions.findOneAndDelete({role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId});
+    try {
+        await RolePermissions.findOneAndDelete({ role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId });
         return true;
     }
-    catch(error){
-        throw new Error(`Cant remove permissions from role ${error}`);}
+    catch (error) {
+        throw new Error(`Cant remove permissions from role ${error}`);
     }
+}
 
 
 // get all roles and their permissions in organization/team
 async function getAllRolesWithPermissions(organizationId, projectId) {
-    try{
-        const roles = await Role.find({organization_id: organizationId});
+    try {
+        const roles = await Role.find({ organization_id: organizationId });
         const rolesWithPermissions = [];
 
         for (let i = 0; i < roles.length; i++) {
             const role = roles[i];
-            const rolePermissions = await RolePermissions.find({role_id: role._id, organization_id: organizationId, project_id: projectId});
+            const rolePermissions = await RolePermissions.find({ role_id: role._id, organization_id: organizationId, project_id: projectId });
             const permissions = [];
             for (let j = 0; j < rolePermissions.length; j++) {
                 const rolePermission = rolePermissions[j];
@@ -343,19 +348,44 @@ async function getAllRolesWithPermissions(organizationId, projectId) {
         }
         return rolesWithPermissions;
     }
-    catch(error){
-        throw new Error(`Cant get roles with permissions ${error}`);}
+    catch (error) {
+        throw new Error(`Cant get roles with permissions ${error}`);
     }
+}
 
 //get all invited users that are not registered yet
 async function getAllInvitedUsers(organizationId) {
-    try{
-        const users = await User.find({organization_id: organizationId, password: null});
+    try {
+        const users = await User.find({ organization_id: organizationId, password: null });
         return users;
     }
-    catch(error){
-        throw new Error(`Cant get invited users ${error}`);}
+    catch (error) {
+        throw new Error(`Cant get invited users ${error}`);
     }
+}
+
+
+//add ticket to project
+async function addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned ){
+    try {
+        const ticket = new Ticket({
+            title: ticketName,
+            description: ticketDescription,
+            status: ticketStatus,
+            priority: ticketPriority,
+            deadLine: ticketDueDate,
+            type: ticketType,
+            project_id: projectId,
+            created_by: ticketReporter,
+            assigned_to: ticketAssignTo,
+            pinned: pinned
+        });
+        await ticket.save();
+        return ticket;
+    } catch (error) {
+        throw new Error(`Cant add ticket to project ${error}`);
+    }
+}
 
 
 
@@ -387,5 +417,5 @@ module.exports = {
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
-    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers
+    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject
 }

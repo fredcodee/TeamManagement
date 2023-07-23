@@ -16,11 +16,7 @@ const projectSchema = new mongoose.Schema({
     },
     info : {
         type: String,
-    },
-    tickets : [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ticket'
-    }],
+    }
 });
 
 module.exports = mongoose.model('Project', projectSchema);

@@ -509,10 +509,53 @@ const getAllInvitesInTeam = async (req, res) => {
     }
 };
 
+//admin users and user with "Edit" permission can add tickets to a project
+const addTicketToProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        const userId = req.body.userId;
+        const ticketName = req.body.ticketName;
+        const ticketDescription = req.body.ticketDescription;
+        const ticketType = req.body.ticketType;
+        const ticketPriority = req.body.ticketPriority;
+        const ticketStatus = req.body.ticketStatus;
+        const ticketAssignTo = req.body.ticketAssignTo;
+        const ticketReporter = req.body.ticketReporter;
+        const ticketDueDate = req.body.ticketDueDate;
+        const pinned = req.body.pinned;
+
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'user is not in team' });
+        }
+        //check if user is in project
+        const userInProject = await userService.checkUserIsInProject(userId, projectId);
+        if (!userInProject) {
+            return res.status(401).json({ message: 'user is not in project' });
+        }
+        //check if user has permission to add ticket || user is admin
+        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Edit");
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if (!userHasPermission || !adminCheck) {
+                return res.status(401).json({ message: 'user does not have permission to add ticket' });
+            }
+        //add ticket to project
+        const ticket = await appService.addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
+        res.json(ticket);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
 
 module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
-    getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam}
+    getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject}
