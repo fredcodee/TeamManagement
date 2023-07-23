@@ -538,7 +538,7 @@ const addTicketToProject = async (req, res) => {
         //check if user has permission to add ticket || user is admin
         const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Edit");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if (!userHasPermission || !adminCheck) {
+        if (!userHasPermission && !adminCheck) {
                 return res.status(401).json({ message: 'user does not have permission to add ticket' });
             }
         //add ticket to project
@@ -578,7 +578,7 @@ const editTicketDetails = async (req, res) => {
         //check if user has permission to edit ticket || user is admin
         const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Edit");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if (!userHasPermission || !adminCheck) {
+        if (!userHasPermission && !adminCheck) {
                 return res.status(401).json({ message: 'user does not have permission to edit ticket' });
             }
         //edit ticket details
@@ -590,6 +590,41 @@ const editTicketDetails = async (req, res) => {
 }
 
 
+//delete ticket from project
+const deleteTicketFromProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        const userId = req.body.userId;
+        const ticketId = req.body.ticketId;
+
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'user is not in team' });
+        }
+        //check if user is in project
+        const userInProject = await userService.checkUserIsInProject(userId, projectId);
+        if (!userInProject) {
+            return res.status(401).json({ message: 'user is not in project' });
+        }
+        //check if user has permission to delete ticket || user is admin
+        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Delete");
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if (!userHasPermission && !adminCheck) {
+            return res.status(401).json({ message: 'user does not have permission to edit ticket' });
+        }
+        //delete ticket from project
+        await appService.deleteTicketFromProject(ticketId);
+        res.json({ message: 'ticket deleted successfully' });
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+        
+
+
 
 
 
@@ -599,4 +634,6 @@ module.exports = {
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
-    getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails}
+    getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
+    , deleteTicketFromProject
+}

@@ -7,6 +7,7 @@ const Project = require('../models/Project');
 const persmissions = require('../models/Permissions');
 const RolePermissions = require('../models/Role_Permissions');
 const Ticket = require('../models/Ticket');
+const Comment = require('../models/Comment');
 
 
 
@@ -428,6 +429,19 @@ async function getAllTicketsInProject(projectId){
     }
 }
 
+//delete ticket from project
+async function deleteTicketFromProject(ticketId){
+    try {
+        await Ticket.findByIdAndDelete(ticketId);
+        //delete all comments on ticket
+        await Comment.deleteMany({ticket_id: ticketId});
+        return true;
+    } catch (error) {
+        throw new Error(`Cant delete ticket from project ${error}`);
+    }
+}
+
+
 
 
 
@@ -463,5 +477,5 @@ module.exports = {
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
-    , getTicketDetails, getAllTicketsInProject
+    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject
 }
