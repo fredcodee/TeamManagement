@@ -408,6 +408,17 @@ async function editTicketDetails(ticketId, ticketName, ticketDescription, ticket
 }
 
 
+//get ticket details
+async function getTicketDetails(ticketId){
+    try {
+        const ticket = await Ticket.findById(ticketId);
+        return ticket;
+    } catch (error) {
+        throw new Error(`Cant get ticket details ${error}`);
+    }
+}
+
+
 
 
 
@@ -441,4 +452,5 @@ module.exports = {
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
+    , getTicketDetails
 }

@@ -86,11 +86,26 @@ const getAllUserTicketsInProject = async (req, res) => {
     }
 }
 
+//get ticket info
+const getTicketInfo = async (req, res) => {
+    try {
+        const ticketId = req.body.ticketId;
+        const ticket = await appService.getTicketDetails(ticketId);
+        res.json(ticket)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
 
 
 
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
+    , getTicketInfo
 }
 
