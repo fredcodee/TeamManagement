@@ -441,6 +441,22 @@ async function deleteTicketFromProject(ticketId){
     }
 }
 
+// add comment to ticket
+async function addCommentToTicket(ticketId, userId, comment){
+    try {
+        const newComment = new Comment({
+            ticket_id: ticketId,
+            user_id: userId,
+            comment: comment
+        });
+        await newComment.save();
+        return newComment;
+    } catch (error) {
+        throw new Error(`Cant add comment to ticket ${error}`);
+    }
+}
+
+
 
 
 
@@ -477,5 +493,5 @@ module.exports = {
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
-    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject
+    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket
 }

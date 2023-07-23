@@ -109,6 +109,31 @@ const getProjectTickets = async (req, res) => {
     }
 }
 
+//admins and users with "Chat" permission can comment on a ticket
+const commentOnTicket = async (req, res) => {
+    try {
+        const user = req.user;
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        const ticketId = req.body.ticketId;
+        const comment = req.body.comment;
+
+        //check if user has permission to comment on ticket
+        const permission = await userService.checkUserPermission(user._id,teamId, projectId, "Chat");
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if (!permission && !adminCheck) {
+            return res.status(401).json({ message: 'You dont have permission to comment on this ticket' });
+        }
+        //add comment to ticket
+        const chat= await appService.addCommentToTicket(ticketId, user._id, comment);
+        res.json(chat)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 
@@ -121,6 +146,6 @@ const getProjectTickets = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets
+    , getTicketInfo, getProjectTickets, commentOnTicket
 }
 
