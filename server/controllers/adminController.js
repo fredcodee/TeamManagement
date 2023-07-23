@@ -190,10 +190,12 @@ const addUserToProject = async (req, res) => {
         const teamId = req.body.teamId;
         const userId = req.body.userId;
         const projectId = req.body.projectId;
-        // check permissions
+        
+        //check if user has permission to invite user || user is admin
+        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Invite");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if (!adminCheck) {
-            return res.status(401).json({ message: 'user is not an admin' });
+        if (!adminCheck && !userHasPermission) {
+            return res.status(401).json({ message: 'user does not have permission to invite/add user' });
         }
         //check if user is in team
         const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
@@ -203,7 +205,7 @@ const addUserToProject = async (req, res) => {
         //check if user is already in project
         const userInProject = await userService.checkUserIsInProject(userId, projectId);
         if (userInProject) {
-            return res.status(401).json({ message: 'user is already in project' });
+            return res.status(401).json({ message: 'user is alread in this project' });
         }
         //add user to project
         await appService.addUserToProject(userId, projectId);
@@ -220,9 +222,10 @@ const removeUserFromProject = async (req, res) => {
         const userId = req.body.userId;
         const projectId = req.body.projectId;
         // check permissions
+        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Delete");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if (!adminCheck) {
-            return res.status(401).json({ message: 'user is not an admin' });
+        if (!adminCheck && !userHasPermission) {
+            return res.status(401).json({ message: 'user does not have permission to remove user' });
         }
         //check if user is in team
         const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
@@ -623,38 +626,9 @@ const deleteTicketFromProject = async (req, res) => {
 }
 
 
-//admins and users with "Invite" permission can invite users to project
-const inviteUserToProject = async (req, res) => {
-    try {
-        const teamId = req.body.teamId;
-        const projectId = req.body.projectId;
-        const userId = req.body.userId;
-        const email = req.body.email;
 
-        //check if user is in team
-        const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
-        if (!userInTeam) {
-            return res.status(401).json({ message: 'user is not in team' });
-        }
-        //check if user is in project
-        const userInProject = await userService.checkUserIsInProject(userId, projectId);
-        if (userInProject) {
-            return res.status(401).json({ message: 'user already in project' });
-        }
-        //check if user has permission to invite user || user is admin
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Invite");
-        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if (!userHasPermission && !adminCheck) {
-            return res.status(401).json({ message: 'user does not have permission to invite user' });
-        }
-        //invite user to project
-        const user = await appService.getUserByEmail(email);
-        await appService.addUserToProject(user._id, projectId);
-        res.json('user invited successfully');
-    } catch (error) {
-        errorHandler.errorHandler(error, res)
-    }
-}
+
+
 
 
 
@@ -671,5 +645,5 @@ module.exports = {
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
-    , deleteTicketFromProject, inviteUserToProject
+    , deleteTicketFromProject,
 }
