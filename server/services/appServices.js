@@ -387,6 +387,29 @@ async function addTicketToProject(projectId, ticketName, ticketDescription, tick
     }
 }
 
+// edit ticket details
+async function editTicketDetails(ticketId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketDueDate, pinned ){
+    try {
+        const ticket =  await Ticket.findById(ticketId);
+        ticket.title = ticketName;
+        ticket.description = ticketDescription;
+        ticket.status = ticketStatus;
+        ticket.priority = ticketPriority;
+        ticket.deadLine = ticketDueDate;
+        ticket.type = ticketType;
+        ticket.assigned_to = ticketAssignTo;
+        ticket.pinned = pinned;
+        ticket.updated_at = Date.now();
+        await ticket.save();
+        return ticket;
+    } catch (error) {
+        throw new Error(`Cant edit ticket details ${error}`);
+    }
+}
+
+
+
+
 
 
 
@@ -417,5 +440,5 @@ module.exports = {
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
-    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject
+    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
 }
