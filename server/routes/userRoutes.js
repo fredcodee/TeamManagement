@@ -11,4 +11,5 @@ router.post('/project/ticket/assigned', userAuth, userController.getAllUserTicke
 router.post('/project/ticket/details', userAuth, userController.getTicketInfo)
 router.post('/project/ticket/all', userAuth, userController.getProjectTickets)
 router.post('/project/ticket/add/comment', userAuth, userController.commentOnTicket)
+router.post('/project/ticket/comment', userAuth, userController.getTicketComments)
 module.exports = router;

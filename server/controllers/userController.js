@@ -132,6 +132,19 @@ const commentOnTicket = async (req, res) => {
     }
 }
 
+//get all comments on a ticket
+const getTicketComments = async (req, res) => {
+    try {
+        const ticketId = req.body.ticketId;
+        const comments = await appService.getAllCommentsOnTicket(ticketId);
+        res.json(comments)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 
@@ -146,6 +159,6 @@ const commentOnTicket = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments
 }
 

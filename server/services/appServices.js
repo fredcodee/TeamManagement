@@ -367,7 +367,7 @@ async function getAllInvitedUsers(organizationId) {
 
 
 //add ticket to project
-async function addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned ){
+async function addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned) {
     try {
         const ticket = new Ticket({
             title: ticketName,
@@ -389,9 +389,9 @@ async function addTicketToProject(projectId, ticketName, ticketDescription, tick
 }
 
 // edit ticket details
-async function editTicketDetails(ticketId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketDueDate, pinned ){
+async function editTicketDetails(ticketId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketDueDate, pinned) {
     try {
-        const ticket =  await Ticket.findById(ticketId);
+        const ticket = await Ticket.findById(ticketId);
         ticket.title = ticketName;
         ticket.description = ticketDescription;
         ticket.status = ticketStatus;
@@ -410,7 +410,7 @@ async function editTicketDetails(ticketId, ticketName, ticketDescription, ticket
 
 
 //get ticket details
-async function getTicketDetails(ticketId){
+async function getTicketDetails(ticketId) {
     try {
         const ticket = await Ticket.findById(ticketId);
         return ticket;
@@ -420,9 +420,9 @@ async function getTicketDetails(ticketId){
 }
 
 //get all tickets in project
-async function getAllTicketsInProject(projectId){
+async function getAllTicketsInProject(projectId) {
     try {
-        const tickets = await Ticket.find({project_id: projectId});
+        const tickets = await Ticket.find({ project_id: projectId });
         return tickets;
     } catch (error) {
         throw new Error(`Cant get all tickets in project ${error}`);
@@ -430,11 +430,11 @@ async function getAllTicketsInProject(projectId){
 }
 
 //delete ticket from project
-async function deleteTicketFromProject(ticketId){
+async function deleteTicketFromProject(ticketId) {
     try {
         await Ticket.findByIdAndDelete(ticketId);
         //delete all comments on ticket
-        await Comment.deleteMany({ticket_id: ticketId});
+        await Comment.deleteMany({ ticket_id: ticketId });
         return true;
     } catch (error) {
         throw new Error(`Cant delete ticket from project ${error}`);
@@ -442,7 +442,7 @@ async function deleteTicketFromProject(ticketId){
 }
 
 // add comment to ticket
-async function addCommentToTicket(ticketId, userId, comment){
+async function addCommentToTicket(ticketId, userId, comment) {
     try {
         const newComment = new Comment({
             ticket_id: ticketId,
@@ -455,6 +455,18 @@ async function addCommentToTicket(ticketId, userId, comment){
         throw new Error(`Cant add comment to ticket ${error}`);
     }
 }
+
+//get all comments on a ticket
+async function getAllCommentsOnTicket(ticketId) {
+    try {
+        const comments = await Comment.find({ ticket_id: ticketId });
+        return comments;
+    } catch (error) {
+
+        throw new Error(`Cant get all comments on ticket ${error}`);
+    }
+}
+
 
 
 
@@ -493,5 +505,5 @@ module.exports = {
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
-    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket
+    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket
 }
