@@ -493,17 +493,21 @@ const getUserInviteId = async (req, res) => {
     }
 }
 
-// //get all invited users in an organization yet to accept invitation
-// const getInvitedUsersInOrganization = async (req, res) => {
-//     try {
-//         const adminUser = req.user;
-//         const organization = await userService.getUserOrganization(adminUser.phoneNumber);//get Admin user's organization
-//         const users = await adminService.getAllUsersWithEmptyPassword(organization);
-//         res.json(users);
-//     } catch (error) {
-//         errorHandler.errorHandler(error, res)
-//     }
-// };
+//get all invited users in an organization yet to accept invitation
+const getAllInvitesInTeam = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
+        }
+        const users = await appService.getAllInvitedUsers(teamId);
+        res.json(users);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+};
 
 
 module.exports = {
@@ -511,5 +515,4 @@ module.exports = {
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
-    getUsersRolePermissionsInProject, getUserInviteId
-}
+    getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam}

@@ -347,6 +347,17 @@ async function getAllRolesWithPermissions(organizationId, projectId) {
         throw new Error(`Cant get roles with permissions ${error}`);}
     }
 
+//get all invited users that are not registered yet
+async function getAllInvitedUsers(organizationId) {
+    try{
+        const users = await User.find({organization_id: organizationId, password: null});
+        return users;
+    }
+    catch(error){
+        throw new Error(`Cant get invited users ${error}`);}
+    }
+
+
 
 
 
@@ -376,5 +387,5 @@ module.exports = {
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
-    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole
+    , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers
 }
