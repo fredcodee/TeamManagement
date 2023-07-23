@@ -98,6 +98,19 @@ const getTicketInfo = async (req, res) => {
 }
 
 
+//get tickets in a project
+const getProjectTickets = async (req, res) => {
+    try {
+        const projectId = req.body.projectId;
+        const tickets = await appService.getAllTicketsInProject(projectId);
+        res.json(tickets)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 
@@ -106,6 +119,6 @@ const getTicketInfo = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo
+    , getTicketInfo, getProjectTickets
 }
 

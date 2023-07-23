@@ -418,6 +418,17 @@ async function getTicketDetails(ticketId){
     }
 }
 
+//get all tickets in project
+async function getAllTicketsInProject(projectId){
+    try {
+        const tickets = await Ticket.find({project_id: projectId});
+        return tickets;
+    } catch (error) {
+        throw new Error(`Cant get all tickets in project ${error}`);
+    }
+}
+
+
 
 
 
@@ -452,5 +463,5 @@ module.exports = {
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
-    , getTicketDetails
+    , getTicketDetails, getAllTicketsInProject
 }

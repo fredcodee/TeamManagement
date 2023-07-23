@@ -9,5 +9,5 @@ router.get('/team/info', userAuth, userController.getTeamInfo)
 router.post('/project/tickets', userAuth, userController.viewUserTicket)
 router.post('/project/ticket/assigned', userAuth, userController.getAllUserTicketsInProject)
 router.post('/project/ticket/details', userAuth, userController.getTicketInfo)
-// router.get('/projects',userAuth,userController.getUserProjects) //get user projects
+router.post('/project/ticket/all', userAuth, userController.getProjectTickets)
 module.exports = router;
