@@ -627,6 +627,48 @@ const deleteTicketFromProject = async (req, res) => {
 
 
 
+//delete project
+const deleteProject = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if(!adminCheck){
+            return res.status(401).json({message:'user is not an admin'});
+        }
+
+        //delete project
+        await appService.deleteProject(projectId);
+        res.json({message:'project deleted successfully'});
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+//delete team
+const deleteTeam = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if(!adminCheck){
+            return res.status(401).json({message:'user is not an admin'});
+        }
+
+        //delete team
+        await appService.deleteOrganization(teamId);
+        res.json({message:'team deleted successfully'});
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 
@@ -648,5 +690,5 @@ module.exports = {
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
-    , deleteTicketFromProject,
+    , deleteTicketFromProject, deleteProject, deleteTeam
 }

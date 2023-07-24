@@ -487,6 +487,47 @@ async function deleteCommentFromTicket(commentId) {
     }
 }
 
+//delete project
+async function deleteProject(projectId) {
+    try {
+        // delete all comments on tickets in project
+        for (const ticket of await getAllTicketsInProject(projectId)) {
+            await Comment.deleteMany({ ticket_id: ticket._id });
+        }
+        //delete all tickets in project
+        await Ticket.deleteMany({ project_id: projectId });
+        await Project.findByIdAndDelete(projectId);
+        return true;
+    } catch (error) {
+        throw new Error(`Cant delete project ${error}`);
+    }
+}
+
+
+//delete organization/team
+async function deleteOrganization(organizationId) {
+    try {
+        //delete all projects in organization
+        for( const project of await getAllProjects(organizationId)){
+            await deleteProject(project._id);
+        }
+        //delete all roles in organization
+        await Role.deleteMany({ organization_id: organizationId });
+        await persmissions.deleteMany({ organization_id: organizationId });
+        await RolePermissions.deleteMany({ organization_id: organizationId });
+        await UserRoles.deleteMany({ organization_id: organizationId });
+        await Role.deleteMany({ organization_id: organizationId });
+        //delete all users in organization
+        await User.deleteMany({ organization_id: organizationId });
+        await Organization.findByIdAndDelete(organizationId)
+        return true;
+    } catch (error) {
+        throw new Error(`Cant delete organization ${error}`);
+    }
+}
+
+
+
 
 
 
@@ -505,8 +546,6 @@ async function getAllOrganizations() {
 
 
 
-
-
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
@@ -514,5 +553,5 @@ module.exports = {
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
-    , getCommentUserId
+    , getCommentUserId, deleteProject, deleteOrganization
 }
