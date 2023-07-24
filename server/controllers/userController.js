@@ -144,6 +144,35 @@ const getTicketComments = async (req, res) => {
 }
 
 
+// user, admin and user with "Delete" permission can delete a comment
+const deleteComment = async (req, res) => {
+    try {
+        const user = req.user;
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        const commentId = req.body.commentId;
+
+        //check if user has permission to delete comment
+        const permission = await userService.checkUserPermission(user._id,teamId, projectId, "Delete");
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        const originUser = await appService.getCommentUserId(commentId);
+        if (!permission && !adminCheck && originUser != user._id) {
+            return res.status(401).json({ message: 'You dont have permission to delete this comment' });
+        }
+        //delete comment
+        await appService.deleteCommentFromTicket(commentId);
+        res.json({ message: 'Comment deleted successfully' })
+
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -159,6 +188,6 @@ const getTicketComments = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment
 }
 

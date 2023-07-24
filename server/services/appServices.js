@@ -466,21 +466,26 @@ async function getAllCommentsOnTicket(ticketId) {
         throw new Error(`Cant get all comments on ticket ${error}`);
     }
 }
+//get comment user_id
+const getCommentUserId = async (commentId) => {
+    try {
+        const userId = await Comment.findById(commentId);
+        return userId.user_id;
+    } catch (error) {
+        throw new Error(`Cant get comment user_id ${error}`);
+    }
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+//delete comment from ticket
+async function deleteCommentFromTicket(commentId) {
+    try {
+        await Comment.findByIdAndDelete(commentId);
+        return true;
+    } catch (error) {
+        throw new Error(`Cant delete comment from ticket ${error}`);
+    }
+}
 
 
 
@@ -499,11 +504,15 @@ async function getAllOrganizations() {
 
 
 
+
+
+
 module.exports = {
     createOrganization, addOrganizationToUser, createRole, addUserToRole, inviteUserToOrganization,
     getAllOrganizations, checkUserHasRoleInOrganization, removeUserFromRole, editOrganizationDetails
     , removeUserFromOrganization, createProject, addUserToProject, removeUserFromProject, getAllProjects
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
-    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket
+    , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
+    , getCommentUserId
 }
