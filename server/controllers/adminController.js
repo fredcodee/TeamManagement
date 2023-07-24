@@ -222,7 +222,7 @@ const removeUserFromProject = async (req, res) => {
         const userId = req.body.userId;
         const projectId = req.body.projectId;
         // check permissions
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Delete");
+        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Remove");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!adminCheck && !userHasPermission) {
             return res.status(401).json({ message: 'user does not have permission to remove user' });
@@ -450,31 +450,6 @@ const getUsersRolePermissionsInProject = async (req, res) => {
 
 
 
-
-
-
-//get all users(remove later)
-const getAllUsers = async (req, res) => {
-    try {
-        const users = await userService.getAllUsers();
-        res.json(users);
-    } catch (error) {
-        errorHandler.errorHandler(error, res)
-    }
-}
-
-//get all teams(remove later)
-const getAllTeams = async (req, res) => {
-    try {
-        const teams = await appService.getAllOrganizations();
-        res.json(teams);
-    } catch (error) {
-        errorHandler.errorHandler(error, res)
-    }
-}
-
-
-
 // //get user invite id
 const getUserInviteId = async (req, res) => {
     try {
@@ -667,6 +642,28 @@ const deleteTeam = async (req, res) => {
     }
 }
 
+
+
+
+//get all users(remove later)
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await userService.getAllUsers();
+        res.json(users);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+//get all teams(remove later)
+const getAllTeams = async (req, res) => {
+    try {
+        const teams = await appService.getAllOrganizations();
+        res.json(teams);
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 
 
