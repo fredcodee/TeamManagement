@@ -1,4 +1,23 @@
 
-#navbar-default ul li{
+#navbar-default ul li, #section2{
     font-family: 'Manrope', 'sans-serif'
+}
+
+#section2{
+    padding-top: 6rem;
+}
+
+#section2 h1{
+    font-weight: 600;
+    padding-bottom: 1.2rem;
+}
+
+.section2_icons{
+    text-align: center;
+    font-size: 3rem;
+}
+
+.section2_icons:hover{
+    font-size: 4rem;
+    transition: 0.7s;
 }
