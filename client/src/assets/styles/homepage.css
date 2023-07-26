@@ -21,3 +21,20 @@
     font-size: 4rem;
     transition: 0.7s;
 }
+#section2 a{
+    padding-left: 4rem;
+    padding-right: 4rem;
+}
+
+.section4{
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    font-family: 'Manrope', 'sans-serif'
+}
+
+.section5{
+    background-color: #0A0A2A;
+    font-family: 'Manrope', 'sans-serif';
+    color: white;
+    text-align: center;
+}
