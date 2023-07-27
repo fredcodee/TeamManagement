@@ -38,3 +38,12 @@
     color: white;
     text-align: center;
 }
+.section6{
+    padding-top: 8rem;
+    /* padding-bottom: 8rem; */
+    font-family: 'Manrope', 'sans-serif';
+}
+
+.section6 .s1{
+    padding-bottom: 6rem;
+}

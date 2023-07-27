@@ -1,5 +1,6 @@
 import React from 'react'
 import logo from "../assets/images/teamlogo.png"
+import boardImg from "../assets/images/homepagescetion6_img1.jpg"
 import "../assets/styles/homepage.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWandMagicSparkles, faCode, faPeopleGroup, faMagnifyingGlassChart, faDiagramProject, faListCheck } from '@fortawesome/free-solid-svg-icons'
@@ -138,6 +139,29 @@ const Home = () => {
                             <a href='#' type="button" class="text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-lg px-5 py-2.5 text-center mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get Started</a>
                         </div>
                 </div>
+            </div>
+            <div className='container mx-auto section6 text-center'>
+                <div className='s1'>
+                    <h1 className='font-bold text-5xl'>Everything you need for any workflow</h1>
+                    <h3 className='text-lg p-2'>Easily build your ideal workflow with TeamManagement building blocks.</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className='h-auto max-w-full '>
+                        <img src={boardImg} alt="" />
+                    </div>
+                    <div className='h-auto max-w-full'>
+                        <h2 className='font-bold text-3xl text-purple-600' >Boards</h2>
+                        <p>Everything starts with a visual board — the core of TeamManagement. Tailor it your way and manage anything from projects to departments.</p>
+                        <h2 className='font-bold text-3xl pt-11 text-green-600'>End-to-end products to run the core of your business</h2>
+                        <p>Tailored products designed for every aspect of your teams' needs.</p>
+                    
+                    </div>
+                </div>
+
+            </div>
+            <hr />
+            <div className='container mx-auto footer p-4'>
+                <p>All Rights Reserved © created by <span className='text-red-800'><a href="https://thefredcode.com">Fredcode</a></span></p>
             </div>
         </div>
     )
