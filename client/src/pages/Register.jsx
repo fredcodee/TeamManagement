@@ -1,6 +1,5 @@
 import React from 'react';
-import api from '../Api';
-import { useEffect, useContext, useState } from 'react'
+import {useContext, useState } from 'react'
 import AuthContext from '../context/AuthContext';
 import ColImage from '../assets/images/registerImg.png'
 import '../assets/styles/register.css'

@@ -54,14 +54,14 @@ export const AuthProvider = ({ children }) => {
         password
       });
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         history('/login');
       } else {
         const data = await response.data;
         setError(data.message);
       }
     } catch (error) {
-      console.error(error);
+        setError(error.response.data.message);
     }
   };
 
@@ -90,7 +90,6 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={contextData}>
-      {error ? <div>{error}</div> : null}
       {loading ? null : children}
     </AuthContext.Provider>
   );
