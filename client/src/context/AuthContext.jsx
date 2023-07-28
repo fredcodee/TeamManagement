@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
         setAuthTokens(data.token);
         setUser(jwt_decode(data.token));
         localStorage.setItem('authTokens', JSON.stringify(data.token));
-        history('/');
+        history('/user-workspace');
       } else {
         setError(data.message);
       }
