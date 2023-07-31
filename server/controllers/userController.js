@@ -21,6 +21,16 @@ const createTeam = async (req, res) => {
     }
 }
 
+const getProfile = async (req, res) => {
+    try{
+        const user = req.user;
+        res.json(user)
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 //get team/organization info
 const getTeamInfo = async (req, res) => {
     try{
@@ -188,6 +198,6 @@ const deleteComment = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile
 }
 
