@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faHouse, faListCheck, faClipboard } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+import SideMenuProjectList from '../components/SideMenuProjectList'
 
 
 const WorkSpace = () => {
@@ -12,10 +13,12 @@ const WorkSpace = () => {
     const token = localStorage.getItem('authTokens').replace(/"/g, '');
     const [user, setUser] = useState([]);
     const history = useNavigate();
+    const [projects, setProjects] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        getUser();
+        getUser(),
+            getProjects();
     }, []);
 
     const getUser = async () => {
@@ -32,6 +35,21 @@ const WorkSpace = () => {
             history('/login');
         }
     };
+
+    const getProjects = async () => {
+        try{
+            const response = await Api.get('/api/user/projects',{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+            }});
+
+            const data = await response.data;
+            setProjects(data);
+        }
+        catch(error){
+            setError(error.response.data.message);
+        }
+    }
 
     return (
         <div>
@@ -67,7 +85,7 @@ const WorkSpace = () => {
                 <div className="grid grid-cols-3 gap-4">
                     <div className="... sideContents p-4">
                         <div className='mainMenu pb-3'>
-                            <a href="#">
+                            <a href="/user-workspace">
                                 <div className='hover:bg-blue-300 pb-2'>
                                     <FontAwesomeIcon icon={faHouse} style={{ color: "#54bb5a", }} className='pr-2' />
                                     My Home
@@ -87,11 +105,10 @@ const WorkSpace = () => {
                                 <a href="#">Your Projects</a>
                             </div>
                             <div>
-
                                 <form className="flex items-center">
-                                    <label htmlFor="simple-search" class="sr-only">Search</label>
+                                    <label htmlFor="simple-search" className="sr-only">Search</label>
                                     <div className="relative w-full">
-                                        <input type="text" id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Projects ..." required />
+                                        <input type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Projects ..." required />
                                     </div>
                                     <button type="submit" className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                         <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -100,7 +117,9 @@ const WorkSpace = () => {
                                         <span className="sr-only">Search</span>
                                     </button>
                                 </form>
-
+                            </div>
+                            <div>
+                                <SideMenuProjectList  projects={projects}/>
                             </div>
                         </div>
                     </div>
