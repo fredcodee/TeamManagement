@@ -17,10 +17,12 @@ const WorkSpace = () => {
     const [projectcopy, setProjectcopy] = useState([]);
     const [search, setSearch] = useState('');
     const [error, setError] = useState(null);
+    const [tickets, setTickets] = useState([]);
 
     useEffect(() => {
         getUser(),
-            getProjects();
+            getProjects(),
+            getTickets();
     }, []);
 
     const getUser = async () => {
@@ -48,7 +50,6 @@ const WorkSpace = () => {
             const data = await response.data;
             setProjects(data);
             setProjectcopy(data);
-            console.log(data);
         }
         catch(error){
             setError(error.response.data.message);
@@ -64,6 +65,21 @@ const WorkSpace = () => {
             setProjects(filteredProjects);
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const getTickets = async () => {
+        try{
+            const response = await Api.get('/api/user/project/ticket/assigned/all',{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+            }});
+
+            const data = await response.data;
+            setTickets(data);
+        }
+        catch(error){
+            setError(error);
         }
     }
 
@@ -86,7 +102,6 @@ const WorkSpace = () => {
                             <ul className="flex flex-col font-medium mt-4 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
                                 <li>
                                     <a href="#" className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page"><FontAwesomeIcon icon={faBell} /></a>
-
                                 </li>
                                 <li>
                                     <a href="#" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Welcome, {user.firstName}</a>
@@ -139,8 +154,33 @@ const WorkSpace = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-2 ...">
-                        <h1>Your Work Space</h1>
+                    <div className="col-span-2 ... mr-14">
+                        <div>
+                            <div className='text-center font-bold p-4'>
+                                <h2>Your Tickets</h2>
+                            </div>
+                            <div className='border-solid border-2 border-gray-300 p-2'>
+                                {tickets.length > 0 ? (
+                                    tickets.map((ticket, index) => (
+                                        <div className='hover:bg-gray-300 pl-2' key={index}>
+                                            <a href="#">{ticket.title} <span className='text-red-600'>- Ticket deadline on {new Date(ticket.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric',day:'numeric' ,month:'long',weekday:'long'})}</span></a>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className='text-center'>
+                                        <p>You have no tickets</p>
+                                    </div>
+                                )}
+                                <div className='text-center text-blue-700 hover:text-orange-400'>
+                                    <a href="#"> see all ...</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div className='text-center font-bold p-4'>
+                                Your workspace (Team page)
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

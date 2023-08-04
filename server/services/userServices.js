@@ -269,7 +269,7 @@ async function getUserRolePermissionsInProject(userId, projectId) {
 }
 
 
-//get user tickets in a project
+//get user tickets in a project they ones they created
 async function getUserTicketsInProject(userId, projectId) {
     try {
         const tickets = await Ticket.find({ created_by: userId, project_id: projectId });
@@ -290,6 +290,21 @@ async function getTicketsAssignedToUserInProject(userId, projectId) {
     }
 }
 
+
+// get all tickets assigned to user in all projects
+async function getAllTicketsAssignedToUserinAllProject(userId) {
+    try {
+        const tickets = await Ticket.find({ assigned_to: userId });
+        //sort tickets by date and get only first 5
+        tickets.sort((a, b) => b.created_at - a.created_at);
+        tickets.splice(5);
+        return tickets;
+    } catch (error) {
+        throw new Error(`Cant get all tickets assigned to user in all projects ${error}`);
+    }
+}
+
+
         
 
 
@@ -298,4 +313,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
     , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject, getTicketsAssignedToUserInProject, getUserTicketsInProject
+, getAllTicketsAssignedToUserinAllProject
 }

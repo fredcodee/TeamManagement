@@ -2,7 +2,7 @@ const router = require('express').Router();
 const adminController = require('../controllers/adminController'); 
 const {userAuth} = require('../middlewares/auth');
 
-
+router.post('/check-admin', userAuth, adminController.checkUserIsAdmin)
 router.post('/invite/user',userAuth, adminController.inviteUser)
 router.post('/user/invite/id',userAuth, adminController.getUserInviteId)
 router.post('/create/role',userAuth, adminController.createRole)

@@ -96,6 +96,19 @@ const getAllUserTicketsInProject = async (req, res) => {
     }
 }
 
+//get all tickets assinged to a user in all projects
+const getAllUserTicketsInAllProjects = async (req, res) => {
+    try {
+        const user = req.user;
+        const userTicket = await userService.getAllTicketsAssignedToUserinAllProject(user._id);
+        res.json(userTicket)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 //get ticket info
 const getTicketInfo = async (req, res) => {
     try {
@@ -180,24 +193,7 @@ const deleteComment = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects
 }
 

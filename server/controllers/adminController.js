@@ -643,6 +643,26 @@ const deleteTeam = async (req, res) => {
 }
 
 
+//check user admin (for frontend)
+const checkUserIsAdmin = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const userId = req.body.userId;
+
+        if (teamId == null || userId == null) {
+            return res.json('false');
+        }
+        //permission check
+        const adminCheck = await userService.checkUserIsAdmin(userId, teamId, res);
+        res.json(adminCheck);
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 
 //get all users(remove later)
@@ -687,5 +707,5 @@ module.exports = {
     ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
-    , deleteTicketFromProject, deleteProject, deleteTeam
+    , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin
 }
