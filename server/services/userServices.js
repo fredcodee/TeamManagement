@@ -304,6 +304,16 @@ async function getAllTicketsAssignedToUserinAllProject(userId) {
     }
 }
 
+//count members in a team
+async function countMembersInTeam(teamId) {
+    try {
+        const members = await User.find({ organization_id: teamId });
+        return members.length;
+    } catch (error) {
+        throw new Error(`Cant count members in a team ${error}`);
+    }
+}
+
 
         
 
@@ -313,5 +323,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
     , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject, getTicketsAssignedToUserInProject, getUserTicketsInProject
-, getAllTicketsAssignedToUserinAllProject
+, getAllTicketsAssignedToUserinAllProject, countMembersInTeam
 }

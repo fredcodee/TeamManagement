@@ -18,11 +18,15 @@ const WorkSpace = () => {
     const [search, setSearch] = useState('');
     const [error, setError] = useState(null);
     const [tickets, setTickets] = useState([]);
+    const [team, setTeam] = useState([]);
+    const [countMembers, setCountMembers] = useState(0);
 
     useEffect(() => {
         getUser(),
             getProjects(),
-            getTickets();
+            getTickets(),
+            getTeamInfo(),
+            countMembersFunc()
     }, []);
 
     const getUser = async () => {
@@ -41,25 +45,26 @@ const WorkSpace = () => {
     };
 
     const getProjects = async () => {
-        try{
-            const response = await Api.get('/api/user/projects',{
+        try {
+            const response = await Api.get('/api/user/projects', {
                 headers: {
                     Authorization: `Bearer ${token}`,
-            }});
+                }
+            });
 
             const data = await response.data;
             setProjects(data);
             setProjectcopy(data);
         }
-        catch(error){
+        catch (error) {
             setError(error.response.data.message);
         }
     }
 
-    const handleSearch=(e) => {
+    const handleSearch = (e) => {
         try {
             e.preventDefault();
-            const filteredProjects = projectcopy.filter((project) => 
+            const filteredProjects = projectcopy.filter((project) =>
                 project.name.includes(search)
             );
             setProjects(filteredProjects);
@@ -69,19 +74,56 @@ const WorkSpace = () => {
     }
 
     const getTickets = async () => {
-        try{
-            const response = await Api.get('/api/user/project/ticket/assigned/all',{
+        try {
+            const response = await Api.get('/api/user/project/ticket/assigned/all', {
                 headers: {
                     Authorization: `Bearer ${token}`,
-            }});
+                }
+            });
 
             const data = await response.data;
             setTickets(data);
         }
-        catch(error){
+        catch (error) {
             setError(error);
         }
     }
+
+    const getTeamInfo = async () => {
+        try {
+            const response = await Api.get('/api/user/team/info',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            const data = await response.data;
+            setTeam(data);
+        }
+        catch (error) {
+            setError(error);
+        }
+    }
+
+    const countMembersFunc =async() => {
+        try{
+            const  teamId = {
+                teamId: team[0].teamId
+            }
+            const response = await Api.post("/api/user/team/count/members", teamId,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await response.data;
+            setCountMembers(data);
+        }
+        catch (error) {
+            setError(error);
+        }
+    }
+
 
     return (
         <div>
@@ -150,11 +192,31 @@ const WorkSpace = () => {
                                 </form>
                             </div>
                             <div>
-                                <SideMenuProjectList  projects={projects}/>
+                                <SideMenuProjectList projects={projects} />
                             </div>
                         </div>
                     </div>
                     <div className="col-span-2 ... mr-14">
+                        <div>
+                            <div className='text-center font-bold p-4'>
+                                Your Team Information
+                            </div>
+                            <div>
+                                {team.length > 0 ? (
+                                    team.map((team, index) => (
+                                        <div className='border-solid border-2 border-gray-300 p-2' key={index}>
+                                            <div className='text-center'>
+                                                <h2>Team :  <span className='text-green-800'>{team.teamName}</span></h2>
+                                                <h2><span>{countMembers}</span> members</h2>
+                                            </div>
+                                        </div>))
+                                ) : (
+                                    <div className='text-center'>
+                                        <p>You are not in any team</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                         <div>
                             <div className='text-center font-bold p-4'>
                                 <h2>Your Tickets</h2>
@@ -163,7 +225,7 @@ const WorkSpace = () => {
                                 {tickets.length > 0 ? (
                                     tickets.map((ticket, index) => (
                                         <div className='hover:bg-gray-300 pl-2' key={index}>
-                                            <a href="#">{ticket.title} <span className='text-red-600'>- Ticket deadline on {new Date(ticket.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric',day:'numeric' ,month:'long',weekday:'long'})}</span></a>
+                                            <a href="#">{ticket.title} <span className='text-red-600'>- Ticket deadline on {new Date(ticket.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric', day: 'numeric', month: 'long', weekday: 'long' })}</span></a>
                                         </div>
                                     ))
                                 ) : (
@@ -174,11 +236,6 @@ const WorkSpace = () => {
                                 <div className='text-center text-blue-700 hover:text-orange-400'>
                                     <a href="#"> see all ...</a>
                                 </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div className='text-center font-bold p-4'>
-                                Your workspace (Team page)
                             </div>
                         </div>
                     </div>

@@ -192,8 +192,21 @@ const deleteComment = async (req, res) => {
 }
 
 
+//count memebers in a team
+const countTeamMembers = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const count = await userService.countMembersInTeam(teamId);
+        res.json(count)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers
 }
 
