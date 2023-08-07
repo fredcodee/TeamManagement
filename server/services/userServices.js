@@ -207,9 +207,15 @@ async function getUserTeamInfo(userId){
         const teams = []
         const team  = await User.findOne({ _id: userId }).populate('organization_id');
         for (const organization of team.organization_id) {
+            const user = await UserRoles.findOne({ user_id: userId, organization_id:organization._id });
+            const role = await Role.findById(user.role_id);
+            if(!role){
+                role = {name: "no role"}
+            }
             const team = {
                 teamId: organization._id,
-                teamName: organization.name
+                teamName: organization.name,
+                role: role.name
             }
             teams.push(team)
         }
@@ -269,7 +275,7 @@ async function getUserRolePermissionsInProject(userId, projectId) {
 }
 
 
-//get user tickets in a project they ones they created
+//get user tickets in a project the ones they created
 async function getUserTicketsInProject(userId, projectId) {
     try {
         const tickets = await Ticket.find({ created_by: userId, project_id: projectId });
