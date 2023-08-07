@@ -2,7 +2,7 @@ import React from 'react'
 import logo from "../assets/images/teamlogo.png"
 import Api from '../Api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faHouse, faListCheck, faClipboard } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faHouse, faListCheck, faClipboard,faUsers,faDiagramProject } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SideMenuProjectList from '../components/SideMenuProjectList'
@@ -20,14 +20,23 @@ const WorkSpace = () => {
     const [tickets, setTickets] = useState([]);
     const [team, setTeam] = useState([]);
     const [countMembers, setCountMembers] = useState(0);
+    const [adminCheck, setAdminCheck] = useState(false);
+
 
     useEffect(() => {
         getUser(),
             getProjects(),
             getTickets(),
-            getTeamInfo(),
-            countMembersFunc()
+            getTeamInfo()
     }, []);
+
+    useEffect(() => {
+        countMembersFunc(),
+            adminCheckFunc()
+    }, [team]);
+
+
+
 
     const getUser = async () => {
         try {
@@ -105,17 +114,17 @@ const WorkSpace = () => {
         }
     }
 
-    const countMembersFunc =async() => {
-        try{
-            const  teamId = {
+    const countMembersFunc = async () => {
+        try {
+            const teamId = {
                 teamId: team[0].teamId
             }
             const response = await Api.post("/api/user/team/count/members", teamId,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
             const data = await response.data;
             setCountMembers(data);
         }
@@ -123,6 +132,26 @@ const WorkSpace = () => {
             setError(error);
         }
     }
+
+    const adminCheckFunc = async () => {
+        try {
+            const data = {
+                teamId: team[0].teamId,
+                userId: user._id
+            }
+            const response = await Api.post("/api/admin/check-admin", data,{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+            }
+            });
+            const data2 = await response.data;
+            setAdminCheck(data2);
+        }
+        catch (error) {
+            setError(error);
+        }
+    }
+
 
 
     return (
@@ -165,11 +194,27 @@ const WorkSpace = () => {
                                 </div>
                             </a>
                             <a href="#">
-                                <div className='hover:bg-blue-300'>
+                                <div className='hover:bg-blue-300 pb-2'>
                                     <FontAwesomeIcon icon={faListCheck} style={{ color: "orange" }} className='pr-2' />
                                     My Tasks
                                 </div>
                             </a>
+                            {adminCheck? (
+                                <div>
+                                <a href="#">
+                                <div className='hover:bg-blue-300 pb-2'>
+                                    <FontAwesomeIcon icon={faUsers} style={{color: "#867bdb",}} className='pr-2' />
+                                    User Management
+                                </div>
+                                </a>
+                                <a href="#">
+                                <div className='hover:bg-blue-300'>
+                                    <FontAwesomeIcon icon={faDiagramProject} style={{color: "#df5dc3",}} className='pr-2' />
+                                    Project Management
+                                </div>
+                                </a>
+                                </div>
+                            ):(null)}
                         </div>
                         <hr />
                         <div>
@@ -213,11 +258,12 @@ const WorkSpace = () => {
                                 ) : (
                                     <div className='text-center'>
                                         <p>You are not in any team</p>
+                                        <a href="#" className=' text-blue-600'> Create a Team and get started</a>
                                     </div>
                                 )}
                             </div>
                         </div>
-                        <div>
+                        <div className='pt-4'>
                             <div className='text-center font-bold p-4'>
                                 <h2>Your Tickets</h2>
                             </div>

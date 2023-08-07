@@ -190,9 +190,9 @@ const addUserToProject = async (req, res) => {
         const teamId = req.body.teamId;
         const userId = req.body.userId;
         const projectId = req.body.projectId;
-        
+
         //check if user has permission to invite user || user is admin
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Invite");
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Invite");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!adminCheck && !userHasPermission) {
             return res.status(401).json({ message: 'user does not have permission to invite/add user' });
@@ -222,7 +222,7 @@ const removeUserFromProject = async (req, res) => {
         const userId = req.body.userId;
         const projectId = req.body.projectId;
         // check permissions
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Remove");
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Remove");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!adminCheck && !userHasPermission) {
             return res.status(401).json({ message: 'user does not have permission to remove user' });
@@ -284,7 +284,7 @@ const getAllUsersInProject = async (req, res) => {
 
 //edit project details
 const editProjectDetails = async (req, res) => {
-    try{
+    try {
         const teamId = req.body.teamId;
         const projectId = req.body.projectId;
         const projectName = req.body.projectName;
@@ -298,13 +298,13 @@ const editProjectDetails = async (req, res) => {
         const project = await appService.editProjectDetails(projectId, projectName, projectDescription);
         res.json(project);
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
 
 // get all users in an organization and their roles
-const getUsersInTeamAndRoles= async (req, res) => {
+const getUsersInTeamAndRoles = async (req, res) => {
     try {
         const teamId = req.body.teamId;
         const users = await userService.getAllUsersInOrganizationWithRoles(teamId);
@@ -328,19 +328,19 @@ const getAllRolesInTeam = async (req, res) => {
 
 //delete roles in an organization/team
 const deleteRole = async (req, res) => {
-    try{
+    try {
         const teamId = req.body.teamId;
         const roleId = req.body.roleId;
         //permission check
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if(!adminCheck){
-            return res.status(401).json({message:'user is not an admin'});
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
         }
         //delete role
         await appService.deleteRole(roleId, teamId);
-        res.json({message:'role deleted successfully'});
+        res.json({ message: 'role deleted successfully' });
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
@@ -348,23 +348,23 @@ const deleteRole = async (req, res) => {
 
 //Add persmissions
 const addPermissions = async (req, res) => {
-    try{
-        const list = ["Edit", "Delete","Invite","Chat","Remove"]
+    try {
+        const list = ["Edit", "Delete", "Invite", "Chat", "Remove"]
         await appService.addPermissions(list)
-        res.json({message:'permissions added successfully'})
+        res.json({ message: 'permissions added successfully' })
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
 
 //get all pesmissions
 const getAllPermissions = async (req, res) => {
-    try{
+    try {
         const permissions = await appService.getAllPermissions()
         res.json(permissions)
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
@@ -373,61 +373,61 @@ const getAllPermissions = async (req, res) => {
 
 // (only admins) add permission to role
 const addPermissionToRole = async (req, res) => {
-    try{
+    try {
         const teamId = req.body.teamId;
         const roleId = req.body.roleId;
         const projectId = req.body.projectId;
         const permissionId = req.body.permissionId;
         //permission check
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if(!adminCheck){
-            return res.status(401).json({message:'user is not an admin'});
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
         }
         //add permission to role
         await appService.addPermissionToRole(roleId, permissionId, projectId, teamId);
-        res.json({message:'permission added to role successfully'});
+        res.json({ message: 'permission added to role successfully' });
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
 
 // (only admins) remove permission from role
 const removePermissionFromRole = async (req, res) => {
-    try{
+    try {
         const teamId = req.body.teamId;
         const roleId = req.body.roleId;
         const projectId = req.body.projectId;
         const permissionId = req.body.permissionId;
         //permission check
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if(!adminCheck){
-            return res.status(401).json({message:'user is not an admin'});
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
         }
         //remove permission from role
         await appService.removePermissionFromRole(roleId, permissionId, projectId, teamId);
-        res.json({message:'permission removed from role successfully'});
+        res.json({ message: 'permission removed from role successfully' });
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
 
 //(only admins)  view all roles with permissions in an organization/team
 const getAllRolesWithPermissions = async (req, res) => {
-    try{
+    try {
         const teamId = req.body.teamId;
         const projectId = req.body.projectId;
         //permission check
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if(!adminCheck){
-            return res.status(401).json({message:'user is not an admin'});
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
         }
         //get all roles with permissions
         const roles = await appService.getAllRolesWithPermissions(teamId, projectId);
         res.json(roles);
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
@@ -435,7 +435,7 @@ const getAllRolesWithPermissions = async (req, res) => {
 
 //get users role persmissions in a project
 const getUsersRolePermissionsInProject = async (req, res) => {
-    try{
+    try {
         const teamId = req.body.teamId;
         const projectId = req.body.projectId;
         const userId = req.body.userId;
@@ -443,7 +443,7 @@ const getUsersRolePermissionsInProject = async (req, res) => {
         const permissions = await userService.getUserRolePermissionsInProject(userId, projectId);
         res.json(permissions);
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
@@ -514,11 +514,11 @@ const addTicketToProject = async (req, res) => {
             return res.status(401).json({ message: 'user is not in project' });
         }
         //check if user has permission to add ticket || user is admin
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Edit");
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!userHasPermission && !adminCheck) {
-                return res.status(401).json({ message: 'user does not have permission to add ticket' });
-            }
+            return res.status(401).json({ message: 'user does not have permission to add ticket' });
+        }
         //add ticket to project
         const ticket = await appService.addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
         res.json(ticket);
@@ -554,11 +554,11 @@ const editTicketDetails = async (req, res) => {
             return res.status(401).json({ message: 'user is not in project' });
         }
         //check if user has permission to edit ticket || user is admin
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Edit");
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!userHasPermission && !adminCheck) {
-                return res.status(401).json({ message: 'user does not have permission to edit ticket' });
-            }
+            return res.status(401).json({ message: 'user does not have permission to edit ticket' });
+        }
         //edit ticket details
         const ticket = await appService.editTicketDetails(ticketId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketDueDate, pinned);
         res.json(ticket);
@@ -587,7 +587,7 @@ const deleteTicketFromProject = async (req, res) => {
             return res.status(401).json({ message: 'user is not in project' });
         }
         //check if user has permission to delete ticket || user is admin
-        const userHasPermission = await userService.checkUserPermission(userId,teamId, projectId, "Delete");
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Delete");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!userHasPermission && !adminCheck) {
             return res.status(401).json({ message: 'user does not have permission to edit ticket' });
@@ -609,15 +609,15 @@ const deleteProject = async (req, res) => {
         const projectId = req.body.projectId;
         //permission check
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if(!adminCheck){
-            return res.status(401).json({message:'user is not an admin'});
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
         }
 
         //delete project
         await appService.deleteProject(projectId);
-        res.json({message:'project deleted successfully'});
+        res.json({ message: 'project deleted successfully' });
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
@@ -629,15 +629,15 @@ const deleteTeam = async (req, res) => {
         const teamId = req.body.teamId;
         //permission check
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if(!adminCheck){
-            return res.status(401).json({message:'user is not an admin'});
+        if (!adminCheck) {
+            return res.status(401).json({ message: 'user is not an admin' });
         }
 
         //delete team
         await appService.deleteOrganization(teamId);
-        res.json({message:'team deleted successfully'});
+        res.json({ message: 'team deleted successfully' });
     }
-    catch(error){
+    catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
@@ -650,16 +650,16 @@ const checkUserIsAdmin = async (req, res) => {
         const userId = req.body.userId;
 
         if (teamId == null || userId == null) {
-            return res.json('false');
+            return res.status(400).json({ message: 'Both teamId and userId are required.' });
         }
-        //permission check
-        const adminCheck = await userService.checkUserIsAdmin(userId, teamId, res);
-        res.json(adminCheck);
+        // Permission check
+        const isAdmin = await userService.checkUserIsAdmin(userId, teamId, res);
+        res.json(isAdmin);
+    } catch (error) {
+        errorHandler.errorHandler(error, res);
     }
-    catch(error){
-        errorHandler.errorHandler(error, res)
-    }
-}
+};
+
 
 
 
@@ -694,7 +694,7 @@ const getAllTeams = async (req, res) => {
 
 
 
-        
+
 
 
 
@@ -704,8 +704,8 @@ const getAllTeams = async (req, res) => {
 module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
-    ,getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
-    deleteRole, addPermissions, getAllPermissions, addPermissionToRole,  getAllRolesWithPermissions, removePermissionFromRole,
+    , getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
+    deleteRole, addPermissions, getAllPermissions, addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
     , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin
 }
