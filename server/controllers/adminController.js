@@ -24,7 +24,7 @@ const inviteUser = async (req, res) => {
             //check if user is already in team
             const userInTeam = await userService.checkUserIsInOrganization(user._id, teamId);
             if (userInTeam) {
-                return res.status(401).json(`user is already in team or has been invited`);
+                return res.status(401).json({ message:`user is already in team or has been invited`});
             }
             //that means user exists to add to team
             await appService.addOrganizationToUser(user._id, teamId);

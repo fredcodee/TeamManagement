@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import WorkSpace from './pages/WorkSpace';
 import Tasks from './pages/Tasks';
+import UserManagement from './pages/UserManagement';
 
 
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<Register/>}/>
           <Route element = {<PrivateRoute> <WorkSpace /></PrivateRoute>} path = "/user-workspace" />
           <Route element = {<PrivateRoute> <Tasks /></PrivateRoute>} path = "/user-tasks" /> 
+          <Route element = {<PrivateRoute> <UserManagement /></PrivateRoute>} path = "/user-management" />
         </Routes>
       </AuthProvider>
       </BrowserRouter>
