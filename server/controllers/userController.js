@@ -69,13 +69,25 @@ const viewProjectInfo = async (req, res) => {
 }
 
 
-//view user ticket in a project
+//get user ticket created in a project
 const viewUserTicket = async (req, res) => {
     try {
         const user = req.user;
         const projectId = req.body.projectId;
 
         const userTicket = await userService.getUserTicketsInProject(user._id, projectId);
+        res.json(userTicket)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
+// get all tickets created by user in all projects
+const getAllUserTickets = async (req, res) => {
+    try {
+        const user = req.user;
+        const userTicket = await userService.getUserTicketsInAllProjects(user._id);
         res.json(userTicket)
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -207,6 +219,6 @@ const countTeamMembers = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers, getAllUserTickets
 }
 

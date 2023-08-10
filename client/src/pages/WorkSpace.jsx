@@ -2,7 +2,7 @@ import React from 'react'
 import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faHouse, faListCheck, faClipboard,faUsers,faDiagramProject } from '@fortawesome/free-solid-svg-icons'
+import {faHouse, faListCheck, faClipboard,faUsers,faDiagramProject, faSitemap} from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SideMenuProjectList from '../components/SideMenuProjectList'
@@ -91,6 +91,7 @@ const WorkSpace = () => {
             });
 
             const data = await response.data;
+            data.splice(5)
             setTickets(data);
         }
         catch (error) {
@@ -182,9 +183,15 @@ const WorkSpace = () => {
                                 </div>
                                 </a>
                                 <a href="#">
-                                <div className='hover:bg-blue-300'>
+                                <div className='hover:bg-blue-300 pb-2'>
                                     <FontAwesomeIcon icon={faDiagramProject} style={{color: "#df5dc3",}} className='pr-2' />
                                     Project Management
+                                </div>
+                                </a>
+                                <a href="#">
+                                <div className='hover:bg-blue-300'>
+                                    <FontAwesomeIcon icon={faSitemap} style={{color: "#d2da5d",}} className='pr-2'/>
+                                    Team Management/Settings
                                 </div>
                                 </a>
                                 </div>

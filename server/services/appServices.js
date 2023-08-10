@@ -95,7 +95,7 @@ async function addUserToRole(userId, roleId, organizationId) {
 //remove user from role
 async function removeUserFromRole(userId, roleId, organizationId) {
     try {
-        await UserRoles.findOneAndDelete({ user_id: userId, role_id: roleId, organization_id: organizationId });
+        await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
         return true;
     } catch (error) {
         throw new Error(`Cant remove user from role ${error}`);
@@ -262,9 +262,12 @@ async function deleteRole(roleId, organizationId) {
     }
 }
 
+
+
 //add persmissions
-async function addPermissions(listOfPermissions) {
+async function addPermissions() {
     try {
+        const listOfPermissions = ["Edit", "Delete", "Invite", "Chat", "Remove"]
         for (const permission of listOfPermissions) {
             if (await persmissions.findOne({ name: permission })) {
                 continue;

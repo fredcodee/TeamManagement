@@ -74,7 +74,11 @@ const addUserToRole = async (req, res) => {
         //check if user has role already
         const userHasRole = await appService.checkUserHasRoleInOrganization(userId, teamId);
         if (userHasRole) {
-            return res.status(401).json({ message: 'user already has a role in team' });
+            // Get the user's current role ID
+            const userTeamInfo = await userService.getUserTeamInfo(userId);
+            const userRoleId = userTeamInfo[0]?.roleId;
+            // Remove the user from their current role
+            await appService.removeUserFromRole(userId, userRoleId, teamId);
         }
         await appService.addUserToRole(userId, roleId, teamId);
         res.json({ message: 'user added to role successfully' });
@@ -176,6 +180,7 @@ const createProject = async (req, res) => {
             return res.status(401).json({ message: 'user is not an admin' });
         }
         //create project
+        await appService.addPermissions()
         const project = await appService.createProject(teamId, projectName, projectDescription);
         res.json(project);
     } catch (error) {
@@ -339,19 +344,6 @@ const deleteRole = async (req, res) => {
         //delete role
         await appService.deleteRole(roleId, teamId);
         res.json({ message: 'role deleted successfully' });
-    }
-    catch (error) {
-        errorHandler.errorHandler(error, res)
-    }
-}
-
-
-//Add persmissions
-const addPermissions = async (req, res) => {
-    try {
-        const list = ["Edit", "Delete", "Invite", "Chat", "Remove"]
-        await appService.addPermissions(list)
-        res.json({ message: 'permissions added successfully' })
     }
     catch (error) {
         errorHandler.errorHandler(error, res)
@@ -705,7 +697,7 @@ module.exports = {
     inviteUser, getAllUsers, getAllTeams, createRole, addUserToRole, removeUserFromRole
     , editTeamDetails, removeUserFromTeam, createProject, addUserToProject, removeUserFromProject
     , getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
-    deleteRole, addPermissions, getAllPermissions, addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole,
+    deleteRole, getAllPermissions, addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
     , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin
 }

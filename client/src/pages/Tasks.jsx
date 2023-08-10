@@ -51,18 +51,13 @@ const Tasks = () => {
     }
 
     const getTasks = async () => {
-        try {
-            const response = await Api.get('/api/user/project/tickets', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            const data = await response.data;
-            setTasks(data);
-        }
-        catch (error) {
-            setError(error);
-        }
+        const response = await Api.get('/api/user/project/tickets/all', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        const data = await response.data;
+        setTasks(data);
     }
 
 

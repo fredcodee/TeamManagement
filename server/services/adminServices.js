@@ -242,6 +242,7 @@ async function getAllUsersWithEmptyPassword( organization){
         throw new Error(`Cant get users ${error}`);
     }
 }
+
    
 
 

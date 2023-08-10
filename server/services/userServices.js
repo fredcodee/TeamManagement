@@ -215,7 +215,8 @@ async function getUserTeamInfo(userId){
             const team = {
                 teamId: organization._id,
                 teamName: organization.name,
-                role: role.name
+                role: role.name,
+                roleId: role._id
             }
             teams.push(team)
         }
@@ -285,6 +286,18 @@ async function getUserTicketsInProject(userId, projectId) {
     }
 }
 
+//get user tickets in all projects the ones they created
+async function getUserTicketsInAllProjects(userId) {
+    try {
+        const tickets = await Ticket.find({ created_by: userId });
+        //sort tickets by date and get only first 5
+        tickets.sort((a, b) => b.created_at - a.created_at);
+        return tickets;
+    } catch (error) {
+        throw new Error(`Cant get user tickets in all projects ${error}`);
+    }}
+
+
 
 //get tickets assigned to user in a project
 async function getTicketsAssignedToUserInProject(userId, projectId) {
@@ -303,7 +316,6 @@ async function getAllTicketsAssignedToUserinAllProject(userId) {
         const tickets = await Ticket.find({ assigned_to: userId });
         //sort tickets by date and get only first 5
         tickets.sort((a, b) => b.created_at - a.created_at);
-        tickets.splice(5);
         return tickets;
     } catch (error) {
         throw new Error(`Cant get all tickets assigned to user in all projects ${error}`);
@@ -329,5 +341,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
     , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject, getTicketsAssignedToUserInProject, getUserTicketsInProject
-, getAllTicketsAssignedToUserinAllProject, countMembersInTeam
+, getAllTicketsAssignedToUserinAllProject, countMembersInTeam, getUserTicketsInAllProjects
 }
