@@ -110,6 +110,7 @@ const ProjectManagement = () => {
       <div className='text-center p-4'>
         <h1 className='text-3xl pb-3 font-bold'>Project Management Section</h1>
         <hr />
+        {success && <div className='text-green-500'>{success}</div>}
         <div>
             <button className='bg-blue-500 hover:bg-purple-700 text-white py-2 px-4 rounded mt-4' onClick={togglePopup} >
               Create New Project

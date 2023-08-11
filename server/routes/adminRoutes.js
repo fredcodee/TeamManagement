@@ -28,6 +28,8 @@ router.post('/team/all/invites', userAuth, adminController.getAllInvitesInTeam)
 router.post('/project/ticket/add', userAuth, adminController.addTicketToProject)
 router.post('/project/ticket/edit', userAuth, adminController.editTicketDetails)
 router.post('/project/ticket/delete', userAuth, adminController.deleteTicketFromProject)
+router.post('/project/delete', userAuth, adminController.deleteProject)
+
 
 //remove later
 router.post('/get/all/users', userAuth, adminController.getAllUsers)
