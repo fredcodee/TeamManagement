@@ -182,7 +182,7 @@ const WorkSpace = () => {
                                     User Management
                                 </div>
                                 </a>
-                                <a href="#">
+                                <a href="/project-management">
                                 <div className='hover:bg-blue-300 pb-2'>
                                     <FontAwesomeIcon icon={faDiagramProject} style={{color: "#df5dc3",}} className='pr-2' />
                                     Project Management
