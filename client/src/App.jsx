@@ -9,6 +9,7 @@ import WorkSpace from './pages/WorkSpace';
 import Tasks from './pages/Tasks';
 import UserManagement from './pages/UserManagement';
 import ProjectManagement from './pages/ProjectManagement';
+import ProjectPageAdmin from './pages/ProjectPageAdmin';
 
 
 
@@ -25,6 +26,7 @@ function App() {
           <Route element = {<PrivateRoute> <Tasks /></PrivateRoute>} path = "/user-tasks" /> 
           <Route element = {<PrivateRoute> <UserManagement /></PrivateRoute>} path = "/user-management" />
           <Route element = {<PrivateRoute> <ProjectManagement /></PrivateRoute>} path = "/project-management" />
+          <Route element = {<PrivateRoute> <ProjectPageAdmin /></PrivateRoute>} path = "/project-page-admin/:id" />
         </Routes>
       </AuthProvider>
       </BrowserRouter>

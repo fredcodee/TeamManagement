@@ -203,6 +203,10 @@ async function removeUserFromProject(userId, projectId) {
 async function getAllProjects(organizationId) {
     try {
         const projects = await Project.find({ organization_id: organizationId });
+        //sort by latest date
+        projects.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date);
+        });
         return projects;
     } catch (error) {
         throw new Error(`Cant get projects ${error}`);
