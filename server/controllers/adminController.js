@@ -191,7 +191,7 @@ const createProject = async (req, res) => {
 
 const getUserInfoByEmail = async (req,res) =>{
     try{
-        const email = req.user.email
+        const email = req.body.email
         const user  = await userService.getUserByEmail(email)
         res.json(user)
 

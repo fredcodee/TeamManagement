@@ -159,7 +159,6 @@ const ProjectPageAdmin = () => {
                 projectId: id,
                 userId: userId
             }
-            console.log(data)
 
             const response = await Api.post('/api/admin/project/add/user', data, {
                 headers: {
@@ -179,30 +178,38 @@ const ProjectPageAdmin = () => {
 
     }
 
-    const removeUserFromProject = async()=>{
-        try{
+    const removeUserFromProject = async () => {
+        try {
             const data = {
                 teamId: team[0]?.teamId,
                 userId: removeUser._id,
-                projectId:id
-            }
+                projectId: id
+            };
             const response = await Api.post('/api/admin/project/remove/user', data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
             const data2 = await response.data;
-            setSuccess(data2);
-            setError(null); // Clear any previous errors if successful
+    
+            // Update state variables together
+            setSuccess(data2.message);
+            setError(null);
+            setNewUser('');
             togglePopup2();
-            getUsersAndRoles();
-        }
-        catch (err) {
+    
+            // Fetch updated user list
+            getAllUsers();
+        } catch (err) {
             setError(err.response?.data?.message || "An error occurred");
-            setSuccess(null); // Clear success message on error
+    
+            // Clear input field and close the popup on error
+            setSuccess(null);
+            setNewUser('');
             togglePopup2();
         }
-    }
+    };
+    
 
 
     return (
