@@ -187,6 +187,18 @@ const createProject = async (req, res) => {
         errorHandler.errorHandler(error, res)
     }
 }
+// get user info by email
+
+const getUserInfoByEmail = async (req,res) =>{
+    try{
+        const email = req.user.email
+        const user  = await userService.getUserByEmail(email)
+        res.json(user)
+
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 
 //add user to project
@@ -210,7 +222,7 @@ const addUserToProject = async (req, res) => {
         //check if user is already in project
         const userInProject = await userService.checkUserIsInProject(userId, projectId);
         if (userInProject) {
-            return res.status(401).json({ message: 'user is alread in this project' });
+            return res.status(401).json({ message: 'user is already in this project' });
         }
         //add user to project
         await appService.addUserToProject(userId, projectId);
@@ -699,5 +711,5 @@ module.exports = {
     , getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, getAllPermissions, addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
-    , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin
+    , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin,getUserInfoByEmail 
 }
