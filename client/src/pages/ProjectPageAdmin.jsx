@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShield } from '@fortawesome/free-solid-svg-icons'
+import { faShield , faCircleInfo} from '@fortawesome/free-solid-svg-icons'
 import PopUp from '../components/PopUp';
 
 
@@ -26,6 +26,10 @@ const ProjectPageAdmin = () => {
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     let [isOpen, setIsOpen] = useState(false); //popup for remove user
+    const [rolesAndPermissionsList, setRolesAndPermissionsList] = useState([]);
+    const [showPopUpForRoles, setShowPopUpForRoles] = useState(false);
+    const [showPopUpforPermissionsInfo , setShowPopUpForPermissionsInfo] = useState(false);
+
 
 
 
@@ -37,7 +41,8 @@ const ProjectPageAdmin = () => {
     }, [])
 
     useEffect(() => {
-        getAllUsers()
+        getAllUsers(),
+        rolesAndPermissions()
     }, [team])
 
 
@@ -53,6 +58,14 @@ const ProjectPageAdmin = () => {
 
     const togglePopup2 = () => {
         setIsOpen(!isOpen);
+    }
+
+    const togglePopUpForRoles = () => {
+        setShowPopUpForRoles(!showPopUpForRoles);
+    };
+
+    const togglePopUpForPermissionsInfo = () => {
+        setShowPopUpForPermissionsInfo(!showPopUpforPermissionsInfo);
     }
 
 
@@ -79,7 +92,7 @@ const ProjectPageAdmin = () => {
                 },
             });
         const data = await response.data;
-        setTeam(data);
+        setTeam(data)
     }
 
     const getProject = async () => {
@@ -209,6 +222,20 @@ const ProjectPageAdmin = () => {
             togglePopup2();
         }
     };
+
+    const rolesAndPermissions = async () => {
+        const data = {
+            teamId: team[0]?.teamId,
+            projectId: id
+        }
+        const response = await Api.post('/api/admin/project/roleswithpermissions', data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const data2 = await response.data;
+        setRolesAndPermissionsList(data2);
+    }
     
 
 
@@ -332,6 +359,44 @@ const ProjectPageAdmin = () => {
                     </>}
                 />
             }
+            {/* popup for permissions info */}
+            {
+                showPopUpforPermissionsInfo && <PopUp
+                    content={<>
+                        <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                            <div className=" relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                                <div className="relative bg-black rounded-lg shadow dark:bg-gray-700 text-white">
+
+                                    <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                        <h3 className="text-xl font-semibold dark:text-white">
+                                           List of Permissions and Their descriptions
+                                        </h3>
+                                        <button type="button" onClick={togglePopUpForPermissionsInfo} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                            </svg>
+                                            <span className="sr-only">Close modal</span>
+                                        </button>
+                                    </div>
+                                    <div className="p-6 space-y-6">
+                                        <div>
+                                            <p className='pb-2'>- Edit <br />(edit ticket status, edit ticket deadline, edit users assigned to tickets(assign/unassign))</p>
+                                            <p className='pb-2'>- Delete <br />(delete comments, delete tickets)</p>
+                                            <p className='pb-2'>- Invite<br />( add user to project)</p>
+                                            <p className='pb-2'>- Chat<br />(can comment on tickets)</p>
+                                            <p className='pb-2'>- Remove<br />(remove user from project)</p>
+                                            <div className='text-center'>
+                                                <small>***Admin users automatically has all permissions***</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>}
+                />
+            }
+
 
 
 
@@ -416,8 +481,24 @@ const ProjectPageAdmin = () => {
 
 
             <hr />
-            <div>
-                Roles and permissions setings fro this project
+            <div className='p-4'>
+                <div className='font-bold text-center'>
+                    <h1>Roles and Permissions</h1>
+                    <FontAwesomeIcon icon={faCircleInfo}  onClick={togglePopUpForPermissionsInfo} className='hover:cursor-pointer'/>
+                </div>
+                <div className='p-2'>
+                    {
+                        rolesAndPermissionsList.map((role, index) => (
+                            <div key={index} className='text-center'>
+                                <p>{role.role.name}: <a href="" className='hover:underline text-blue-700'>
+                                    {role.permissions.map((permission, index) => (
+                                        <span key={index}>{permission.name}, </span>
+                                    ))}
+                                    </a>
+                                </p> 
+                            </div>))
+                    }
+                </div>
             </div>
 
         </div>
