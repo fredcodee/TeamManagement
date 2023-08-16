@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShield , faCircleInfo} from '@fortawesome/free-solid-svg-icons'
+import { faShield, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import PopUp from '../components/PopUp';
 
 
@@ -22,13 +22,17 @@ const ProjectPageAdmin = () => {
     const [projectInfo, setProjectInfo] = useState('');
     const [allUsers, setAllUsers] = useState([]);
     const [newUser, setNewUser] = useState('') //user to add to project
-    const [removeUser , setRemoveUser] = useState('') //user to remove from project
+    const [removeUser, setRemoveUser] = useState('') //user to remove from project
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     let [isOpen, setIsOpen] = useState(false); //popup for remove user
     const [rolesAndPermissionsList, setRolesAndPermissionsList] = useState([]);
-    const [showPopUpForRoles, setShowPopUpForRoles] = useState(false);
-    const [showPopUpforPermissionsInfo , setShowPopUpForPermissionsInfo] = useState(false);
+    const [showPopUpForRolesAdd, setShowPopUpForRolesAdd] = useState(false);
+    const [showPopUpForRolesDelete, setShowPopUpForRolesDelete] = useState(false);
+    const [showPopUpforPermissionsInfo, setShowPopUpForPermissionsInfo] = useState(false);
+    const [permissions, setPermissions] = useState([]); //list of all permissions
+    const [currentPermission, setCurrentPermission] = useState(''); //permission to add/remove to role
+    const [currentRole, setCurrentRole] = useState(''); //role to add/remove permission to/from
 
 
 
@@ -37,12 +41,13 @@ const ProjectPageAdmin = () => {
     useEffect(() => {
         getUser(),
             getTeamInfo(),
-            getProject()
+            getProject(),
+            getPersmissions()
     }, [])
 
     useEffect(() => {
         getAllUsers(),
-        rolesAndPermissions()
+            rolesAndPermissions()
     }, [team])
 
 
@@ -60,8 +65,12 @@ const ProjectPageAdmin = () => {
         setIsOpen(!isOpen);
     }
 
-    const togglePopUpForRoles = () => {
-        setShowPopUpForRoles(!showPopUpForRoles);
+    const togglePopUpForRolesAdd = () => {
+        setShowPopUpForRolesAdd(!showPopUpForRolesAdd);
+    };
+
+    const togglePopUpForRolesDelete = () => {
+        setShowPopUpForRolesDelete(!showPopUpForRolesDelete);
     };
 
     const togglePopUpForPermissionsInfo = () => {
@@ -204,18 +213,18 @@ const ProjectPageAdmin = () => {
                 }
             });
             const data2 = await response.data;
-    
+
             // Update state variables together
             setSuccess(data2.message);
             setError(null);
             setNewUser('');
             togglePopup2();
-    
+
             // Fetch updated user list
             getAllUsers();
         } catch (err) {
             setError(err.response?.data?.message || "An error occurred");
-    
+
             // Clear input field and close the popup on error
             setSuccess(null);
             setNewUser('');
@@ -236,7 +245,47 @@ const ProjectPageAdmin = () => {
         const data2 = await response.data;
         setRolesAndPermissionsList(data2);
     }
-    
+
+    const getPersmissions = async () => {
+        const response = await Api.get('/api/admin/permission/list/all', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const data = await response.data;
+        setPermissions(data);
+    }
+
+    const handleaddPermission = async () => {
+        try {
+            const data = {
+                teamId: team[0]?.teamId,
+                projectId: id,
+                roleId: currentRole,
+                permissionId: currentPermission
+            }
+            console.log(data)
+            const response = await Api.post('/api/admin/permission/add/role', data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data2 = await response.data;
+            setSuccess(data2.message);
+            setError(null);
+            togglePopUpForRolesAdd();
+            rolesAndPermissions();
+            
+
+
+        } catch (error) {
+            setError(error.response?.data?.message || "An error occurred");
+            setSuccess(null); // Clear success message on error
+            togglePopUpForRolesAdd();
+        }
+    }
+
+
 
 
     return (
@@ -255,6 +304,7 @@ const ProjectPageAdmin = () => {
             <hr />
             {success && <div className='text-center text-green-500'>{success}</div>}
             {error && <div className='text-center text-red-500' >{error}</div>}
+
             {/* for popup for edit project */}
             {showPopUp && <PopUp
                 content={<>
@@ -335,7 +385,7 @@ const ProjectPageAdmin = () => {
 
                                     <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                           Remove <span className='text-green-700'>{removeUser.email}</span> from this project
+                                            Remove <span className='text-green-700'>{removeUser.email}</span> from this project
                                         </h3>
                                         <button type="button" onClick={togglePopup2} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
                                             <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -369,7 +419,7 @@ const ProjectPageAdmin = () => {
 
                                     <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                                         <h3 className="text-xl font-semibold dark:text-white">
-                                           List of Permissions and Their descriptions
+                                            List of Permissions and Their descriptions
                                         </h3>
                                         <button type="button" onClick={togglePopUpForPermissionsInfo} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
                                             <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -396,6 +446,47 @@ const ProjectPageAdmin = () => {
                     </>}
                 />
             }
+            {/* popup for add permission */}
+            {
+                showPopUpForRolesAdd && <PopUp
+                    content={<>
+                        <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                            <div className=" relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                                <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+
+                                    <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                        <h3 className="text-xl font-semibold dark:text-white">
+                                            Add permission to this role
+                                        </h3>
+                                        <button type="button" onClick={togglePopUpForRolesAdd} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                            </svg>
+                                            <span className="sr-only">Close modal</span>
+                                        </button>
+                                    </div>
+                                    <div className="p-6 space-y-6">
+                                        <div>
+                                            <select id="role" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCurrentPermission(e.target.value)}>
+                                                {
+                                                    permissions.map((permission, index) => {
+                                                        return <option key={index} value={permission._id}>{permission.name}</option>
+                                                    })
+                                                }
+                                            </select>
+                                            <div className='text-center p-4'>
+                                                <button type="button" onClick={handleaddPermission} className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>}
+                />
+            }
+
+            {/* popup for remove permission */}
 
 
 
@@ -484,20 +575,51 @@ const ProjectPageAdmin = () => {
             <div className='p-4'>
                 <div className='font-bold text-center'>
                     <h1>Roles and Permissions</h1>
-                    <FontAwesomeIcon icon={faCircleInfo}  onClick={togglePopUpForPermissionsInfo} className='hover:cursor-pointer'/>
+                    <FontAwesomeIcon icon={faCircleInfo} onClick={togglePopUpForPermissionsInfo} className='hover:cursor-pointer' />
                 </div>
                 <div className='p-2'>
                     {
                         rolesAndPermissionsList.map((role, index) => (
                             <div key={index} className='text-center'>
-                                <p>{role.role.name}: <a href="" className='hover:underline text-blue-700'>
-                                    {role.permissions.map((permission, index) => (
-                                        <span key={index}>{permission.name}, </span>
-                                    ))}
-                                    </a>
-                                </p> 
-                            </div>))
+                                {role.role.name === 'admin' ? (
+                                    <div>
+                                        <p>{role.role.name} : <span className='text-purple-700'>Has All Permissions</span></p>
+                                        <hr />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p >
+                                            {role.role.name}:{" "}
+                                            {
+                                                role.permissions.length === 0 ? (
+                                                    <span className='text-orange-700' key={index}>No Permissions added yet</span>
+                                                ) : (
+                                                    role.permissions.map((permission, index) => (
+                                                        <span className='text-blue-600' key={index}>{permission.name}, </span>
+
+                                                    ))
+                                                )
+                                            }
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setCurrentRole(role.role._id);
+                                                togglePopUpForRolesAdd();
+                                            }}
+                                            className="text-white bg-purple-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                        >
+                                            Add
+                                        </button>
+
+                                        <button type="button" className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">remove</button>
+                                        <hr />
+                                    </div>
+                                )}
+                            </div>
+                        ))
                     }
+
                 </div>
             </div>
 
