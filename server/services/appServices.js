@@ -65,6 +65,10 @@ async function addOrganizationToUser(userId, organizationId) {
 //create role
 async function createRole(organizationId, roleName) {
     try {
+        const checkRole = await Role.findOne({ name: roleName, organization_id: organizationId });
+        if (checkRole) {
+            throw new Error(`Sorry a role with this name already exists`);
+        }
         const role = new Role({
             name: roleName,
             organization_id: organizationId

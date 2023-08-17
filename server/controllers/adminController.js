@@ -53,7 +53,7 @@ const createRole = async (req, res) => {
         }
         //create role
         const role = await appService.createRole(teamId, roleName);
-        res.json(role);
+        res.json({ message: 'role created successfully'});
     } catch (error) {
         errorHandler.errorHandler(error, res)
     }

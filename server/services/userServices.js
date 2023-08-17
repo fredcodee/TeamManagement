@@ -215,6 +215,7 @@ async function getUserTeamInfo(userId){
             const team = {
                 teamId: organization._id,
                 teamName: organization.name,
+                createdOn: organization.date,
                 role: role.name,
                 roleId: role._id
             }

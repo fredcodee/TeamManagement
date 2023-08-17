@@ -188,7 +188,7 @@ const WorkSpace = () => {
                                     Project Management
                                 </div>
                                 </a>
-                                <a href="#">
+                                <a href="/team-settings">
                                 <div className='hover:bg-blue-300'>
                                     <FontAwesomeIcon icon={faSitemap} style={{color: "#d2da5d",}} className='pr-2'/>
                                     Team Management/Settings
