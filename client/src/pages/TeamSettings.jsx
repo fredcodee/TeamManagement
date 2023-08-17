@@ -4,7 +4,7 @@ import Api from '../Api'
 import { useState, useEffect } from 'react'
 import PopUp from '../components/PopUp';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons'
+import { faPeopleGroup, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 const TeamSettings = () => {
     const token = localStorage.getItem('authTokens').replace(/"/g, '');
@@ -15,12 +15,16 @@ const TeamSettings = () => {
     const [error, setError] = useState(null);
     const [showPopUpForEditTeam, setShowPopUpForEditTeam] = useState(false);
     const [roleName, setRoleName] = useState('');
-
+    const [allRoles , setAllRoles] = useState([]);
 
     useEffect(() => {
         getUser(),
             getTeamInfo()
     }, [])
+
+    useEffect(() => {
+        getAllRoles();
+    }, [team])
 
 
 
@@ -44,16 +48,16 @@ const TeamSettings = () => {
         }
     };
     const getTeamInfo = async () => {
-            const response = await Api.get('/api/user/team/info',
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-            const data = await response.data;
-            setTeam(data);
-            setTeamName(data[0]?.teamName);
-        
+        const response = await Api.get('/api/user/team/info',
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        const data = await response.data;
+        setTeam(data);
+        setTeamName(data[0]?.teamName);
+
     }
 
     const editTeam = async () => {
@@ -80,28 +84,28 @@ const TeamSettings = () => {
         }
     }
 
-    const deleteTeam = async () => {
-        try {
-            const data = {
-                teamId: team[0]?.teamId,
-            }
-            const response = await Api.post('/api/admin/delete/team',
-                data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-            const data2 = await response.data;
-            setSuccess(data2.message);
-            togglePopUpForEditTeam();
-            getTeamInfo();
-        }
-        catch (error) {
-            setError(error.response.data.message);
-            togglePopUpForEditTeam();
-        }
-    }
+    // const deleteTeam = async () => {
+    //     try {
+    //         const data = {
+    //             teamId: team[0]?.teamId,
+    //         }
+    //         const response = await Api.post('/api/admin/delete/team',
+    //             data,
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             });
+    //         const data2 = await response.data;
+    //         setSuccess(data2.message);
+    //         togglePopUpForEditTeam();
+    //         getTeamInfo();
+    //     }
+    //     catch (error) {
+    //         setError(error.response.data.message);
+    //         togglePopUpForEditTeam();
+    //     }
+    // }
 
     const createRole = async () => {
         try {
@@ -126,6 +130,45 @@ const TeamSettings = () => {
         }
     }
 
+    const getAllRoles = async () => {
+        const data = {
+            teamId: team[0]?.teamId,
+        }
+
+        const response = await Api.post('/api/admin/team/all/roles', data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+        const data2 = await response.data;
+        setAllRoles(data2);
+        
+
+    }
+
+    const deleteRole = async (roleId) => {
+        try {
+            const data = {
+                teamId: team[0]?.teamId,
+                roleId: roleId
+            }
+            const response = await Api.post('/api/admin/delete/role', data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+
+            const data2 = await response.data;
+            setSuccess(data2.message);
+            setError(null);
+            getTeamInfo();
+            getAllRoles();
+            
+        } catch (error) {
+            setError(error.response.data.message);
+        }
+    }
+
 
     return (
         <div>
@@ -136,14 +179,14 @@ const TeamSettings = () => {
                 </div>
             </a>
             <div className='text-center p-2 font-bold'>
-            <FontAwesomeIcon icon={faPeopleGroup} style={{color: "#578dea",}} />
+                <FontAwesomeIcon icon={faPeopleGroup} style={{ color: "#578dea", }} />
                 <h1>Team Managament</h1>
             </div>
             {success && <div className='text-center text-green-500'>{success}</div>}
             {error && <div className='text-center text-red-500' >{error}</div>}
 
             {/* for popup for edit team */}
-            {showPopUpForEditTeam&& <PopUp
+            {showPopUpForEditTeam && <PopUp
                 content={<>
                     <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                         <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
@@ -182,11 +225,11 @@ const TeamSettings = () => {
             </div>
             <div className='p-3'>
                 <button type="button" onClick={togglePopUpForEditTeam} className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900">Edit Team Details</button>
-                <button type="button"  className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete Team</button>
+                <button type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete Team</button>
             </div>
             <hr />
             <div>
-            <div className='text-center p-3'>
+                <div className='text-center p-3'>
                     <h1 className='font-bold'>Create Role</h1>
                 </div>
                 <div>
@@ -198,7 +241,18 @@ const TeamSettings = () => {
                     </div>
                 </div>
             </div>
-            <p>ALL roles in this team / delete role</p>
+            <div>
+                <div className='text-center p-3'>
+                    <h1>All Roles In This Team </h1>
+                </div>
+                <div className='text-center'>
+                    {allRoles.map((role, index) => (
+                        <div key={index} className='border-solid border-2 border-gray-200 rounded-full p-2 m-2'>
+                            <h1 className='text-blue-800'>{role.name} <span className='pl-4 hover:cursor-pointer' onClick={() => deleteRole(role._id)}><FontAwesomeIcon icon={faTrash} style={{color: "#ec563c",}} /></span></h1>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }
