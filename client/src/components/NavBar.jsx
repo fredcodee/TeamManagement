@@ -3,7 +3,14 @@ import logo from "../assets/images/teamlogo.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 
-const NavBar = ({user}) => {
+const NavBar = ({ user }) => {
+    const token = localStorage.getItem('authTokens').replace(/"/g, '');
+
+    //logot and delete tokens in local storage
+    const handleLogout = () => {
+        localStorage.removeItem('authTokens')
+        window.location.reload()
+    }
     return (
         <div>
             <nav className="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
@@ -25,6 +32,9 @@ const NavBar = ({user}) => {
                             </li>
                             <li>
                                 <a href="#" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Welcome, {user.firstName}</a>
+                            </li>
+                            <li className='text-red-400 hover:text-red-700'>
+                                <a href="#" onClick={handleLogout}>Logout</a>
                             </li>
                         </ul>
                     </div>

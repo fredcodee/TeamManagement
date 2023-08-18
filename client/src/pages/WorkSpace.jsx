@@ -2,14 +2,14 @@ import React from 'react'
 import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faHouse, faListCheck, faClipboard,faUsers,faDiagramProject, faSitemap} from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faListCheck, faClipboard, faUsers, faDiagramProject, faSitemap } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import SideMenuProjectList from '../components/SideMenuProjectList'
+import PopUp from '../components/PopUp';
 
 
 const WorkSpace = () => {
-    //get token from local storage and decode it
     const token = localStorage.getItem('authTokens').replace(/"/g, '');
     const [user, setUser] = useState([]);
     const history = useNavigate();
@@ -21,6 +21,8 @@ const WorkSpace = () => {
     const [team, setTeam] = useState([]);
     const [countMembers, setCountMembers] = useState(0);
     const [adminCheck, setAdminCheck] = useState(false);
+    const [showPopUp, setShowPopUp] = useState(false); //for new team
+    const [teamName, setTeamName] = useState(''); //for new team
 
 
     useEffect(() => {
@@ -36,6 +38,9 @@ const WorkSpace = () => {
     }, [team]);
 
 
+    const togglePopup = () => {
+        setShowPopUp(!showPopUp);
+    }
 
 
     const getUser = async () => {
@@ -71,85 +76,79 @@ const WorkSpace = () => {
     }
 
     const handleSearch = (e) => {
-        try {
-            e.preventDefault();
-            const filteredProjects = projectcopy.filter((project) =>
-                project.name.includes(search)
-            );
-            setProjects(filteredProjects);
-        } catch (error) {
-            console.log(error);
-        }
+        e.preventDefault();
+        const filteredProjects = projectcopy.filter((project) =>
+            project.name.includes(search)
+        );
+        setProjects(filteredProjects);
     }
 
     const getTickets = async () => {
+        const response = await Api.get('/api/user/project/ticket/assigned/all', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+
+        const data = await response.data;
+        data.splice(5)
+        setTickets(data);
+    }
+
+    const getTeamInfo = async () => {
+        const response = await Api.get('/api/user/team/info',
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        const data = await response.data;
+        setTeam(data);
+    }
+
+    const countMembersFunc = async () => {
+        const teamId = {
+            teamId: team[0]?.teamId
+        }
+        const response = await Api.post("/api/user/team/count/members", teamId,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        const data = await response.data;
+        setCountMembers(data);
+
+    }
+
+    const adminCheckFunc = async () => {
+
+        const data = {
+            teamId: team[0]?.teamId,
+            userId: user._id
+        }
+        const response = await Api.post("/api/admin/check-admin", data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        const data2 = await response.data;
+        setAdminCheck(data2);
+
+    }
+
+    const createTeam = async () => {
         try {
-            const response = await Api.get('/api/user/project/ticket/assigned/all', {
+            const response = await Api.post('/api/user/new/team', { teamName: teamName }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             });
-
-            const data = await response.data;
-            data.splice(5)
-            setTickets(data);
-        }
-        catch (error) {
-            setError(error);
-        }
-    }
-
-    const getTeamInfo = async () => {
-        try {
-            const response = await Api.get('/api/user/team/info',
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-            const data = await response.data;
-            setTeam(data);
-        }
-        catch (error) {
-            setError(error);
-        }
-    }
-
-    const countMembersFunc = async () => {
-        try {
-            const teamId = {
-                teamId: team[0].teamId
-            }
-            const response = await Api.post("/api/user/team/count/members", teamId,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-            const data = await response.data;
-            setCountMembers(data);
-        }
-        catch (error) {
-            setError(error);
-        }
-    }
-
-    const adminCheckFunc = async () => {
-        try {
-            const data = {
-                teamId: team[0].teamId,
-                userId: user._id
-            }
-            const response = await Api.post("/api/admin/check-admin", data,{
-                headers: {
-                    Authorization: `Bearer ${token}`,
-            }
-            });
-            const data2 = await response.data;
-            setAdminCheck(data2);
-        }
-        catch (error) {
-            setError(error);
+            await response.data;
+            window.location.reload();
+        } catch (error) {
+            setError("sorry try another name or try again later");
+            togglePopup();
         }
     }
 
@@ -157,7 +156,47 @@ const WorkSpace = () => {
 
     return (
         <div>
-            < NavBar  user={user}/>
+            < NavBar user={user} />
+            {/* for popup for create team */}
+            {showPopUp && <PopUp
+                content={<>
+                    <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                        <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+
+                                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                        Create A Team
+                                    </h3>
+                                    <button type="button" onClick={togglePopup} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                        </svg>
+                                        <span className="sr-only">Close modal</span>
+                                    </button>
+                                </div>
+                                <div className="p-6 space-y-6">
+                                    <div className="flex flex-col">
+                                        <label htmlFor="team-name" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+                                            Team Name
+                                        </label>
+                                        <div className="relative flex-1">
+                                            <input type="text" id="team-name" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm" placeholder="Team Name" onChange={e => setTeamName(e.target.value)} />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                                    <button type="button" onClick={createTeam} className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>}
+            />}
+
+            {/* contents */}
+            {error && <div className='text-center text-red-500' >{error}</div>}
             <div>
                 <div className="grid grid-cols-3 gap-4">
                     <div className="... sideContents p-4">
@@ -174,28 +213,28 @@ const WorkSpace = () => {
                                     My Tasks
                                 </div>
                             </a>
-                            {adminCheck? (
+                            {adminCheck ? (
                                 <div>
-                                <a href="/user-management">
-                                <div className='hover:bg-blue-300 pb-2'>
-                                    <FontAwesomeIcon icon={faUsers} style={{color: "#867bdb",}} className='pr-2' />
-                                    User Management
+                                    <a href="/user-management">
+                                        <div className='hover:bg-blue-300 pb-2'>
+                                            <FontAwesomeIcon icon={faUsers} style={{ color: "#867bdb", }} className='pr-2' />
+                                            User Management
+                                        </div>
+                                    </a>
+                                    <a href="/project-management">
+                                        <div className='hover:bg-blue-300 pb-2'>
+                                            <FontAwesomeIcon icon={faDiagramProject} style={{ color: "#df5dc3", }} className='pr-2' />
+                                            Project Management
+                                        </div>
+                                    </a>
+                                    <a href="/team-settings">
+                                        <div className='hover:bg-blue-300'>
+                                            <FontAwesomeIcon icon={faSitemap} style={{ color: "#d2da5d", }} className='pr-2' />
+                                            Team Management/Settings
+                                        </div>
+                                    </a>
                                 </div>
-                                </a>
-                                <a href="/project-management">
-                                <div className='hover:bg-blue-300 pb-2'>
-                                    <FontAwesomeIcon icon={faDiagramProject} style={{color: "#df5dc3",}} className='pr-2' />
-                                    Project Management
-                                </div>
-                                </a>
-                                <a href="/team-settings">
-                                <div className='hover:bg-blue-300'>
-                                    <FontAwesomeIcon icon={faSitemap} style={{color: "#d2da5d",}} className='pr-2'/>
-                                    Team Management/Settings
-                                </div>
-                                </a>
-                                </div>
-                            ):(null)}
+                            ) : (null)}
                         </div>
                         <hr />
                         <div>
@@ -240,7 +279,7 @@ const WorkSpace = () => {
                                 ) : (
                                     <div className='text-center'>
                                         <p>You are not in any team</p>
-                                        <a href="#" className=' text-blue-600'> Create a Team and get started</a>
+                                        <button type="button" onClick={togglePopup} className="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Create a Team and get started</button>
                                     </div>
                                 )}
                             </div>

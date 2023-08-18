@@ -30,6 +30,7 @@ router.post('/project/ticket/edit', userAuth, adminController.editTicketDetails)
 router.post('/project/ticket/delete', userAuth, adminController.deleteTicketFromProject)
 router.post('/project/delete', userAuth, adminController.deleteProject)
 router.post('/get/user-by-email', userAuth, adminController.getUserInfoByEmail)
+router.post('/team/delete', userAuth, adminController.deleteTeam)
 
 
 //remove later

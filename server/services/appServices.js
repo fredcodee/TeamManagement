@@ -26,7 +26,7 @@ async function createOrganization(name) {
         await newOrganization.save();
         return newOrganization;
     } catch (error) {
-        throw new Error(`Cant create organization ${error}`);
+        throw new Error(`Cant create team ${error}`);
     }
 }
 
@@ -37,7 +37,7 @@ async function getOrganizationDetails(organizationId) {
         return organization;
     }
     catch (error) {
-        throw new Error(`Cant get organization details ${error}`);
+        throw new Error(`Cant get team details ${error}`);
     }
 }
 

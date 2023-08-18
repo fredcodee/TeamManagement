@@ -2,6 +2,7 @@ import React from 'react'
 import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import PopUp from '../components/PopUp';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPeopleGroup, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -14,8 +15,10 @@ const TeamSettings = () => {
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     const [showPopUpForEditTeam, setShowPopUpForEditTeam] = useState(false);
+    const [showPopUpForDeleteTeam, setShowPopUpForDeleteTeam] = useState(false);
     const [roleName, setRoleName] = useState('');
     const [allRoles , setAllRoles] = useState([]);
+    const history = useNavigate();
 
     useEffect(() => {
         getUser(),
@@ -30,6 +33,10 @@ const TeamSettings = () => {
 
     const togglePopUpForEditTeam = () => {
         setShowPopUpForEditTeam(!showPopUpForEditTeam);
+    }
+
+    const togglePopUpForDeleteTeam = () => {
+        setShowPopUpForDeleteTeam(!showPopUpForDeleteTeam);
     }
 
 
@@ -84,28 +91,26 @@ const TeamSettings = () => {
         }
     }
 
-    // const deleteTeam = async () => {
-    //     try {
-    //         const data = {
-    //             teamId: team[0]?.teamId,
-    //         }
-    //         const response = await Api.post('/api/admin/delete/team',
-    //             data,
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             });
-    //         const data2 = await response.data;
-    //         setSuccess(data2.message);
-    //         togglePopUpForEditTeam();
-    //         getTeamInfo();
-    //     }
-    //     catch (error) {
-    //         setError(error.response.data.message);
-    //         togglePopUpForEditTeam();
-    //     }
-    // }
+    const deleteTeam = async () => {
+        try {
+            const data = {
+                teamId: team[0]?.teamId,
+            }
+            const response = await Api.post('/api/admin/team/delete',
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            const data2 = await response.data;
+            history('/register');
+        }
+        catch (error) {
+            setError(error.response.data.message);
+            togglePopUpForDeleteTeam();
+        }
+    }
 
     const createRole = async () => {
         try {
@@ -217,6 +222,43 @@ const TeamSettings = () => {
                     </div>
                 </>}
             />}
+            {/* popup for deleting team*/}
+            {
+                showPopUpForDeleteTeam && <PopUp
+                    content={<>
+                        <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                            <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                                <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+
+                                    <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                        <h3> Delete {team[0]?.teamName}
+                                        </h3>
+                                        <button type="button" onClick={togglePopUpForDeleteTeam} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                            </svg>
+                                            <span className="sr-only">Close modal</span>
+                                        </button>
+                                    </div>
+                                    <div className="p-6 space-y-6">
+                                        <div>
+                                            <p>Deleting team means you will also be deleting your account as its connect to you this current team.</p>
+                                            <div className='text-center'>
+                                                <p className='text-red-900'>Confirm Action ?</p>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                                        <button type="button" onClick={deleteTeam} className="text-white bg-red-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Yes</button>
+                                        <button type="button" onClick={togglePopUpForDeleteTeam} className="text-white bg-green-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>}
+                />
+            }
 
             <div className='p-3'>
                 <h1 className='font-bold'>Team Details</h1>
@@ -225,7 +267,7 @@ const TeamSettings = () => {
             </div>
             <div className='p-3'>
                 <button type="button" onClick={togglePopUpForEditTeam} className="focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900">Edit Team Details</button>
-                <button type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete Team</button>
+                <button type="button" onClick={togglePopUpForDeleteTeam} className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete Team</button>
             </div>
             <hr />
             <div>
@@ -247,9 +289,15 @@ const TeamSettings = () => {
                 </div>
                 <div className='text-center'>
                     {allRoles.map((role, index) => (
+                        (role.name !== 'admin'? 
                         <div key={index} className='border-solid border-2 border-gray-200 rounded-full p-2 m-2'>
                             <h1 className='text-blue-800'>{role.name} <span className='pl-4 hover:cursor-pointer' onClick={() => deleteRole(role._id)}><FontAwesomeIcon icon={faTrash} style={{color: "#ec563c",}} /></span></h1>
+                        </div> : 
+                        (
+                            <div key={index} className='border-solid border-2 border-gray-200 rounded-full p-2 m-2'>
+                            <h1 className='text-blue-800'>{role.name}</h1>
                         </div>
+                        ))
                     ))}
                 </div>
             </div>

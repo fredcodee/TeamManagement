@@ -47,12 +47,13 @@ export const AuthProvider = ({ children }) => {
 
   const registerUser = async (firstname, lastname, email, password) => {
     try {
-      const response = await Api.post('/api/register', {
-        firstname,
-        lastname,
-        email,
-        password
-      });
+      const data ={
+        firstName: firstname,
+        lastName: lastname,
+        email: email,
+        password: password
+      }
+      const response = await Api.post('/api/register', data);
 
       if (response.status === 201 || response.status === 200) {
         history('/login');
