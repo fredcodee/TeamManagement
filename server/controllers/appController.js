@@ -76,25 +76,21 @@ const signupWithInviteLink = async (req, res) => {
 }
 
 //invite link
-const inviteLink= async (req, res) => {
+const inviteLink = async (req, res) => {
     try {
-    //get invite id from params
-    const {inviteId} = req.params;
-    //check if invite id exists (userId)
-    const user = await userService.getUserById(inviteId);
-    if (user) {
-        //check if password is set
-        if (user.password == null) {
-            //if password is not set, redirect to signup page
-            res.json(user)
-        }else{
-            //if password is set, redirect to login page
-            return res.json({message: 'user is already registered'})
+        const { inviteId } = req.params;
+        const user = await userService.getUserById(inviteId);
+        if (user) {
+            //check if password is set
+            if (user.password == null) {
+                res.json(user)
+            } else {
+                return res.json({ message: 'Invalid' })
+            }
+        } else {
+            return res.status(401).json({message: 'Invalid' })
         }
-    }else{
-        //if invite id does not exist
-        res.json({message: 'invalid invite link'})
-    } }
+    }
     catch (error) {
         errorHandler.errorHandler(error, res)
     }

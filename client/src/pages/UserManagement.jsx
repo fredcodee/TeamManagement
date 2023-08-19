@@ -21,6 +21,7 @@ const UserManagement = () => {
     const [newRole, setNewRole] = useState(''); //new role for user
     const [isOpen2, setIsOpen2] = useState(false); //for role change popup
     const [isOpen3, setIsOpen3] = useState(false); // for remove user popup
+    const [isOpen4, setIsOpen4] = useState(false); // for remove role popup
 
     useEffect(() => {
         getUser(),
@@ -62,6 +63,12 @@ const UserManagement = () => {
     // for remove user fron team
     const togglePopup3 = () => {
         setIsOpen3(!isOpen3);
+    }
+    
+
+    // for get invite link
+    const togglePopup4 = () => {
+        setIsOpen4(!isOpen4);
     }
 
 
@@ -251,6 +258,35 @@ const UserManagement = () => {
                     </div>
                 </>}
             />}
+            {/* for popup for invite Link */}
+            {isOpen4 && <PopUp
+                content={<>
+                    <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                        <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                            <div className="relative bg-black text-white rounded-lg shadow dark:bg-gray-700">
+
+                                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                    <h3 className="text-xl font-semibold text-white dark:text-white">
+                                        Invite Link:
+                                    </h3>
+                                    <button type="button" onClick={togglePopup4} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                        </svg>
+                                        <span className="sr-only">Close modal</span>
+                                    </button>
+                                </div>
+                                <div className="p-6 space-y-6 text-center">
+                                    <div className="input-group mb-3">
+                                        <p>http://127.0.0.1:5173/join/<span>{currentUser._id}</span></p>
+                                        <small>***send this link to the user for registration***</small>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>}
+            />}
 
             {/* popup for remove role */}
             {
@@ -366,7 +402,7 @@ const UserManagement = () => {
                                     usersAndRoles.map((user, index) => (
                                         <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700" key={index}>
                                             {user.user.firstName === null ? (
-                                                <th scope="row" className="px-6 py-4 font-medium text-green-600 whitespace-nowrap">
+                                                <th scope="row" onClick={() => { togglePopup4(); getCurrentUser(user.user); }}className="px-6 py-4 font-medium text-green-600 whitespace-nowrap hover:cursor-pointer hover:text-green-800">
                                                     Invited User
                                                 </th>
                                             ) : (
