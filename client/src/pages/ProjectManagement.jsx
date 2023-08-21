@@ -42,7 +42,6 @@ const ProjectManagement = () => {
     }
   };
   const getTeamInfo = async () => {
-    try {
       const response = await Api.get('/api/user/team/info',
         {
           headers: {
@@ -51,9 +50,6 @@ const ProjectManagement = () => {
         });
       const data = await response.data;
       setTeam(data);
-    }
-    catch (error) {
-    }
   }
 
   const getProjects = async () => {

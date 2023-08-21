@@ -1,6 +1,5 @@
 import React from 'react'
 import logo from "../assets/images/teamlogo.png"
-import { useContext, useState } from 'react'
 import '../assets/styles/register.css'
 import '../assets/styles/errorPage.css'
 
@@ -20,7 +19,7 @@ const ErrorPage = () => {
                 </div>
                 <div id='content'>
                     <div id="main">
-                        <div class="fof">
+                        <div className="fof">
                             <h1>Error 404</h1>
                             <p>Sorry, Page not found</p>
                         </div>

@@ -40,15 +40,17 @@ const ProjectPageAdmin = () => {
 
     useEffect(() => {
         getUser(),
-            getTeamInfo(),
+        getTeamInfo()
             getProject(),
             getPersmissions()
     }, [])
 
     useEffect(() => {
-        getAllUsers(),
+        if (team.length > 0) {
+            getAllUsers(),
             rolesAndPermissions()
-    }, [team])
+        }
+    }, [team]);
 
 
 
@@ -95,13 +97,29 @@ const ProjectPageAdmin = () => {
 
     const getTeamInfo = async () => {
         const response = await Api.get('/api/user/team/info',
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
         const data = await response.data;
-        setTeam(data)
+        setTeam(data);
+        
+    }
+
+
+    const getAllUsers = async () => {
+        const data = {
+            teamId: team[0]?.teamId,
+            projectId: id
+        }
+        const response = await Api.post('/api/admin/project/all/users', data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const data2 = await response.data;
+        setAllUsers(data2);
     }
 
     const getProject = async () => {
@@ -119,6 +137,8 @@ const ProjectPageAdmin = () => {
         setProjectInfo(data.info);
 
     }
+    
+
     const deleteProject = async () => {
         const data = {
             teamId: team[0]?.teamId,
@@ -151,19 +171,6 @@ const ProjectPageAdmin = () => {
         getProject();
         togglePopUp();
 
-    }
-    const getAllUsers = async () => {
-        const data = {
-            teamId: team[0]?.teamId,
-            projectId: id
-        }
-        const response = await Api.post('/api/admin/project/all/users', data, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        const data2 = await response.data;
-        setAllUsers(data2);
     }
 
     const addUserToProject = async () => {
@@ -507,6 +514,7 @@ const ProjectPageAdmin = () => {
                                     <div className="p-6 space-y-6">
                                         <div>
                                             <select id="role" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCurrentPermission(e.target.value)}>
+                                                <option value= "">Select a permission</option>
                                                 {
                                                     permissions.map((permission, index) => {
                                                         return <option key={index} value={permission._id}>{permission.name}</option>

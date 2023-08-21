@@ -524,7 +524,6 @@ async function deleteOrganization(organizationId) {
         }
         //delete all roles in organization
         await Role.deleteMany({ organization_id: organizationId });
-        await persmissions.deleteMany({ organization_id: organizationId });
         await RolePermissions.deleteMany({ organization_id: organizationId });
         await UserRoles.deleteMany({ organization_id: organizationId });
         await Role.deleteMany({ organization_id: organizationId });
