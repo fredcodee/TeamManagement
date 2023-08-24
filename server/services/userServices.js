@@ -178,6 +178,15 @@ async function checkUserIsInProject(userId, projectId) {
     }
 }
 
+async function getAllUsersInTeam(teamId) {
+    try {
+        const users = await User.find({ organization_id: teamId });
+        return users;
+    } catch (error) {
+        throw new Error(`Cant get all users in a team ${error}`);
+    }
+}
+
 async function getAllUsersInOrganizationWithRoles(organizationId) {
     try {
       const allUser = await User.find({ organization_id: organizationId });
@@ -333,6 +342,18 @@ async function countMembersInTeam(teamId) {
     }
 }
 
+async function removeUserFromProject(userId, projectId) {
+    try {
+        //remove user from project tickets
+        await Ticket.updateMany({ assigned_to: userId, project_id: projectId }, { $pull: { assigned_to: userId } });
+        //remove user from project
+        await User.updateOne({ _id: userId }, { $pull: { projects: projectId } });
+        return true;
+    } catch (error) {
+        
+    }
+}
+
 
         
 
@@ -342,5 +363,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
     , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject, getTicketsAssignedToUserInProject, getUserTicketsInProject
-, getAllTicketsAssignedToUserinAllProject, countMembersInTeam, getUserTicketsInAllProjects
+, getAllTicketsAssignedToUserinAllProject, countMembersInTeam, getUserTicketsInAllProjects, getAllUsersInTeam, removeUserFromProject
 }

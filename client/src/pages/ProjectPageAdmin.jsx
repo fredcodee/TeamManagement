@@ -110,7 +110,6 @@ const ProjectPageAdmin = () => {
 
     const getAllUsers = async () => {
         const data = {
-            teamId: team[0]?.teamId,
             projectId: id
         }
         const response = await Api.post('/api/admin/project/all/users', data, {

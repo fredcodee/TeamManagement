@@ -43,6 +43,16 @@ const getTeamInfo = async (req, res) => {
     }
 }
 
+const getAllUsersInTeam = async (req, res) => {
+    try {
+        const teamId = req.body.teamId;
+        const users = await userService.getAllUsersInTeam(teamId);
+        res.json(users)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 
 
 //get user's projects
@@ -144,6 +154,19 @@ const getProjectTickets = async (req, res) => {
     }
 }
 
+//leave prject
+const leaveProject = async (req, res) => {
+    try {
+        const user = req.user;
+        const projectId = req.body.projectId;
+        //remove user from project
+        await userService.removeUserFromProject(user._id, projectId);
+        res.json({ message: 'user removed from project successfully' })
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 //admins and users with "Chat" permission can comment on a ticket
 const commentOnTicket = async (req, res) => {
     try {
@@ -219,6 +242,6 @@ const countTeamMembers = async (req, res) => {
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
-    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers, getAllUserTickets
+    , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers, getAllUserTickets,getAllUsersInTeam, leaveProject
 }
 
