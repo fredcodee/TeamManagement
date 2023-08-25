@@ -14,6 +14,7 @@ import JoinInvitedUsers from './pages/JoinInvitedUsers';
 import ErrorPage from './pages/ErrorPage';
 import TeamSettings from './pages/TeamSettings';
 import ProjectPage from './pages/ProjectPage';
+import TicketPage from './pages/TicketPage';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route element = {<PrivateRoute> <ProjectPageAdmin /></PrivateRoute>} path = "/project-page-admin/:id" />
           <Route element = {<PrivateRoute> <TeamSettings /></PrivateRoute>} path = "/team-settings" />
           <Route element = {<PrivateRoute> <ProjectPage /></PrivateRoute>} path = "/project-page/:id" />
+          <Route element = {<PrivateRoute> <TicketPage /></PrivateRoute>} path = "/ticket/:id" />
         </Routes>
       </AuthProvider>
       </BrowserRouter>

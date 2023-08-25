@@ -5,6 +5,8 @@ import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import PopUp from '../components/PopUp';
+import TicketLists from '../components/TicketLists';
+
 
 
 const ProjectPage = () => {
@@ -188,6 +190,8 @@ const ProjectPage = () => {
             setError(error.response.data.message);
         }
     }
+
+
     return (
         <div>
             <NavBar user={user} />
@@ -393,8 +397,13 @@ const ProjectPage = () => {
                         {error && <div className='text-red-500'>{error}</div>}
                         {success && <div className='text-green-500'>{success}</div>}
                     </div>
+                    <div className='text-center p-4'>
+                        <p>All tickets in {project.name}</p>
+                    </div>
+                    <div>
+                        <TicketLists projectId={id} />
+                    </div>
                 </div>
-
             </div>
         </div>
     )
