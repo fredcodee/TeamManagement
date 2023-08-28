@@ -7,7 +7,7 @@ import NavBar from '../components/NavBar';
 import PopUp from '../components/PopUp';
 import TicketLists from '../components/TicketLists';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMapPin } from '@fortawesome/free-solid-svg-icons'
 
 
 const ProjectPage = () => {
@@ -24,7 +24,7 @@ const ProjectPage = () => {
     const [ticketPriority, setTicketPriority] = useState('');
     const [ticketStatus, setTicketStatus] = useState('');
     const [ticketDueDate, setTicketDueDate] = useState('');
-    const [ticketAssignTo, setTicketAssignTo] = useState('');
+    const [ticketAssignTo, setTicketAssignTo] = useState([]);
     const [pinned, setPinned] = useState('');
     const [showPopUpForProjectDescription, setShowPopUpForProjectDescription] = useState(false);
     const [showPopUpForMembers, setShowPopUpForMembers] = useState(false);
@@ -63,6 +63,9 @@ const ProjectPage = () => {
     }
     const togglePopUpForPermissions = () => {
         setShowPopUpForPermissions(!showPopUpForPermissions);
+    }
+    const togglePopUpForCreateTicket = () => {
+        setShowPopUpForCreateTicket(!showPopUpForCreateTicket);
     }
 
     const getProject = async () => {
@@ -216,6 +219,13 @@ const ProjectPage = () => {
         }
     }
 
+
+    //select user to assign
+    const handleSelectChangeAssign = (e) => {
+        const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
+        setTicketAssignTo(selectedValues);
+    };
+
     const createTicket = async () => {
         try {
             const data = {
@@ -229,10 +239,10 @@ const ProjectPage = () => {
                 ticketStatus: ticketStatus,
                 ticketDueDate: ticketDueDate,
                 ticketAssignTo: ticketAssignTo,
-                pinned:pinned
+                pinned: pinned
             }
 
-            const response = await Api.post('}/api/admin/project/ticket/add', data, {
+            const response = await Api.post('/api/admin/project/ticket/add', data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -242,6 +252,7 @@ const ProjectPage = () => {
 
         } catch (error) {
             setError(error.response.data.message);
+            togglePopUpForCreateTicket();
         }
     }
 
@@ -457,6 +468,113 @@ const ProjectPage = () => {
                     </div>
                 </>}
             />}
+            {/* for popup for create ticket */}
+            {showPopUpForCreateTicket && <PopUp
+                content={<>
+                    <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                        <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+
+                                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                        Create A New Ticket in {project.name} <br />
+                                        <span className='text-orange-900'><small>***This action is only for admins and users with 'edit' permission***</small></span>
+                                    </h3>
+                                    <button type="button" onClick={togglePopUpForCreateTicket} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                        </svg>
+                                        <span className="sr-only">Close modal</span>
+                                    </button>
+                                </div>
+                                <div className="p-6 space-y-6">
+                                    <div className="flex flex-col">
+                                        <label htmlFor="ticket-name" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+                                            Ticket Title
+                                        </label>
+                                        <div className="relative flex-1">
+                                            <input type="text" id="ticket-name" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm" placeholder="Ticket Title eg. incoming bugs" onChange={e => setTicketName(e.target.value)} required />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label htmlFor="Ticket-description" className="block text-sm font-medium text-gray-900 dark:text-gray-200">
+
+                                            Ticket Description
+                                        </label>
+                                        <div className="relative flex-1">
+                                            <textarea id="Ticket-description" rows="3" className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm" placeholder="Ticket Description" onChange={e => setTicketDescription(e.target.value)} required></textarea>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="type" className="block text-sm font-medium text-gray-900 dark:text-gray-200" > Ticket Type</label>
+                                        <select id="type" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setTicketType(e.target.value)} required>
+                                            <option value="">Select Type</option>
+                                            <option value="bug">Bug</option>
+                                            <option value="feature">Feature</option>
+                                            <option value="task">Task</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="status" className="block text-sm font-medium text-gray-900 dark:text-gray-200" > Ticket Status</label>
+                                        <select id="status" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setTicketStatus(e.target.value)} required>
+                                            <option value="">Select Status</option>
+                                            <option value="open">Open</option>
+                                            <option value="in progress">In Progress</option>
+                                            <option value="closed">Closed</option>
+                                            <option value="resolved">Resolved</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="priority" className="block text-sm font-medium text-gray-900 dark:text-gray-200" > Priority</label>
+                                        <select id="priority" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setTicketPriority(e.target.value)} required>
+                                            <option value="">Select Priority</option>
+                                            <option value="low">Low</option>
+                                            <option value="meduim">Meduim</option>
+                                            <option value="high">High</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="date" className="block text-sm font-medium text-red-900 dark:text-gray-200" > Set Deadline</label>
+                                        <input type="date" id="date" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setTicketDueDate(e.target.value)} required />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="pin" className="block text-sm font-medium text-gray-900 dark:text-gray-200" > Pin this Ticket <span><FontAwesomeIcon icon={faMapPin} style={{ color: "#3f4724", }} /></span></label>
+                                        <select id="pin" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setPinned(e.target.value)} required>
+                                            <option value="">Select</option>
+                                            <option value="true">Yes</option>
+                                            <option value="false">No</option>
+                                        </select>
+
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="assign" className="block text-sm font-medium text-gray-900 dark:text-gray-200" > Assign To: <span>(***use ctrl key**)</span></label>
+                                        <select
+                                            id="assign"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            onChange={handleSelectChangeAssign}
+                                            required
+                                            multiple
+                                            value={ticketAssignTo} // Set the selected values here
+                                        >
+                                            <option value="">Select</option>
+                                            {projectMembers.map((member, index) => (
+                                                <option key={index} value={member._id}>
+                                                    {member.firstName || "invited user"}, {member.email}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                                    <button type="button" onClick={createTicket} className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>}
+            />}
 
             <div className="grid grid-cols-3 gap-4">
                 <div className="... sideContents p-4">
@@ -478,7 +596,7 @@ const ProjectPage = () => {
                         </div>
                         <div>
                             <div className='pt-4 hover:text-purple-600 hover:cursor-pointer'>
-                                <p>Create Ticket</p>
+                                <p onClick={togglePopUpForCreateTicket}>Create Ticket</p>
                             </div>
                         </div>
                         <div className='pt-4 hover:text-purple-600 hover:cursor-pointer'>
@@ -500,7 +618,7 @@ const ProjectPage = () => {
                         {success && <div className='text-green-500'>{success}</div>}
                     </div>
                     <div className='text-center p-4'>
-                        <p className='p-4 hover:text-blue-500 hover:cursor-pointer'> Create A Ticket <span><FontAwesomeIcon icon={faPlus} style={{color: "#d86fd8",}} /></span></p>
+                        <p className='p-4 hover:text-blue-500 hover:cursor-pointer' onClick={togglePopUpForCreateTicket}> Create A Ticket <span><FontAwesomeIcon icon={faPlus} style={{ color: "#d86fd8", }} /></span></p>
                         <hr />
                         <p className='p-2'>All tickets in {project.name}</p>
                     </div>
