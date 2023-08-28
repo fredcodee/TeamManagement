@@ -238,10 +238,23 @@ const countTeamMembers = async (req, res) => {
     }
 }
 
+//get you role and permissions in a project
+const getUsersRolePermissionsInProject = async (req, res) => {
+    try {
+        const user = req.user;
+        const projectId = req.body.projectId;
+        const role = await userService.getUsersRolePermissionsInProject(user._id, projectId);
+        res.json(role)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
     , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers, getAllUserTickets,getAllUsersInTeam, leaveProject
+    ,getUsersRolePermissionsInProject 
 }
 

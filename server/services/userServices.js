@@ -354,6 +354,22 @@ async function removeUserFromProject(userId, projectId) {
     }
 }
 
+async function getUsersRolePermissionsInProject(userId, projectId) {
+    try {
+        const user = await UserRoles.findOne({ user_id: userId});
+        const role = await Role.findById(user.role_id);
+        const rolePermission = await rolePermissions.find({ role_id: role._id, project_id: projectId });
+        const permissions = [];
+        for (const permission of rolePermission) {
+            const permissionName = await Permission.findById(permission.permission_id);
+            permissions.push(permissionName);
+        }
+        return {role:role.name, permissisons: permissions};
+    } catch (error) {
+        throw new Error(`Cant get user role permissions in a project ${error}`);
+    }
+}
+
 
         
 
@@ -363,5 +379,5 @@ module.exports = {
     generateToken, addUserToDb, findAndVerifyUser, getUserById, editUserProfile, getAllUsersInOrganizationWithRoles, checkUserIsAdmin
     , checkIfUserWasInvited, checkIfUserIsRegistered, getUserByEmail, checkUserIsInOrganization, getAllUsers
     , checkUserIsInProject, getAllUsersInProject, getUserProjects, getUserTeamInfo, checkUserPermission, getUserRolePermissionsInProject, getTicketsAssignedToUserInProject, getUserTicketsInProject
-, getAllTicketsAssignedToUserinAllProject, countMembersInTeam, getUserTicketsInAllProjects, getAllUsersInTeam, removeUserFromProject
+, getAllTicketsAssignedToUserinAllProject, countMembersInTeam, getUserTicketsInAllProjects, getAllUsersInTeam, removeUserFromProject, getUsersRolePermissionsInProject
 }

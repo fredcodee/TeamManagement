@@ -19,5 +19,6 @@ router.post('/project/ticket/comments', userAuth, userController.getTicketCommen
 router.post('/project/ticket/comment/delete', userAuth, userController.deleteComment)
 router.post('/team/all/users', userAuth, userController.getAllUsersInTeam)
 router.post('/project/leave', userAuth, userController.leaveProject)
+router.post('/project/user/roleinfo', userAuth, userController.getUsersRolePermissionsInProject)
 
 module.exports = router;
