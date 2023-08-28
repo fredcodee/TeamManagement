@@ -299,7 +299,7 @@ async function getUserTicketsInProject(userId, projectId) {
 //get user tickets in all projects the ones they created
 async function getUserTicketsInAllProjects(userId) {
     try {
-        const tickets = await Ticket.find({ created_by: userId });
+        const tickets = await Ticket.find({ created_by: userId }).populate('created_by');
         //sort tickets by date and get only first 5
         tickets.sort((a, b) => b.created_at - a.created_at);
         return tickets;
@@ -312,7 +312,7 @@ async function getUserTicketsInAllProjects(userId) {
 //get tickets assigned to user in a project
 async function getTicketsAssignedToUserInProject(userId, projectId) {
     try {
-        const tickets = await Ticket.find({ assigned_to: userId, project_id: projectId });
+        const tickets = await Ticket.find({ assigned_to: userId, project_id: projectId }).populate('created_by')
         return tickets;
     } catch (error) {
         throw new Error(`Cant get tickets assigned to user in a project ${error}`);
@@ -323,7 +323,7 @@ async function getTicketsAssignedToUserInProject(userId, projectId) {
 // get all tickets assigned to user in all projects
 async function getAllTicketsAssignedToUserinAllProject(userId) {
     try {
-        const tickets = await Ticket.find({ assigned_to: userId });
+        const tickets = await Ticket.find({ assigned_to: userId }).populate('created_by')
         //sort tickets by date and get only first 5
         tickets.sort((a, b) => b.created_at - a.created_at);
         return tickets;

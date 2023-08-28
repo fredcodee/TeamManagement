@@ -433,7 +433,7 @@ async function getTicketDetails(ticketId) {
 //get all tickets in project
 async function getAllTicketsInProject(projectId) {
     try {
-        const tickets = await Ticket.find({ project_id: projectId });
+        const tickets = await Ticket.find({ project_id: projectId }).populate('created_by')
         return tickets;
     } catch (error) {
         throw new Error(`Cant get all tickets in project ${error}`);
