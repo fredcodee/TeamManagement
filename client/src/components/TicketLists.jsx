@@ -3,7 +3,7 @@ import Api from '../Api'
 import { useState, useEffect } from 'react'
 import '../assets/styles/projectpage.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faXmark,faUser } from '@fortawesome/free-solid-svg-icons'
 
 const TicketLists = ({ projectId }) => {
     const token = localStorage.getItem('authTokens').replace(/"/g, '');
@@ -14,7 +14,6 @@ const TicketLists = ({ projectId }) => {
     }, [])
 
     const getTickets = async () => {
-        try {
             const response = await Api.post(`/api/user/project/ticket/all`, { projectId: projectId }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -22,10 +21,6 @@ const TicketLists = ({ projectId }) => {
             });
             const data = await response.data;
             setTickets(data);
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-        }
     };
     return (
         <div>
@@ -58,6 +53,15 @@ const TicketLists = ({ projectId }) => {
                                                 <li className="card__actions--wrapper">
                                                     <i className="fas fa-align-left"></i></li>
                                             </ol>
+                                            {ticket.assigned_to.length === 0 && <p className='text-orange-900'>No users assigned to this ticket <span><FontAwesomeIcon icon={faXmark} /></span></p>}
+                                            {ticket.assigned_to.map((user, index) => (
+                                                <div key={index}>
+                                                    <h6 className="card__title">{user["firstName"] && user["lastName"]
+                                                        ? `${user["firstName"]} ${user["lastName"]}`
+                                                        : "invited user"} <span><FontAwesomeIcon icon={faUser} style={{color: "#2e77f5",}} /></span></h6>
+                                                </div>
+                                            ))}
+
                                         </li>
                                     </ul>
                                 </li>

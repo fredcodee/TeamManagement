@@ -506,20 +506,24 @@ const addTicketToProject = async (req, res) => {
         if (!userInTeam) {
             return res.status(401).json({ message: 'user is not in team' });
         }
-        //check if user is in project
-        const userInProject = await userService.checkUserIsInProject(userId, projectId);
-        if (!userInProject) {
-            return res.status(401).json({ message: 'user is not in project' });
-        }
-        //check if user has permission to add ticket || user is admin
-        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
+        
+        //check if user is admin
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
-        if (!userHasPermission && !adminCheck) {
+        const userInProject = await userService.checkUserIsInProject(userId, projectId);
+        if (!userInProject && !adminCheck) {
+            return res.status(401).json({ message: 'user is not in project nor admin' });
+        }
+
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
+
+        if(adminCheck || userHasPermission){
+            const ticket = await appService.addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
+            res.json(ticket);
+        }
+        else{
             return res.status(401).json({ message: 'user does not have permission to add ticket' });
         }
-        //add ticket to project
-        const ticket = await appService.addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
-        res.json(ticket);
+        
     } catch (error) {
         errorHandler.errorHandler(error, res)
     }

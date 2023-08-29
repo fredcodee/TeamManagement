@@ -558,7 +558,6 @@ const ProjectPage = () => {
                                             multiple
                                             value={ticketAssignTo} // Set the selected values here
                                         >
-                                            <option value="">Select</option>
                                             {projectMembers.map((member, index) => (
                                                 <option key={index} value={member._id}>
                                                     {member.firstName || "invited user"}, {member.email}
@@ -604,11 +603,11 @@ const ProjectPage = () => {
                             <p onClick={togglePopUpForInvite}>Invite</p>
                         </div>
                         <div className='pt-4 hover:text-red-600 hover:cursor-pointer text-red-800'>
-                            <p onClick={leaveProject}>Remove User</p>
+                            <p onClick={togglePopUpForRemove}>Remove User</p>
                         </div>
 
                         <div className='pt-4 hover:text-purple-600 hover:cursor-pointer'>
-                            <button type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Leave Project</button>
+                            <button type="button"  onClick = {leaveProject} className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Leave Project</button>
                         </div>
                     </div>
 
