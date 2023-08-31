@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faListCheck, } from '@fortawesome/free-solid-svg-icons'
+import '../assets/styles/tasks.css'
 
 const Tasks = () => {
     const token = localStorage.getItem('authTokens').replace(/"/g, '');
@@ -75,35 +76,46 @@ const Tasks = () => {
                 <h1 className='font-bold'><FontAwesomeIcon icon={faListCheck} className='pr-2' style={{ color: "red" }} /> Tasks and Tickets assigned to you</h1>
                 <hr />
                 <div>
-                    {tickets.length > 0 ? (
-                        tickets.map((ticket, index) => (
-                            <div className='hover:bg-gray-300 pl-2' key={index}>
-                                <a href="#">{ticket.title} <span className='text-red-600'>- Ticket deadline on {new Date(ticket.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric', day: 'numeric', month: 'long', weekday: 'long' })}</span></a>
+                    <div className="tasks-wrapper">
+                        {tickets.length > 0 ? (
+                            tickets.map((ticket, index) => (
+                            <div className="task2" key={index}>
+                                    <label for="item-1">
+                                        <a href={`ticket/${ticket._id}`}>{ticket.title} </a>
+                                    </label>
+                                    <a href=""></a>
+                                    <span className={`tag ${ticket.status === 'in progress' ? ('in-progress') : (ticket.status)}`}>{ticket.status}</span>
                             </div>
-                        ))
-                    ) : (
-                        <div className='text-center'>
-                            <p>You have no tickets...</p>
-                        </div>
-                    )}
+                            ))
+                        ) : (
+                            <div className='text-center'>
+                                <p>You have no tickets...</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
             <div className='text-center p-4'>
                 <h1 className='font-bold'><FontAwesomeIcon icon={faListCheck} className='pr-2' style={{ color: "orange" }} /> Tasks and Tickets you created</h1>
                 <hr />
                 <div>
-                    {tasks.length > 0 ? (
-                        tasks.map((task, index) => (
-                            <div className='hover:bg-gray-300 pl-2' key={index}>
-                                <a href="#">{task.title} <span className='text-red-600'>- Ticket deadline on {new Date(task.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric', day: 'numeric', month: 'long', weekday: 'long' })}</span></a>
+                    <div className="tasks-wrapper">
+                        {tasks.length > 0 ? (
+                            tasks.map((task, index) => (
+                                <div className="task2" key={index}>
+                                    <label for="item-1">
+                                        <a href={`ticket/${task._id}`}>{task.title} </a>
+                                    </label>
+                                    <a href=""></a>
+                                    <span className={`tag ${task.status === 'in progress' ? ('in-progress') : (task.status)}`}>{task.status}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className='text-center'>
+                                <p>You have created no tickets yets...</p>
                             </div>
-                        ))
-                    ) : (
-                        <div className='text-center'>
-                            <p>You have created no tickets yets...</p>
-                        </div>
-                    )}
-
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

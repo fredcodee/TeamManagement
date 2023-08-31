@@ -11,7 +11,7 @@ const Home = () => {
             <div >
                 <nav class="bg-white border-gray-200 dark:bg-gray-900">
                     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                        <a href="/" class="flex items-center">
+                        <a href="/user-workspace" class="flex items-center">
                             <img src={logo} className="h-8 mr-3" alt="Team M Logo" />
                             <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Team Management</span>
                         </a>

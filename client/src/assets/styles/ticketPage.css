@@ -1,0 +1,47 @@
+.detailsbox {
+    margin-top: 2rem;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+.title-card-open{
+    color: rgb(33, 128, 96);
+}
+.title-card-closed{
+    color: rgb(179, 42, 42);
+}
+.title-card-in-progess{
+    color: rgb(97, 97, 27);
+}
+.title-card-resolved{
+    color: rgb(26, 61, 26);
+}
+.title-card-low {
+    color: #c377e0;
+  }
+  
+  .title-card-medium {
+    color: #f2d600;
+  }
+  
+  .title-card-high {
+    color: #eb5a46;
+  }
+  
+  .title-card-task {
+    color: #00c2e0;
+  }
+  .title-card-feature {
+    color: #f71aff;
+  }
+  .title-card-bug{
+    color: #ff8777;
+  }
+
+
+  /* comment section */
+  .commentBox{
+    margin-top: 2rem;
+    margin-left: 30%;
+    margin-right: 30%;
+  }
