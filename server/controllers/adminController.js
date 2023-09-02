@@ -485,6 +485,7 @@ const getAllInvitesInTeam = async (req, res) => {
     }
 };
 
+
 //admin users and user with "Edit" permission can add tickets to a project
 const addTicketToProject = async (req, res) => {
     try {
@@ -517,7 +518,7 @@ const addTicketToProject = async (req, res) => {
         const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
 
         if(adminCheck || userHasPermission){
-            const ticket = await appService.addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
+            const ticket = await appService.addTicketToProject(teamId, projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
             res.json(ticket);
         }
         else{

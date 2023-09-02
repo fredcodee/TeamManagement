@@ -378,9 +378,10 @@ async function getAllInvitedUsers(organizationId) {
 
 
 //add ticket to project
-async function addTicketToProject(projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned) {
+async function addTicketToProject(teamId, projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned) {
     try {
         const ticket = new Ticket({
+            organization_id: teamId,
             title: ticketName,
             description: ticketDescription,
             status: ticketStatus,
@@ -423,7 +424,7 @@ async function editTicketDetails(ticketId, ticketName, ticketDescription, ticket
 //get ticket details
 async function getTicketDetails(ticketId) {
     try {
-        const ticket = await Ticket.findById(ticketId).populate('created_by assigned_to');
+        const ticket = await Ticket.findById(ticketId).populate('created_by assigned_to project_id');
         return ticket;
     } catch (error) {
         throw new Error(`Cant get ticket details ${error}`);
@@ -470,7 +471,7 @@ async function addCommentToTicket(ticketId, userId, comment) {
 //get all comments on a ticket
 async function getAllCommentsOnTicket(ticketId) {
     try {
-        const comments = await Comment.find({ ticket_id: ticketId });
+        const comments = await Comment.find({ ticket_id: ticketId }).populate('user_id').sort({ created_at: -1 });
         return comments;
     } catch (error) {
 
