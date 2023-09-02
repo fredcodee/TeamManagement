@@ -423,7 +423,7 @@ async function editTicketDetails(ticketId, ticketName, ticketDescription, ticket
 //get ticket details
 async function getTicketDetails(ticketId) {
     try {
-        const ticket = await Ticket.findById(ticketId);
+        const ticket = await Ticket.findById(ticketId).populate('created_by assigned_to');
         return ticket;
     } catch (error) {
         throw new Error(`Cant get ticket details ${error}`);
