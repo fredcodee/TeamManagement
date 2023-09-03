@@ -21,8 +21,11 @@ const TicketPage = () => {
   const [showPopUpForAssignedUsers, setShowPopUpForAssignedUsers] = useState(false);
   const [showPopUpForEditTicket, setShowPopUpForEditTicket] = useState(false);
   const [showPopUpForDeleteTicket, setShowPopUpForDeleteTicket] = useState(false);
+  const [showPopUpForDeleteComment, setShowPopUpForDeleteComment] = useState(false);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
+  const [commentToDelete, setCommentToDelete] = useState('');
+  const [adminCheck, setAdminCheck] = useState(false);
   const [ticketName, setTicketName] = useState('');
   const [ticketDescription, setTicketDescription] = useState('');
   const [ticketStatus, setTicketStatus] = useState('');
@@ -46,6 +49,12 @@ const TicketPage = () => {
       getProjectMembers()
   }, [ticket])
 
+  useEffect(() => {
+    if (team.length > 0) {
+      adminCheckFunc()
+    }
+  }, [team]);
+
 
 
   const togglePopUpForAssignedUsers = () => {
@@ -56,6 +65,10 @@ const TicketPage = () => {
   }
   const togglePopUpForDeleteTicket = () => {
     setShowPopUpForDeleteTicket(!showPopUpForDeleteTicket);
+  }
+
+  const togglePopUpForDeleteComment = () => {
+    setShowPopUpForDeleteComment(!showPopUpForDeleteComment);
   }
 
   const getUser = async () => {
@@ -183,8 +196,30 @@ const TicketPage = () => {
 
   }
 
+  const deleteComment = async () => {
+    try {
+      const data = {
+        teamId: team[0]?.teamId || ticket.organization_id,
+        projectId: ticket.project_id['_id'],
+        commentId: commentToDelete._id
+      }
+      const response = await Api.post(`/api/user/project/ticket/comment/delete`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await response.data;
+      setSuccess('Comment deleted successfully')
+      getComments()
+      togglePopUpForDeleteComment
+    } catch (error) {
+      setError(error.response.data.message)
+      togglePopUpForDeleteComment
+    }
+  }
 
-  const deleteProject = async () => {
+
+  const deleteTicket = async () => {
     try {
       const data = {
         teamId: team[0]?.teamId || ticket.organization_id,
@@ -200,12 +235,28 @@ const TicketPage = () => {
       await response.data;
       setSuccess('Ticket deleted successfully')
       navigate(`/project-page/${ticket.project_id['_id']}`)
-      
+
     } catch (error) {
       setError(error.response.data.message)
       togglePopUpForDeleteTicket();
     }
   }
+
+  const adminCheckFunc = async () => {
+    const data = {
+      teamId: team[0]?.teamId,
+      userId: user._id
+    }
+    const response = await Api.post("/api/admin/check-admin", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    const data2 = await response.data;
+    setAdminCheck(data2);
+
+  }
+
 
 
   return (
@@ -341,38 +392,73 @@ const TicketPage = () => {
       />}
 
       {/* popup for delete ticket */}
-      {showPopUpForDeleteTicket && <PopUp 
+      {showPopUpForDeleteTicket && <PopUp
         content={<>
           <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-              <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
-                  <div className="relative bg-gray-200  rounded-lg shadow dark:bg-gray-700">
+            <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+              <div className="relative bg-gray-200  rounded-lg shadow dark:bg-gray-700">
 
-                      <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600 text-center">
-                          <h3 className="text-xl font-semibold text-red-700 dark:text-white">
-                              Delete this Ticket <br />
-                              <small className='text-red-800'>*** Only admin users and user with "Delete" permission can perform this action</small>
-                          </h3>
-                          <button type="button" onClick={togglePopUpForDeleteTicket} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
-                              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                              </svg>
-                              <span className="sr-only">Close modal</span>
-                          </button>
-                      </div>
-                      <div className="pt-6 space-y-6 text-center font-bold ">
-                          <div>
-                              <p>Confirm Action ?</p>
-                          </div>
-                      </div>
-                      <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
-                          <button type="button" onClick={deleteProject} className="text-white bg-red-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Yes</button>
-                          <button type="button" onClick={togglePopUpForDeleteTicket} className="text-white bg-green-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">No</button>
-                      </div>
+                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600 text-center">
+                  <h3 className="text-xl font-semibold text-red-700 dark:text-white">
+                    Delete this Ticket <br />
+                    <small className='text-red-800'>*** Only admin users and user with "Delete" permission can perform this action</small>
+                  </h3>
+                  <button type="button" onClick={togglePopUpForDeleteTicket} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+                <div className="pt-6 space-y-6 text-center font-bold ">
+                  <div>
+                    <p>Confirm Action ?</p>
                   </div>
+                </div>
+                <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                  <button type="button" onClick={deleteTicket} className="text-white bg-red-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Yes</button>
+                  <button type="button" onClick={togglePopUpForDeleteTicket} className="text-white bg-green-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">No</button>
+                </div>
               </div>
+            </div>
           </div>
-      </>}
+        </>}
       />}
+
+      {/* popup for delete comment */}
+      {showPopUpForDeleteComment && <PopUp
+        content={<>
+          <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+              <div className="relative bg-gray-200  rounded-lg shadow dark:bg-gray-700">
+
+                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600 text-center">
+                  <h3 className="text-xl font-semibold text-red-700 dark:text-white">
+                    Delete this comment <br />
+                    <small className='text-red-800'>*** Only admin users and user with "Delete" permission can perform this action</small>
+                  </h3>
+                  <button type="button" onClick={togglePopUpForDeleteComment} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span className="sr-only">Close modal</span>
+                  </button>
+                </div>
+                <div className="pt-6 space-y-6 text-center font-bold ">
+                  <div>
+                    <p>Confirm Action ?</p>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                  <button type="button" onClick={deleteComment} className="text-white bg-red-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Yes</button>
+                  <button type="button" onClick={togglePopUpForDeleteComment} className="text-white bg-green-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">No</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>}
+      />}
+
 
 
       <div className='contents'>
@@ -380,7 +466,6 @@ const TicketPage = () => {
         <div className='text-center pt-3'>
           {error && <div className='text-red-500 pb-2'><p>{error} <span><FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "red", }} /></span></p></div>}
           {success && <div className='text-green-500 pb-2'><p>{success} <span><FontAwesomeIcon icon={faCircleCheck} style={{ color: "green", }} /></span></p></div>}
-
 
           <button onClick={togglePopUpForEditTicket} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
@@ -486,10 +571,11 @@ const TicketPage = () => {
                   <div className="col-span-2 ... p-4 mr-14">
                     <div>
                       <p>{comment.comment}</p>
-                      <div className='text-center text-sm  text-red-500 pt-5'>
-                        <a href="#" className='pr-4'>Edit</a>
-                        <a href="#">Delete</a>
-                      </div>
+                      {adminCheck === true || comment.user_id['_id'] === user._id ? (
+                        <div className='text-center text-sm  text-red-500 pt-5'>
+                          <a href="#" onClick={() => {setCommentToDelete(comment); togglePopUpForDeleteComment();}}>Delete</a>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>

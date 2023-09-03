@@ -471,7 +471,7 @@ async function addCommentToTicket(ticketId, userId, comment) {
 //get all comments on a ticket
 async function getAllCommentsOnTicket(ticketId) {
     try {
-        const comments = await Comment.find({ ticket_id: ticketId }).populate('user_id').sort({ created_at: -1 });
+        const comments = await Comment.find({ ticket_id: ticketId }).populate('user_id')
         return comments;
     } catch (error) {
 
