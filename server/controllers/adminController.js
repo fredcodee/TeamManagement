@@ -438,7 +438,7 @@ const getUsersRolePermissionsInProject = async (req, res) => {
         const projectId = req.body.projectId;
         const userId = req.body.userId;
         //get users role permissions in project
-        const permissions = await userService.getUserRolePermissionsInProject(userId, projectId);
+        const permissions = await userService.getUserRolePermissionsInProject(userId, projectId, teamId);
         res.json(permissions);
     }
     catch (error) {
@@ -560,6 +560,7 @@ const editTicketDetails = async (req, res) => {
         const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!userHasPermission && !adminCheck) {
+            console.log(userHasPermission)
             return res.status(401).json({ message: 'user does not have permission to edit ticket' });
         }
         //edit ticket details

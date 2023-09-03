@@ -46,9 +46,6 @@ const ProjectPage = () => {
             getProjectMembers(),
             getUserRoleInfo();
     }, [])
-    useEffect(() => {
-        console.log(rolePermission['permissisons'])
-    }, [project])
 
 
     const togglePopUpForProjectDescription = () => {

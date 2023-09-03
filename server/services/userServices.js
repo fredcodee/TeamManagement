@@ -143,10 +143,12 @@ async function checkUserPermission(userId, organizationId,projectId, permissionN
     try {
         const user = await UserRoles.findOne({ user_id: userId, organization_id:organizationId });
         const role = await Role.findById(user.role_id);
-        const rolePermission = await rolePermissions.findOne({ role_id: role._id, project_id: projectId, organization_id: organizationId });
-        const permission = await Permission.findById(rolePermission.permission_id);
-        if (permission.name == permissionName) {
-            return true;
+        const ListOfRolePermission = await rolePermissions.find({ role_id: role._id, project_id: projectId});
+        for (const rolePermission of  ListOfRolePermission ) {
+            const permission= await Permission.findById(rolePermission .permission_id);
+            if (permission.name == permissionName) {
+                return true;
+            }
         }
         return false;
     }
@@ -269,9 +271,9 @@ async function getUserProjects(userId) {
 }
 
 //get user's role permissions in a project
-async function getUserRolePermissionsInProject(userId, projectId) {
+async function getUserRolePermissionsInProject(userId, projectId, organizationId) {
     try {
-        const user = await UserRoles.findOne({ user_id: userId, project_id: projectId });
+        const user = await UserRoles.findOne({ user_id: userId, organization_id:organizationId });
         const role = await Role.findById(user.role_id);
         const rolePermission = await rolePermissions.find({ role_id: role._id, project_id: projectId });
         const permissions = [];

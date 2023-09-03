@@ -165,7 +165,7 @@ const TicketPage = () => {
         ticketAssignTo: ticketAssignTo || ticket.assigned_to,
         pinned: pinned || ticket.pinned
       }
-      // console.log(data)
+      console.log(data)
       const response = await Api.post(`/api/admin/project/ticket/edit`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
