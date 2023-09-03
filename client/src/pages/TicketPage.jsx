@@ -7,7 +7,7 @@ import NavBar from '../components/NavBar';
 import PopUp from '../components/PopUp';
 import "../assets/styles/ticketPage.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTriangleExclamation, faCircleCheck, faComments, faUser, faUsers, faArrowsRotate, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faTriangleExclamation, faCircleCheck, faComments, faUser, faUsers, faArrowsRotate, faXmark, faMapPin } from '@fortawesome/free-solid-svg-icons'
 
 
 
@@ -257,6 +257,29 @@ const TicketPage = () => {
 
   }
 
+  const pinticket = async (value) => {
+    try {
+      const data = {
+        teamId: team[0]?.teamId || ticket.organization_id,
+        projectId: ticket.project_id,
+        userId: user._id,
+        ticketId: ticket._id,
+        pinned: value
+      }
+
+      const response = await Api.post(`/api/admin//project/ticket/pinUnpin`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await response.data;
+      getTicket();
+    } catch (error) {
+      setError(error.response.data.message)
+    }
+
+  }
+
 
 
   return (
@@ -467,6 +490,11 @@ const TicketPage = () => {
           {error && <div className='text-red-500 pb-2'><p>{error} <span><FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "red", }} /></span></p></div>}
           {success && <div className='text-green-500 pb-2'><p>{success} <span><FontAwesomeIcon icon={faCircleCheck} style={{ color: "green", }} /></span></p></div>}
 
+          {
+            ticket.pinned ? (<span onClick={() => pinticket(false)} className='pr-4 text-2xl text-green-600 hover:text-red-800 hover:cursor-pointer'>unpin <FontAwesomeIcon icon={faMapPin} /></span>):
+            (<span onClick={() => pinticket(true)} className='pr-4 text-2xl text-red-800 hover:text-green-600 hover:cursor-pointer'>pin <FontAwesomeIcon icon={faMapPin} /></span>)
+          }
+          
           <button onClick={togglePopUpForEditTicket} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800">
             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
               Edit

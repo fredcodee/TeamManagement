@@ -539,6 +539,18 @@ async function deleteOrganization(organizationId) {
 
 
 
+async function pinAndUnpinTicket(ticketId, pin){
+    try {
+        const ticket = await Ticket.findById(ticketId);
+        ticket.pinned = pin;
+        await ticket.save();
+        return ticket;
+    } catch (error) {
+        throw new Error(`Cant pin/unpin ticket ${error}`);
+    }
+}
+
+
 
 
 
@@ -564,5 +576,5 @@ module.exports = {
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
-    , getCommentUserId, deleteProject, deleteOrganization
+    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket
 }

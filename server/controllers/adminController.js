@@ -571,6 +571,42 @@ const editTicketDetails = async (req, res) => {
 }
 
 
+const pinAndUnpinTicket = async (req, res) => {
+    try{
+        const teamId = req.body.teamId;
+        const projectId = req.body.projectId;
+        const userId = req.body.userId;
+        const ticketId = req.body.ticketId;
+        const pinned = req.body.pinned;
+
+        //check if user is in team
+        const userInTeam = await userService.checkUserIsInOrganization(userId, teamId);
+        if (!userInTeam) {
+            return res.status(401).json({ message: 'user is not in team' });
+        }
+
+        //check if user is in project
+        const userInProject = await userService.checkUserIsInProject(userId, projectId);
+        if (!userInProject) {
+            return res.status(401).json({ message: 'user is not in project' });
+        }
+        //check if user has permission to edit ticket || user is admin
+        const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
+        const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
+        if (!userHasPermission && !adminCheck) {
+            return res.status(401).json({ message: 'you do not have the permission to edit or pin ticket' });
+        }
+
+        //pin and unpin ticket
+        const ticket = await appService.pinAndUnpinTicket(ticketId, pinned);
+        res.json(ticket);
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+
 //delete ticket from project
 const deleteTicketFromProject = async (req, res) => {
     try {
@@ -710,5 +746,5 @@ module.exports = {
     , getAllProjectsInTeam, getAllUsersInProject, getUsersInTeamAndRoles, getAllRolesInTeam, editProjectDetails, getTeamDetails,
     deleteRole, getAllPermissions, addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole,
     getUsersRolePermissionsInProject, getUserInviteId, getAllInvitesInTeam, addTicketToProject, editTicketDetails
-    , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin,getUserInfoByEmail 
+    , deleteTicketFromProject, deleteProject, deleteTeam, checkUserIsAdmin,getUserInfoByEmail, pinAndUnpinTicket
 }
