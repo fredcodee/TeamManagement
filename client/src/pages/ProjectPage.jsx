@@ -43,8 +43,12 @@ const ProjectPage = () => {
         getProject(),
             getUser(),
             getTeamInfo(),
-            getProjectMembers()
+            getProjectMembers(),
+            getUserRoleInfo();
     }, [])
+    useEffect(() => {
+        console.log(rolePermission['permissisons'])
+    }, [project])
 
 
     const togglePopUpForProjectDescription = () => {
@@ -80,7 +84,7 @@ const ProjectPage = () => {
                 navigate('/error')
             }
             setProject(data);
-            getUserRoleInfo();
+            
         } catch (error) {
             navigate('/error')
         }
@@ -457,11 +461,14 @@ const ProjectPage = () => {
                                         {rolePermission.role === 'admin' ? (
                                             <p>You are an admin in this project and have all permissions</p>
                                         ) : (
-                                            rolePermission.permissions.map((permission, index) => {
-                                                return <p key={index}>{permission.name}</p>;
-                                            })
+                                            rolePermission['permissisons'] ? (
+                                                rolePermission['permissisons'].map((permission, index) => (
+                                                    <p key={index}>{permission.name}</p>
+                                                ))
+                                            ) : null
                                         )}
                                     </div>
+
                                 </div>
 
                             </div>
@@ -607,7 +614,7 @@ const ProjectPage = () => {
                         </div>
 
                         <div className='pt-4 hover:text-purple-600 hover:cursor-pointer'>
-                            <button type="button"  onClick = {leaveProject} className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Leave Project</button>
+                            <button type="button" onClick={leaveProject} className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Leave Project</button>
                         </div>
                     </div>
 

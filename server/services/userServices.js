@@ -300,12 +300,12 @@ async function getUserTicketsInProject(userId, projectId) {
 async function getUserTicketsInAllProjects(userId) {
     try {
         const tickets = await Ticket.find({ created_by: userId }).populate('created_by');
-        //sort tickets by date and get only first 5
-        tickets.sort((a, b) => b.created_at - a.created_at);
+
         return tickets;
     } catch (error) {
-        throw new Error(`Cant get user tickets in all projects ${error}`);
-    }}
+        throw new Error(`Can't get user tickets in all projects ${error}`);
+    }
+}
 
 
 

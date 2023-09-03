@@ -435,6 +435,15 @@ async function getTicketDetails(ticketId) {
 async function getAllTicketsInProject(projectId) {
     try {
         const tickets = await Ticket.find({ project_id: projectId }).populate('created_by assigned_to')
+        tickets.sort((a, b) => {
+            if (a.pinned && !b.pinned) {
+                return -1; 
+            } else if (!a.pinned && b.pinned) {
+                return 1;
+            } else {
+                return new Date(b.created_at) - new Date(a.created_at);
+            }
+        });
         return tickets;
     } catch (error) {
         throw new Error(`Cant get all tickets in project ${error}`);

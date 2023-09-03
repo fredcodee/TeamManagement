@@ -3,7 +3,7 @@ import Api from '../Api'
 import { useState, useEffect } from 'react'
 import '../assets/styles/projectpage.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark,faUser } from '@fortawesome/free-solid-svg-icons'
+import { faXmark,faUser,faMapPin} from '@fortawesome/free-solid-svg-icons'
 
 const TicketLists = ({ projectId }) => {
     const token = localStorage.getItem('authTokens').replace(/"/g, '');
@@ -33,6 +33,8 @@ const TicketLists = ({ projectId }) => {
                                 <li className="column__item hover:bg-gray-300">
                                     <div className="column__title--wrapper">
                                         <h2>{ticket.title}</h2>
+                                        {ticket.pinned ? (<span><FontAwesomeIcon icon={faMapPin} style={{color: "#2f6a41",}} /></span>):(null)}
+                                        
                                     </div>
                                     <ul className="card__list">
                                         <li className="card__item">

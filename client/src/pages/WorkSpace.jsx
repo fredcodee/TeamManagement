@@ -33,8 +33,9 @@ const WorkSpace = () => {
     }, []);
 
     useEffect(() => {
+        if (team.length > 0) {
         countMembersFunc(),
-            adminCheckFunc()
+            adminCheckFunc()}
     }, [team]);
 
 
@@ -269,7 +270,7 @@ const WorkSpace = () => {
                             <div>
                                 {team.length > 0 ? (
                                     team.map((team, index) => (
-                                        <div className='border-solid border-2 border-gray-300 p-2' key={index}>
+                                        <div className='border-solid border-2 border-gray-300 p-2 rounded-lg' key={index}>
                                             <div className='text-center'>
                                                 <h2>Team :  <span className='text-green-800'>{team.teamName}</span></h2>
                                                 <h2>Role: <span className='text-blue-800'>{team.role}</span></h2>
@@ -288,11 +289,11 @@ const WorkSpace = () => {
                             <div className='text-center font-bold p-4'>
                                 <h2>Your Tickets</h2>
                             </div>
-                            <div className='border-solid border-2 border-gray-300 p-2'>
+                            <div className='border-solid border-2 border-gray-300 p-2 rounded-lg'>
                                 {tickets.length > 0 ? (
                                     tickets.map((ticket, index) => (
                                         <div className='hover:bg-gray-300 pl-2' key={index}>
-                                            <a href="#">{ticket.title} <span className='text-red-600'>- Ticket deadline on {new Date(ticket.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric', day: 'numeric', month: 'long', weekday: 'long' })}</span></a>
+                                            <a href={`/ticket/${ticket._id}`}>{ticket.title} <span className='text-red-600'>- Ticket deadline on {new Date(ticket.deadLine).toLocaleDateString('en-US', { hour12: true, minute: 'numeric', hour: 'numeric', day: 'numeric', month: 'long', weekday: 'long' })}</span></a>
                                         </div>
                                     ))
                                 ) : (
