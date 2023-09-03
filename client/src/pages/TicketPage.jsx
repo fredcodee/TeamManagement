@@ -20,6 +20,7 @@ const TicketPage = () => {
   const [ticket, setTicket] = useState([]);
   const [showPopUpForAssignedUsers, setShowPopUpForAssignedUsers] = useState(false);
   const [showPopUpForEditTicket, setShowPopUpForEditTicket] = useState(false);
+  const [showPopUpForDeleteTicket, setShowPopUpForDeleteTicket] = useState(false);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
   const [ticketName, setTicketName] = useState('');
@@ -52,6 +53,9 @@ const TicketPage = () => {
   }
   const togglePopUpForEditTicket = () => {
     setShowPopUpForEditTicket(!showPopUpForEditTicket);
+  }
+  const togglePopUpForDeleteTicket = () => {
+    setShowPopUpForDeleteTicket(!showPopUpForDeleteTicket);
   }
 
   const getUser = async () => {
@@ -180,7 +184,28 @@ const TicketPage = () => {
   }
 
 
-
+  const deleteProject = async () => {
+    try {
+      const data = {
+        teamId: team[0]?.teamId || ticket.organization_id,
+        projectId: ticket.project_id,
+        userId: user._id,
+        ticketId: ticket._id,
+      }
+      const response = await Api.post(`/api/admin/project/ticket/delete`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await response.data;
+      setSuccess('Ticket deleted successfully')
+      navigate(`/project-page/${ticket.project_id['_id']}`)
+      
+    } catch (error) {
+      setError(error.response.data.message)
+      togglePopUpForDeleteTicket();
+    }
+  }
 
 
   return (
@@ -315,6 +340,40 @@ const TicketPage = () => {
         </>}
       />}
 
+      {/* popup for delete ticket */}
+      {showPopUpForDeleteTicket && <PopUp 
+        content={<>
+          <div id="staticModal" data-modal-backdrop="static" tabIndex="-1" aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+              <div className="relative w-full max-w-2xl max-h-full" style={{ margin: "auto" }}>
+                  <div className="relative bg-gray-200  rounded-lg shadow dark:bg-gray-700">
+
+                      <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600 text-center">
+                          <h3 className="text-xl font-semibold text-red-700 dark:text-white">
+                              Delete this Ticket <br />
+                              <small className='text-red-800'>*** Only admin users and user with "Delete" permission can perform this action</small>
+                          </h3>
+                          <button type="button" onClick={togglePopUpForDeleteTicket} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="staticModal">
+                              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                              </svg>
+                              <span className="sr-only">Close modal</span>
+                          </button>
+                      </div>
+                      <div className="pt-6 space-y-6 text-center font-bold ">
+                          <div>
+                              <p>Confirm Action ?</p>
+                          </div>
+                      </div>
+                      <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                          <button type="button" onClick={deleteProject} className="text-white bg-red-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Yes</button>
+                          <button type="button" onClick={togglePopUpForDeleteTicket} className="text-white bg-green-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">No</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </>}
+      />}
+
 
       <div className='contents'>
         {/* Top buttons  and action details*/}
@@ -328,7 +387,7 @@ const TicketPage = () => {
               Edit
             </span>
           </button>
-          <button className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+          <button onClick={togglePopUpForDeleteTicket} className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
               Delete Ticket
             </span>
