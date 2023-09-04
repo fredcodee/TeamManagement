@@ -59,14 +59,14 @@ async function findAndVerifyUser(email, password) {
 //edit user profile
 async function editUserProfile(firstName, lastName, email, password) {
     try {
-        await User.updateOne({ email: email }, {
+        const editUser = await User.updateOne({ email: email }, {
             $set: {
                 firstName: firstName,
                 lastName: lastName,
                 password: bcrypt.hashSync(password, 10)
             }
         })
-        return true;
+        return editUser;
     } catch (error) {
         throw new Error(`Cant edit user profile ${error}`);
     }

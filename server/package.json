@@ -39,6 +39,7 @@
     "path": "^0.12.7",
     "redirect-ssl": "^3.0.0",
     "request": "^2.88.2",
+    "socket.io": "^4.7.2",
     "swagger-ui-express": "^4.5.0",
     "util": "^0.12.5"
   },

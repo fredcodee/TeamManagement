@@ -58,7 +58,7 @@ const TicketLists = ({ projectId }) => {
                                             {ticket.assigned_to.length === 0 && <p className='text-orange-900'>No users assigned to this ticket <span><FontAwesomeIcon icon={faXmark} /></span></p>}
                                             {ticket.assigned_to.map((user, index) => (
                                                 <div key={index}>
-                                                    <h6 className="card__title">{user["firstName"] && user["lastName"]
+                                                    <h6 className="card__title">{user.firstName && user.lastName
                                                         ? `${user["firstName"]} ${user["lastName"]}`
                                                         : "invited user"} <span><FontAwesomeIcon icon={faUser} style={{color: "#2e77f5",}} /></span></h6>
                                                 </div>

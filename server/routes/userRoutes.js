@@ -20,5 +20,8 @@ router.post('/project/ticket/comment/delete', userAuth, userController.deleteCom
 router.post('/team/all/users', userAuth, userController.getAllUsersInTeam)
 router.post('/project/leave', userAuth, userController.leaveProject)
 router.post('/project/user/roleinfo', userAuth, userController.getUsersRolePermissionsInProject)
+router.get('/notifications/all', userAuth, userController.getAllNotifications)
+router.post('/notification/read', userAuth, userController.updateNotificationStatus)
+router.post('/notification/delete', userAuth, userController.deleteNotification)
 
 module.exports = router;

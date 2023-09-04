@@ -7,7 +7,7 @@ import NavBar from '../components/NavBar';
 import PopUp from '../components/PopUp';
 import TicketLists from '../components/TicketLists';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMapPin } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMapPin, faTriangleExclamation, faCircleCheck} from '@fortawesome/free-solid-svg-icons'
 
 
 const ProjectPage = () => {
@@ -81,7 +81,7 @@ const ProjectPage = () => {
                 navigate('/error')
             }
             setProject(data);
-            
+
         } catch (error) {
             navigate('/error')
         }
@@ -253,7 +253,7 @@ const ProjectPage = () => {
             window.location.reload();
 
         } catch (error) {
-            setError(error.response.data.message);
+            setError('You dont have permission to create a ticket');
             togglePopUpForCreateTicket();
         }
     }
@@ -618,8 +618,9 @@ const ProjectPage = () => {
                 </div>
                 <div className="col-span-2 ... mr-14">
                     <div className='text-center'>
-                        {error && <div className='text-red-500'>{error}</div>}
-                        {success && <div className='text-green-500'>{success}</div>}
+                        {error && <div className='text-red-500 pb-2'><p>{error} <span><FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "red", }} /></span></p></div>}
+                        {success && <div className='text-green-500 pb-2'><p>{success} <span><FontAwesomeIcon icon={faCircleCheck} style={{ color: "green", }} /></span></p></div>}
+
                     </div>
                     <div className='text-center p-4'>
                         <p className='p-4 hover:text-blue-500 hover:cursor-pointer' onClick={togglePopUpForCreateTicket}> Create A Ticket <span><FontAwesomeIcon icon={faPlus} style={{ color: "#d86fd8", }} /></span></p>

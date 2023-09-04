@@ -31,7 +31,7 @@ const getProfile = async (req, res) => {
     }
 }
 
-//get team/organization info
+
 const getTeamInfo = async (req, res) => {
     try{
         const user = req.user;
@@ -55,7 +55,7 @@ const getAllUsersInTeam = async (req, res) => {
 
 
 
-//get user's projects
+
 const getUserProjects = async (req, res) => {
     try {
         const user = req.user;
@@ -67,7 +67,7 @@ const getUserProjects = async (req, res) => {
 }
 
 
-//view project info
+
 const viewProjectInfo = async (req, res) => {
     try {
         const projectId = req.body.projectId;
@@ -131,7 +131,7 @@ const getAllUserTicketsInAllProjects = async (req, res) => {
 
 
 
-//get ticket info
+
 const getTicketInfo = async (req, res) => {
     try {
         const ticketId = req.body.ticketId;
@@ -143,7 +143,7 @@ const getTicketInfo = async (req, res) => {
 }
 
 
-//get tickets in a project
+
 const getProjectTickets = async (req, res) => {
     try {
         const projectId = req.body.projectId;
@@ -154,20 +154,24 @@ const getProjectTickets = async (req, res) => {
     }
 }
 
-//leave prject
+
 const leaveProject = async (req, res) => {
     try {
         const user = req.user;
         const projectId = req.body.projectId;
         //remove user from project
         await userService.removeUserFromProject(user._id, projectId);
+        const projectMembers = await userService.getAllUsersInProject(projectId);
+        await Promise.all(projectMembers?.map(async (member) => {
+            await appService.addNotificationToDbSingle(member._id, teamId, `${req.user.firstName} ${req.user.lastName} left a project`, `/project-page/${projectId}`);
+        }));
         res.json({ message: 'user removed from project successfully' })
     } catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
 
-//admins and users with "Chat" permission can comment on a ticket
+
 const commentOnTicket = async (req, res) => {
     try {
         const user = req.user;
@@ -184,13 +188,17 @@ const commentOnTicket = async (req, res) => {
         }
         //add comment to ticket
         const chat= await appService.addCommentToTicket(ticketId, user._id, comment);
+        const userAssigned = await appService.getTicketDetails(ticketId);
+        userAssigned.assigned_to.forEach(async (user) => {
+            await appService.addNotificationToDbSingle(user._id, teamId, `${req.user.firstName} ${req.user.lastName} commented on a ticket`, `/ticket/${ticketId}`);
+        });
         res.json(chat)
     } catch (error) {
         errorHandler.errorHandler(error, res)
     }
 }
 
-//get all comments on a ticket
+
 const getTicketComments = async (req, res) => {
     try {
         const ticketId = req.body.ticketId;
@@ -202,7 +210,7 @@ const getTicketComments = async (req, res) => {
 }
 
 
-// user, admin and user with "Delete" permission can delete a comment
+
 const deleteComment = async (req, res) => {
     try {
         const user = req.user;
@@ -227,7 +235,6 @@ const deleteComment = async (req, res) => {
 }
 
 
-//count memebers in a team
 const countTeamMembers = async (req, res) => {
     try {
         const teamId = req.body.teamId;
@@ -238,7 +245,7 @@ const countTeamMembers = async (req, res) => {
     }
 }
 
-//get you role and permissions in a project
+//get user role and permissions in a project
 const getUsersRolePermissionsInProject = async (req, res) => {
     try {
         const user = req.user;
@@ -250,11 +257,40 @@ const getUsersRolePermissionsInProject = async (req, res) => {
     }
 }
 
+const getAllNotifications = async (req, res) => {
+    try {
+        const user = req.user;
+        const notifications = await appService.getAllNotifications(user._id);
+        res.json(notifications)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
 
+const updateNotificationStatus = async (req, res) => {
+    try {
+        const notificationId = req.body.notificationId;
+        const notification = await appService.readNotification(notificationId);
+        res.json(notification)
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
+const deleteNotification = async (req, res) => {
+    try{
+        const notificationId = req.body.notificationId;
+        const notification = await appService.deleteNotification(notificationId);
+        res.json(notification)
+    }
+    catch(error){
+        errorHandler.errorHandler(error, res)
+    }
+}
 
 
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
     , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers, getAllUserTickets,getAllUsersInTeam, leaveProject
-    ,getUsersRolePermissionsInProject 
+    ,getUsersRolePermissionsInProject, getAllNotifications, updateNotificationStatus, deleteNotification
 }
 

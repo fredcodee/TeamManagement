@@ -8,6 +8,7 @@ const persmissions = require('../models/Permissions');
 const RolePermissions = require('../models/Role_Permissions');
 const Ticket = require('../models/Ticket');
 const Comment = require('../models/Comment');
+const Notification = require('../models/Notification');
 
 
 
@@ -30,7 +31,6 @@ async function createOrganization(name) {
     }
 }
 
-//get orginization/team details
 async function getOrganizationDetails(organizationId) {
     try {
         const organization = await Organization.findById(organizationId);
@@ -41,7 +41,6 @@ async function getOrganizationDetails(organizationId) {
     }
 }
 
-//add organization to user
 async function addOrganizationToUser(userId, organizationId) {
     try {
         const user = await User.findById(userId);
@@ -62,7 +61,7 @@ async function addOrganizationToUser(userId, organizationId) {
     }
 }
 
-//create role
+
 async function createRole(organizationId, roleName) {
     try {
         const checkRole = await Role.findOne({ name: roleName, organization_id: organizationId });
@@ -80,7 +79,7 @@ async function createRole(organizationId, roleName) {
     }
 }
 
-//add user to role
+
 async function addUserToRole(userId, roleId, organizationId) {
     try {
         const userRole = new UserRoles({
@@ -96,7 +95,7 @@ async function addUserToRole(userId, roleId, organizationId) {
     }
 }
 
-//remove user from role
+
 async function removeUserFromRole(userId, roleId, organizationId) {
     try {
         await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
@@ -107,7 +106,7 @@ async function removeUserFromRole(userId, roleId, organizationId) {
 }
 
 
-//invite user to organization/team
+
 async function inviteUserToOrganization(email, organizationId) {
     try {
         //add user to db
@@ -121,7 +120,7 @@ async function inviteUserToOrganization(email, organizationId) {
     }
 }
 
-// check if user has role in organization
+
 async function checkUserHasRoleInOrganization(userId, organizationId) {
     try {
         const userRole = await UserRoles.findOne({ user_id: userId, organization_id: organizationId });
@@ -130,7 +129,8 @@ async function checkUserHasRoleInOrganization(userId, organizationId) {
         throw new Error(`Cant check if user has role in organization ${error}`);
     }
 }
-//edit organization/team details
+
+
 async function editOrganizationDetails(teamId, name) {
     try {
         const team = await Organization.findById(teamId);
@@ -142,14 +142,12 @@ async function editOrganizationDetails(teamId, name) {
     }
 }
 
-//remove user from organization/team
 async function removeUserFromOrganization(userId, organizationId) {
     try {
-        //remove user from organization
         await User.findOneAndUpdate({ _id: userId }, { $pull: { organization_id: organizationId } });
-        //remove user from all roles in organization
+       
         await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
-        //remove user from all projects linked with the organization
+        
         for (const project of await getAllProjects(organizationId)) {
             await removeUserFromProject(userId, project._id);
         }
@@ -160,7 +158,6 @@ async function removeUserFromOrganization(userId, organizationId) {
 }
 
 
-//create project
 async function createProject(organizationId, name, info) {
     try {
         const project = new Project({
@@ -175,13 +172,12 @@ async function createProject(organizationId, name, info) {
     }
 }
 
-//add user to project
+
 async function addUserToProject(userId, projectId) {
     try {
         const user = await User.findById(userId);
         const project = await Project.findById(projectId);
         if (user) {
-            // Add the organization ID to the user's organization_id array
             user.projects.push(project._id);
             await user.save();
             return true;
@@ -192,7 +188,7 @@ async function addUserToProject(userId, projectId) {
     }
 }
 
-//remove user from project
+
 async function removeUserFromProject(userId, projectId) {
     try {
         await User.findOneAndUpdate({ _id: userId }, { $pull: { projects: projectId } });
@@ -203,7 +199,7 @@ async function removeUserFromProject(userId, projectId) {
 }
 
 
-//get all projects in organization/team 
+
 async function getAllProjects(organizationId) {
     try {
         const projects = await Project.find({ organization_id: organizationId });
@@ -217,7 +213,7 @@ async function getAllProjects(organizationId) {
     }
 }
 
-//get all roles in organization/team
+
 async function getAllRoles(organizationId) {
     try {
         const roles = await Role.find({ organization_id: organizationId });
@@ -228,7 +224,7 @@ async function getAllRoles(organizationId) {
 }
 
 
-//get project details
+
 async function getProjectInfo(projectId) {
     try {
         const project = await Project.findById(projectId);
@@ -240,7 +236,7 @@ async function getProjectInfo(projectId) {
 
 }
 
-//edit project details
+
 async function editProjectDetails(projectId, name, info) {
     try {
         const project = await Project.findById(projectId);
@@ -255,7 +251,6 @@ async function editProjectDetails(projectId, name, info) {
 }
 
 
-//delete a role from organization/team
 async function deleteRole(roleId, organizationId) {
     try {
         //unasign all users from the role
@@ -272,7 +267,6 @@ async function deleteRole(roleId, organizationId) {
 
 
 
-//add persmissions
 async function addPermissions() {
     try {
         const listOfPermissions = ["Edit", "Delete", "Invite", "Chat", "Remove"]
@@ -292,7 +286,6 @@ async function addPermissions() {
     }
 }
 
-//get aall persmissions list
 async function getAllPermissions() {
     try {
         const permissions = await persmissions.find();
@@ -304,7 +297,6 @@ async function getAllPermissions() {
 }
 
 
-// add permissions to role
 async function addPermissionToRole(roleId, permissionId, projectId, organizationId) {
     try {
         const rolePermission = await RolePermissions.findOne({ role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId });
@@ -325,7 +317,6 @@ async function addPermissionToRole(roleId, permissionId, projectId, organization
     }
 }
 
-//remove permissions from role
 async function removePermissionFromRole(roleId, permissionId, projectId, organizationId) {
     try {
         await RolePermissions.findOneAndDelete({ role_id: roleId, permission_id: permissionId, project_id: projectId, organization_id: organizationId });
@@ -337,7 +328,6 @@ async function removePermissionFromRole(roleId, permissionId, projectId, organiz
 }
 
 
-// get all roles and their permissions in organization/team
 async function getAllRolesWithPermissions(organizationId, projectId) {
     try {
         const roles = await Role.find({ organization_id: organizationId });
@@ -365,7 +355,6 @@ async function getAllRolesWithPermissions(organizationId, projectId) {
     }
 }
 
-//get all invited users that are not registered yet
 async function getAllInvitedUsers(organizationId) {
     try {
         const users = await User.find({ organization_id: organizationId, password: null });
@@ -377,7 +366,6 @@ async function getAllInvitedUsers(organizationId) {
 }
 
 
-//add ticket to project
 async function addTicketToProject(teamId, projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned) {
     try {
         const ticket = new Ticket({
@@ -400,7 +388,6 @@ async function addTicketToProject(teamId, projectId, ticketName, ticketDescripti
     }
 }
 
-// edit ticket details
 async function editTicketDetails(ticketId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketDueDate, pinned) {
     try {
         const ticket = await Ticket.findById(ticketId);
@@ -421,7 +408,6 @@ async function editTicketDetails(ticketId, ticketName, ticketDescription, ticket
 }
 
 
-//get ticket details
 async function getTicketDetails(ticketId) {
     try {
         const ticket = await Ticket.findById(ticketId).populate('created_by assigned_to project_id');
@@ -431,7 +417,6 @@ async function getTicketDetails(ticketId) {
     }
 }
 
-//get all tickets in project
 async function getAllTicketsInProject(projectId) {
     try {
         const tickets = await Ticket.find({ project_id: projectId }).populate('created_by assigned_to')
@@ -450,11 +435,10 @@ async function getAllTicketsInProject(projectId) {
     }
 }
 
-//delete ticket from project
+
 async function deleteTicketFromProject(ticketId) {
     try {
         await Ticket.findByIdAndDelete(ticketId);
-        //delete all comments on ticket
         await Comment.deleteMany({ ticket_id: ticketId });
         return true;
     } catch (error) {
@@ -462,7 +446,6 @@ async function deleteTicketFromProject(ticketId) {
     }
 }
 
-// add comment to ticket
 async function addCommentToTicket(ticketId, userId, comment) {
     try {
         const newComment = new Comment({
@@ -477,7 +460,7 @@ async function addCommentToTicket(ticketId, userId, comment) {
     }
 }
 
-//get all comments on a ticket
+
 async function getAllCommentsOnTicket(ticketId) {
     try {
         const comments = await Comment.find({ ticket_id: ticketId }).populate('user_id')
@@ -487,6 +470,8 @@ async function getAllCommentsOnTicket(ticketId) {
         throw new Error(`Cant get all comments on ticket ${error}`);
     }
 }
+
+
 //get comment user_id
 const getCommentUserId = async (commentId) => {
     try {
@@ -498,7 +483,6 @@ const getCommentUserId = async (commentId) => {
 }
 
 
-//delete comment from ticket
 async function deleteCommentFromTicket(commentId) {
     try {
         await Comment.findByIdAndDelete(commentId);
@@ -508,7 +492,7 @@ async function deleteCommentFromTicket(commentId) {
     }
 }
 
-//delete project
+
 async function deleteProject(projectId) {
     try {
         // delete all comments on tickets in project
@@ -525,19 +509,16 @@ async function deleteProject(projectId) {
 }
 
 
-//delete organization/team
 async function deleteOrganization(organizationId) {
     try {
         //delete all projects in organization
         for( const project of await getAllProjects(organizationId)){
             await deleteProject(project._id);
         }
-        //delete all roles in organization
         await Role.deleteMany({ organization_id: organizationId });
         await RolePermissions.deleteMany({ organization_id: organizationId });
         await UserRoles.deleteMany({ organization_id: organizationId });
         await Role.deleteMany({ organization_id: organizationId });
-        //delete all users in organization
         await User.deleteMany({ organization_id: organizationId });
         await Organization.findByIdAndDelete(organizationId)
         return true;
@@ -558,6 +539,85 @@ async function pinAndUnpinTicket(ticketId, pin){
         throw new Error(`Cant pin/unpin ticket ${error}`);
     }
 }
+
+
+
+// notification func
+async function addNotificationToDbSingle (userId, teamId, notificationMessage, notificationLink){
+    try {
+        const notification = new Notification({
+            user_id: userId,
+            teamId: teamId,
+            notification : notificationMessage,
+            link: notificationLink || null
+        }
+        );
+        await notification.save();
+        return true;
+    } catch (error) {
+        throw new Error(`Cant add notification to db ${error}`);
+    }
+}
+async function addNotificationToDbAll (teamId, notificationMessage, notificationLink){
+    try{
+        // get all users in team
+        const users = await userService.getAllUsersInTeam(teamId);
+        // add notification to all users
+        for (const user of users){
+            await addNotificationToDbSingle(user._id, teamId, notificationMessage, notificationLink);
+        }
+        return true;
+    }
+    catch(error){
+        throw new Error(`Cant add notification to db ${error}`);
+    }
+}
+async function readNotification (NotificationId){
+    try {
+        const notification = await Notification.findById(NotificationId);
+        notification.read = true;
+        await notification.save();
+        return true;
+    } catch (error) {
+        throw new Error(`Cant read notification ${error}`);
+    }
+}
+
+async function getAllNotifications(userId) {
+    try {
+        //delete any notification older than 30 days
+        const date = new Date();
+        date.setDate(date.getDate() - 30);
+        await Notification.deleteMany({ created_at: { $lt: date } });
+
+        //get all notifications
+        const notifications = await Notification.aggregate([
+            {
+                $match: { user_id: userId }
+            },
+            {
+                $sort: {
+                    read: 1,
+                    created_at: -1
+                }
+            }
+        ]);
+        return notifications;
+    } catch (error) {
+        throw new Error(`Can't get all notifications: ${error}`);
+    }
+}
+
+//delete notification
+async function deleteNotification(notificationId) {
+    try {
+        await Notification.findByIdAndDelete(notificationId);
+        return true;
+    } catch (error) {
+        throw new Error(`Cant delete notification ${error}`);
+    }
+}
+
 
 
 
@@ -585,5 +645,5 @@ module.exports = {
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
-    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket
+    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, addNotificationToDbAll, readNotification, getAllNotifications, deleteNotification
 }
