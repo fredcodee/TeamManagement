@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes} from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useState, useEffect } from 'react'
 import PrivateRoute from './context/PrivateRoute';
@@ -17,16 +17,20 @@ import TeamSettings from './pages/TeamSettings';
 import ProjectPage from './pages/ProjectPage';
 import TicketPage from './pages/TicketPage';
 import socket from './Socket'
+import '../src/assets/styles/alerts.css'
 
 function App() {
-  const [notifications, setNotifications] = useState([]);
+  const [notification, setNotification] = useState([])
+  const [isAlertActive, setIsAlertActive] = useState(false);
 
   useEffect(() => {
     socket.on('Notification', (data) => {
-      setNotifications((prevNotifications) => [...prevNotifications, data]);
-
-      console.log(notifications)
-
+      const user = JSON.parse(localStorage.getItem('user'));
+      const userId = user.id;
+      if (data.userId === userId) {
+        setNotification(data)
+        showAlert()
+      }
     });
 
     return () => {
@@ -35,26 +39,59 @@ function App() {
     };
   }, []);
 
+  const showAlert = () => {
+    setIsAlertActive(true);
+  }
+
+  const closeAlert = () => {
+    setIsAlertActive(false);
+  }
+
   return (
     <>
+      {isAlertActive && (
+      <div className="alert_wrapper active">
+        <div className="alert_backdrop"></div>
+        <div className="alert_inner">
+          <div className="alert_item alert_info">
+            <div className="icon data_icon">
+              <i className="fa-solid fa-bell pr-3"></i>
+            </div>
+            <div className="data">
+              {notification.link !== null ?(
+                <a href={notification.link} className='hover:text-gray-500'>{notification.notification}</a>
+              ):(
+                <p className="title"><span>Info: </span>
+                {notification.notification}
+              </p>
+              )}
+              
+            </div>
+            <div className="icon close" onClick={closeAlert}>
+              <i className="fas fa-times pl-3 hover:cursor-pointer hover:text-orange-500"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
       <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/error" element={<ErrorPage/>}/>
-          <Route element = {<JoinInvitedUsers />} path = "/join/:id" />
-          <Route element = {<PrivateRoute> <WorkSpace /></PrivateRoute>} path = "/user-workspace" />
-          <Route element = {<PrivateRoute> <Tasks /></PrivateRoute>} path = "/user-tasks" /> 
-          <Route element = {<PrivateRoute> <UserManagement /></PrivateRoute>} path = "/user-management" />
-          <Route element = {<PrivateRoute> <ProjectManagement /></PrivateRoute>} path = "/project-management" />
-          <Route element = {<PrivateRoute> <ProjectPageAdmin /></PrivateRoute>} path = "/project-page-admin/:id" />
-          <Route element = {<PrivateRoute> <TeamSettings /></PrivateRoute>} path = "/team-settings" />
-          <Route element = {<PrivateRoute> <ProjectPage /></PrivateRoute>} path = "/project-page/:id" />
-          <Route element = {<PrivateRoute> <TicketPage /></PrivateRoute>} path = "/ticket/:id" />
-        </Routes>
-      </AuthProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/error" element={<ErrorPage />} />
+            <Route element={<JoinInvitedUsers />} path="/join/:id" />
+            <Route element={<PrivateRoute> <WorkSpace /></PrivateRoute>} path="/user-workspace" />
+            <Route element={<PrivateRoute> <Tasks /></PrivateRoute>} path="/user-tasks" />
+            <Route element={<PrivateRoute> <UserManagement /></PrivateRoute>} path="/user-management" />
+            <Route element={<PrivateRoute> <ProjectManagement /></PrivateRoute>} path="/project-management" />
+            <Route element={<PrivateRoute> <ProjectPageAdmin /></PrivateRoute>} path="/project-page-admin/:id" />
+            <Route element={<PrivateRoute> <TeamSettings /></PrivateRoute>} path="/team-settings" />
+            <Route element={<PrivateRoute> <ProjectPage /></PrivateRoute>} path="/project-page/:id" />
+            <Route element={<PrivateRoute> <TicketPage /></PrivateRoute>} path="/ticket/:id" />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </>
   )
