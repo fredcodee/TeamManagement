@@ -227,7 +227,8 @@ const addUserToProject = async (req, res) => {
         }
         //add user to project
         await appService.addUserToProject(userId, projectId);
-        await appService.addNotificationToDbSingle(req, userId,teamId, `${req.user.firstName} ${req.user.lastName} added you to project`, `/project-page/${projectId}`);
+        const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
+        await appService.addNotificationToDbSingle(req, userId,teamId, `${req.user.firstName} ${req.user.lastName} added you to project`, projectLink);
         res.json({ message: 'user added to project successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -310,7 +311,8 @@ const editProjectDetails = async (req, res) => {
         }
 
         const project = await appService.editProjectDetails(projectId, projectName, projectDescription);
-        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, `/project-page/${projectId}`);
+        const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
+        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, projectLink);
         res.json(project);
     }
     catch (error) {
@@ -620,8 +622,9 @@ const pinAndUnpinTicket = async (req, res) => {
         //pin and unpin ticket
         const ticket = await appService.pinAndUnpinTicket(ticketId, pinned);
         const projectMembers = await userService.getAllUsersInProject(projectId);
+        const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
         await Promise.all(projectMembers?.map(async (member) => {
-            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} ${pinned ? `pinned a ticket`: `unpinned a ticket`}`, `/project-page/${projectId._id}`);
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} ${pinned ? `pinned a ticket`: `unpinned a ticket`}`, projectLink);
         }));
         res.json(ticket);
     }
@@ -659,8 +662,9 @@ const deleteTicketFromProject = async (req, res) => {
         //delete ticket from project
         await appService.deleteTicketFromProject(ticketId);
         const projectMembers = await userService.getAllUsersInProject(projectId);
+        const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
         await Promise.all(projectMembers?.map(async (member) => {
-            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} deleted a ticket`, `/project-page/${projectId}`);
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} deleted a ticket`, projectLink);
         }));
         res.json({ message: 'ticket deleted successfully' });
     } catch (error) {
