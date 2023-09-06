@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes} from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { useState, useEffect } from 'react'
 import PrivateRoute from './context/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -15,9 +16,25 @@ import ErrorPage from './pages/ErrorPage';
 import TeamSettings from './pages/TeamSettings';
 import ProjectPage from './pages/ProjectPage';
 import TicketPage from './pages/TicketPage';
-
+import socket from './Socket'
 
 function App() {
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    socket.on('Notification', (data) => {
+      setNotifications((prevNotifications) => [...prevNotifications, data]);
+
+      console.log(notifications)
+
+    });
+
+    return () => {
+      // Clean up socket event listener when component unmounts
+      socket.off('Notification');
+    };
+  }, []);
+
   return (
     <>
       <BrowserRouter>

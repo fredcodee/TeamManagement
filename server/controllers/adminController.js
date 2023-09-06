@@ -79,7 +79,7 @@ const addUserToRole = async (req, res) => {
             await appService.removeUserFromRole(userId, userRoleId, teamId);
         }
         await appService.addUserToRole(userId, roleId, teamId);
-        await appService.addNotificationToDbSingle(userId,teamId, `${req.user.firstName} ${req.user.lastName} change your role`,);
+        await appService.addNotificationToDbSingle( req, userId,teamId, `${req.user.firstName} ${req.user.lastName} change your role`,);
         res.json({ message: 'user added to role successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -103,7 +103,7 @@ const removeUserFromRole = async (req, res) => {
             return res.status(401).json({ message: 'user does not have a role in team' });
         }
         await appService.removeUserFromRole(userId, roleId, teamId);
-        await appService.addNotificationToDbSingle(userId,teamId, `${req.user.firstName} ${req.user.lastName} removed your role`,);
+        await appService.addNotificationToDbSingle(req, userId,teamId, `${req.user.firstName} ${req.user.lastName} removed your role`,);
         res.json({ message: 'user removed from role successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -142,7 +142,7 @@ const editTeamDetails = async (req, res) => {
         }
         //edit team details
         await appService.editOrganizationDetails(teamId, teamName);
-        await appService.addNotificationToDbAll(teamId, `${req.user.firstName} ${req.user.lastName} edited team details`,);
+        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} edited team details`,);
         res.json({ message: 'team details edited successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -161,7 +161,7 @@ const removeUserFromTeam = async (req, res) => {
             return res.status(401).json({ message: 'user is not an admin' });
         }
         await appService.removeUserFromOrganization(userId, teamId);
-        await appService.addNotificationToDbSingle(userId,teamId, `${req.user.firstName} ${req.user.lastName} removed you from team`,);
+        await appService.addNotificationToDbSingle(req, userId,teamId, `${req.user.firstName} ${req.user.lastName} removed you from team`,);
         res.json({ message: 'user removed from team successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -227,7 +227,7 @@ const addUserToProject = async (req, res) => {
         }
         //add user to project
         await appService.addUserToProject(userId, projectId);
-        await appService.addNotificationToDbSingle(userId,teamId, `${req.user.firstName} ${req.user.lastName} added you to project`, `/project-page/${projectId}`);
+        await appService.addNotificationToDbSingle(req, userId,teamId, `${req.user.firstName} ${req.user.lastName} added you to project`, `/project-page/${projectId}`);
         res.json({ message: 'user added to project successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -259,7 +259,7 @@ const removeUserFromProject = async (req, res) => {
         
 
         await appService.removeUserFromProject(userId, projectId);
-        await appService.addNotificationToDbSingle(userId,teamId, `${req.user.firstName} ${req.user.lastName} removed you from project`,);
+        await appService.addNotificationToDbSingle(req, userId,teamId, `${req.user.firstName} ${req.user.lastName} removed you from project`,);
         res.json({ message: 'user removed from project successfully' });
 
     } catch (error) {
@@ -310,7 +310,7 @@ const editProjectDetails = async (req, res) => {
         }
 
         const project = await appService.editProjectDetails(projectId, projectName, projectDescription);
-        await appService.addNotificationToDbAll(teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, `/project-page/${projectId}`);
+        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, `/project-page/${projectId}`);
         res.json(project);
     }
     catch (error) {
@@ -353,7 +353,7 @@ const deleteRole = async (req, res) => {
         }
 
         await appService.deleteRole(roleId, teamId);
-        await appService.addNotificationToDbAll(teamId, `${req.user.firstName} ${req.user.lastName} deleted a role`,);
+        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} deleted a role`,);
         res.json({ message: 'role deleted successfully' });
     }
     catch (error) {
@@ -524,11 +524,11 @@ const addTicketToProject = async (req, res) => {
             const ticket = await appService.addTicketToProject(teamId, projectId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketReporter, ticketDueDate, pinned);
             const projectMembers = await userService.getAllUsersInProject(projectId);
             const projectMemberNotifications = projectMembers.map(async (member) => {
-                await appService.addNotificationToDbSingle(member._id, teamId, `${req.user.firstName} ${req.user.lastName} added a ticket to the project`, `/ticket/${ticket._id}`);
+                await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} added a ticket to the project`, `/ticket/${ticket._id}`);
             });
             
             const ticketAssignToNotifications = ticketAssignTo.map(async (member) => {
-                await appService.addNotificationToDbSingle(member, teamId, `${req.user.firstName} ${req.user.lastName} assigned you to a ticket`, `/ticket/${ticket._id}`);
+                await appService.addNotificationToDbSingle(req, member, teamId, `${req.user.firstName} ${req.user.lastName} assigned you to a ticket`, `/ticket/${ticket._id}`);
             });
             
             await Promise.all([...projectMemberNotifications, ...ticketAssignToNotifications]);
@@ -581,7 +581,7 @@ const editTicketDetails = async (req, res) => {
         const ticket = await appService.editTicketDetails(ticketId, ticketName, ticketDescription, ticketType, ticketPriority, ticketStatus, ticketAssignTo, ticketDueDate, pinned);
         
         await Promise.all(ticketAssignTo?.map(async (member) => {
-            await appService.addNotificationToDbSingle(member, teamId, `${req.user.firstName} ${req.user.lastName} edited a ticket you are assigned to`, `/ticket/${ticket._id}`);
+            await appService.addNotificationToDbSingle(req, member, teamId, `${req.user.firstName} ${req.user.lastName} edited a ticket you are assigned to`, `/ticket/${ticket._id}`);
         }));
         
         res.json(ticket);
@@ -621,7 +621,7 @@ const pinAndUnpinTicket = async (req, res) => {
         const ticket = await appService.pinAndUnpinTicket(ticketId, pinned);
         const projectMembers = await userService.getAllUsersInProject(projectId);
         await Promise.all(projectMembers?.map(async (member) => {
-            await appService.addNotificationToDbSingle(member._id, teamId, `${req.user.firstName} ${req.user.lastName} pinned a ticket`, `/project-page/${projectId}`);
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} ${pinned ? `pinned a ticket`: `unpinned a ticket`}`, `/project-page/${projectId._id}`);
         }));
         res.json(ticket);
     }
@@ -660,7 +660,7 @@ const deleteTicketFromProject = async (req, res) => {
         await appService.deleteTicketFromProject(ticketId);
         const projectMembers = await userService.getAllUsersInProject(projectId);
         await Promise.all(projectMembers?.map(async (member) => {
-            await appService.addNotificationToDbSingle(member._id, teamId, `${req.user.firstName} ${req.user.lastName} deleted a ticket`, `/project-page/${projectId}`);
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} deleted a ticket`, `/project-page/${projectId}`);
         }));
         res.json({ message: 'ticket deleted successfully' });
     } catch (error) {
@@ -683,7 +683,7 @@ const deleteProject = async (req, res) => {
 
         //delete project
         await appService.deleteProject(projectId);
-        await appService.addNotificationToDbAll(teamId, `${req.user.firstName} ${req.user.lastName} deleted a project`,);
+        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} deleted a project`,);
         res.json({ message: 'project deleted successfully' });
     }
     catch (error) {
@@ -704,7 +704,7 @@ const deleteTeam = async (req, res) => {
 
         //delete team
         await appService.deleteOrganization(teamId);
-        await appService.addNotificationToDbAll(teamId, `${req.user.firstName} ${req.user.lastName} deleted the team`,);
+        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} deleted the team`,);
         res.json({ message: 'team deleted successfully' });
     }
     catch (error) {

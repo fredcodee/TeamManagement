@@ -543,7 +543,7 @@ async function pinAndUnpinTicket(ticketId, pin){
 
 
 // notification func
-async function addNotificationToDbSingle (userId, teamId, notificationMessage, notificationLink){
+async function addNotificationToDbSingle (req, userId, teamId, notificationMessage, notificationLink){
     try {
         const notification = new Notification({
             user_id: userId,
@@ -553,18 +553,26 @@ async function addNotificationToDbSingle (userId, teamId, notificationMessage, n
         }
         );
         await notification.save();
+
+        const io = req.app.get('io'); // get io object from app
+        const alertData = {
+            userId: notification.user_id,
+            notification: notification.notification,
+            link: notification.link
+        }
+        await io.emit('Notification', alertData);
         return true;
     } catch (error) {
         throw new Error(`Cant add notification to db ${error}`);
     }
 }
-async function addNotificationToDbAll (teamId, notificationMessage, notificationLink){
+async function addNotificationToDbAll( req, teamId, notificationMessage, notificationLink){
     try{
         // get all users in team
         const users = await userService.getAllUsersInTeam(teamId);
         // add notification to all users
         for (const user of users){
-            await addNotificationToDbSingle(user._id, teamId, notificationMessage, notificationLink);
+            await addNotificationToDbSingle(req, user._id, teamId, notificationMessage, notificationLink);
         }
         return true;
     }
@@ -623,6 +631,8 @@ async function deleteNotification(notificationId) {
 
 
 
+
+
 //get all team (remove later)
 async function getAllOrganizations() {
     try {
@@ -645,5 +655,5 @@ module.exports = {
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
-    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, addNotificationToDbAll, readNotification, getAllNotifications, deleteNotification
+    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, addNotificationToDbAll, readNotification, getAllNotifications, deleteNotification,
 }
