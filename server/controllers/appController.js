@@ -70,8 +70,11 @@ const signupWithInviteLink = async (req, res) => {
 
         // edit user profile
         const newUser = await userService.editUserProfile(firstName, lastName, email, password);
-        await appService.addNotificationToDbAll( req, newUser._id, newUser.organization_id, `${firstName} ${lastName} just joined the team`,);
-        await io.emit('Notification', alertData);
+        const teamMembers = await userService.getAllUsersInTeam(teamId);
+        await Promise.all(teamMembers?.map(async (member) => {
+            if(member._id !== req.user._id){
+                await appService.addNotificationToDbSingle( req, newUser._id, newUser.organization_id, `${firstName} ${lastName} just joined the team`,);}
+        }));
         return res.json({ message: 'user is registered successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)

@@ -142,7 +142,12 @@ const editTeamDetails = async (req, res) => {
         }
         //edit team details
         await appService.editOrganizationDetails(teamId, teamName);
-        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} edited team details`,);
+        const teamMembers = await userService.getAllUsersInTeam(teamId);
+        await Promise.all(teamMembers?.map(async (member) => {
+            if(member._id !== req.user._id){
+                await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} edited team details`,);}
+        }));
+        
         res.json({ message: 'team details edited successfully' });
     } catch (error) {
         errorHandler.errorHandler(error, res)
@@ -312,7 +317,11 @@ const editProjectDetails = async (req, res) => {
 
         const project = await appService.editProjectDetails(projectId, projectName, projectDescription);
         const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
-        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, projectLink);
+        const projectMembers = await userService.getAllUsersInProject(projectId);
+        await Promise.all(projectMembers?.map(async (member) => {
+            if(member._id !== req.user._id){
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, projectLink);}
+        }));
         res.json(project);
     }
     catch (error) {
@@ -355,7 +364,11 @@ const deleteRole = async (req, res) => {
         }
 
         await appService.deleteRole(roleId, teamId);
-        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} deleted a role`,);
+        const teamMembers = await userService.getAllUsersInTeam(teamId);
+        await Promise.all(teamMembers?.map(async (member) => {
+            if(member._id !== req.user._id){
+                await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} deleted a role`,);}
+        }));
         res.json({ message: 'role deleted successfully' });
     }
     catch (error) {
@@ -687,7 +700,11 @@ const deleteProject = async (req, res) => {
 
         //delete project
         await appService.deleteProject(projectId);
-        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} deleted a project`,);
+        const projectMembers = await userService.getAllUsersInProject(projectId);
+        await Promise.all(projectMembers?.map(async (member) => {
+            if(member._id !== req.user._id){
+            await appService.addNotificationToDbSingle(req,member._id,  teamId, `${req.user.firstName} ${req.user.lastName} deleted a project`,);}
+        }));
         res.json({ message: 'project deleted successfully' });
     }
     catch (error) {
@@ -708,7 +725,11 @@ const deleteTeam = async (req, res) => {
 
         //delete team
         await appService.deleteOrganization(teamId);
-        await appService.addNotificationToDbAll(req, teamId, `${req.user.firstName} ${req.user.lastName} deleted the team`,);
+        const teamMembers = await userService.getAllUsersInTeam(teamId);
+        await Promise.all(teamMembers?.map(async (member) => {
+            if(member._id !== req.user._id){
+                await appService.addNotificationToDbSingle(req,member._id,  teamId, `${req.user.firstName} ${req.user.lastName} deleted the team`)}
+        }));
         res.json({ message: 'team deleted successfully' });
     }
     catch (error) {

@@ -164,7 +164,8 @@ const leaveProject = async (req, res) => {
         const projectMembers = await userService.getAllUsersInProject(projectId);
         const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
         await Promise.all(projectMembers?.map(async (member) => {
-            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} left a project`,projectLink);
+            if(member._id !== req.user._id){
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} left a project`,projectLink);}
         }));
         res.json({ message: 'user removed from project successfully' })
     } catch (error) {
@@ -192,7 +193,8 @@ const commentOnTicket = async (req, res) => {
         const userAssigned = await appService.getTicketDetails(ticketId);
         const ticketLink = typeof ticketId === 'string' ? `/ticket/${ticketId}` : `/ticket/${ticketId._id}`;
         userAssigned.assigned_to.forEach(async (user) => {
-            await appService.addNotificationToDbSingle(req, user._id, teamId, `${req.user.firstName} ${req.user.lastName} commented on a ticket`, ticketLink);
+            if(user._id !== req.user._id){
+            await appService.addNotificationToDbSingle(req, user._id, teamId, `${req.user.firstName} ${req.user.lastName} commented on a ticket`, ticketLink);}
         });
         res.json(chat)
     } catch (error) {

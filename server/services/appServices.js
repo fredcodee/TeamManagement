@@ -566,20 +566,7 @@ async function addNotificationToDbSingle (req, userId, teamId, notificationMessa
         throw new Error(`Cant add notification to db ${error}`);
     }
 }
-async function addNotificationToDbAll( req, teamId, notificationMessage, notificationLink){
-    try{
-        // get all users in team
-        const users = await userService.getAllUsersInTeam(teamId);
-        // add notification to all users
-        for (const user of users){
-            await addNotificationToDbSingle(req, user._id, teamId, notificationMessage, notificationLink);
-        }
-        return true;
-    }
-    catch(error){
-        throw new Error(`Cant add notification to db ${error}`);
-    }
-}
+
 async function readNotification (NotificationId){
     try {
         const notification = await Notification.findById(NotificationId);
@@ -655,5 +642,5 @@ module.exports = {
     , getAllRoles, getProjectInfo, editProjectDetails, getOrganizationDetails, deleteRole, addPermissions, getAllPermissions
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
-    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, addNotificationToDbAll, readNotification, getAllNotifications, deleteNotification,
+    , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, readNotification, getAllNotifications, deleteNotification,
 }
