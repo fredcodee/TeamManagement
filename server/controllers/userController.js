@@ -292,7 +292,6 @@ const deleteNotification = async (req, res) => {
     }
 }
 
-
 module.exports = { createTeam, getUserProjects, viewProjectInfo, getTeamInfo, viewUserTicket, getAllUserTicketsInProject
     , getTicketInfo, getProjectTickets, commentOnTicket, getTicketComments, deleteComment , getProfile, getAllUserTicketsInAllProjects, countTeamMembers, getAllUserTickets,getAllUsersInTeam, leaveProject
     ,getUsersRolePermissionsInProject, getAllNotifications, updateNotificationStatus, deleteNotification

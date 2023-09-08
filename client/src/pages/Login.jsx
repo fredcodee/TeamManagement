@@ -1,5 +1,4 @@
 import React from 'react'
-import logo from "../assets/images/teamlogo.png"
 import {useContext, useState } from 'react'
 import AuthContext from '../context/AuthContext';
 import '../assets/styles/register.css'
@@ -8,7 +7,6 @@ const Login = () => {
   const { loginUser, error } = useContext(AuthContext);
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState(null)
 
   const handleSubmit = async (e) => {
     try{
@@ -22,10 +20,6 @@ const Login = () => {
 
   return (
     <div>
-       <div className='flex flex-wrap p-4 bg-gray-200'>
-       <img src={logo} className="h-8 mr-3" alt="Team M Logo" />
-        <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Team Management</span>
-       </div>
        <div>
           <div className='loginform'>
             <div className='text-center'>

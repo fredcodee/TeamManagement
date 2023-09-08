@@ -18,12 +18,20 @@ import ProjectPage from './pages/ProjectPage';
 import TicketPage from './pages/TicketPage';
 import socket from './Socket'
 import '../src/assets/styles/alerts.css'
+import NavBar from './components/NavBar';
+
 
 function App() {
+  const [user, setUser] = useState(() =>
+  JSON.parse(localStorage.getItem('user')) || false);
+  const token = localStorage.getItem('authTokens') || false
+  const [currentUser , setCurrentUser] = useState([])
+  const [notifications, setNotifications] = useState([])
   const [notification, setNotification] = useState([])
   const [isAlertActive, setIsAlertActive] = useState(false);
 
   useEffect(() => {
+  
     socket.on('Notification', (data) => {
       const user = JSON.parse(localStorage.getItem('user'));
       const userId = user.id;
@@ -37,6 +45,7 @@ function App() {
       // Clean up socket event listener when component unmounts
       socket.off('Notification');
     };
+    
   }, []);
 
   const showAlert = () => {
@@ -47,8 +56,22 @@ function App() {
     setIsAlertActive(false);
   }
 
+
+const getNotification = async()=>{
+  const response = await Api.get('/api/user/notifications/all',{
+      headers:{
+          Authorization:token.replace(/"/g, '')
+      }
+  })
+
+  const data = await response.data
+  setNotifications(data)
+  console.log(data)
+}
+
   return (
     <>
+      < NavBar user={user} />
       {isAlertActive && (
       <div className="alert_wrapper active">
         <div className="alert_backdrop"></div>

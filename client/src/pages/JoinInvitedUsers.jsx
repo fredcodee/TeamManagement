@@ -1,6 +1,5 @@
 import React from 'react'
 import Api from '../Api'
-import logo from "../assets/images/teamlogo.png"
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
@@ -51,10 +50,6 @@ const JoinInvitedUsers = () => {
 
     return (
         <div>
-            <div className='flex flex-wrap p-4 bg-gray-200'>
-                <img src={logo} className="h-8 mr-3" alt="Team M Logo" />
-                <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Team Management</span>
-            </div>
             <div>
                 <div className='loginform'>
                     <div className='text-center'>

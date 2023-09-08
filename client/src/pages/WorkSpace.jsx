@@ -1,5 +1,4 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faListCheck, faClipboard, faUsers, faDiagramProject, faSitemap } from '@fortawesome/free-solid-svg-icons'
@@ -157,7 +156,7 @@ const WorkSpace = () => {
 
     return (
         <div>
-            < NavBar user={user} />
+            
             {/* for popup for create team */}
             {showPopUp && <PopUp
                 content={<>

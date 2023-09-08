@@ -1,5 +1,4 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
@@ -335,7 +334,6 @@ const ProjectPageAdmin = () => {
 
     return (
         <div>
-            <NavBar user={user} />
             <div className='pl-2 bg-pink-200 '>
                 <a href="/user-workspace" className='hover:text-orange-500'>Go Back To Dashboard
                 </a>

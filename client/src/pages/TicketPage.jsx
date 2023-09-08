@@ -3,7 +3,6 @@ import Api from '../Api'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
-import NavBar from '../components/NavBar';
 import PopUp from '../components/PopUp';
 import "../assets/styles/ticketPage.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -284,7 +283,6 @@ const TicketPage = () => {
 
   return (
     <div>
-      <NavBar user={user} />
       {/* popup for assigned user */}
       {showPopUpForAssignedUsers && <PopUp
         content={<>

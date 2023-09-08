@@ -1,5 +1,4 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { useState, useEffect } from 'react'
 import PopUp from '../components/PopUp';
@@ -96,7 +95,6 @@ const ProjectManagement = () => {
 
   return (
     <div>
-      <NavBar user={user} />
       <a href="/user-workspace">
         <div className='pl-2 bg-purple-200 hover:text-white'>
           <p>Go Back To Dashboard</p>

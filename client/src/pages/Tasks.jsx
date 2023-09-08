@@ -1,5 +1,4 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
 import Api from '../Api'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
@@ -64,7 +63,6 @@ const Tasks = () => {
 
     return (
         <div>
-            <NavBar user={user} />
             <a href="/user-workspace">
                 <div className='pl-2 bg-blue-200 hover:text-purple-800'>
                     <p>Go Back To Dashboard</p>

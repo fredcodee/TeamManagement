@@ -34,8 +34,10 @@ export const AuthProvider = ({ children }) => {
         setAuthTokens(data.token);
         setUser(jwt_decode(data.token));
         localStorage.setItem('authTokens', JSON.stringify(data.token));
-        localStorage.setItem('user', JSON.stringify(jwt_decode(data.token)));
-        history('/user-workspace');
+        const user  = await getUser()
+        localStorage.setItem('user', JSON.stringify(user));
+        window.location.href = '/user-workspace';
+
       } else {
         setError(data.message);
       }
@@ -43,6 +45,21 @@ export const AuthProvider = ({ children }) => {
       console.error(error);
     }
   };
+
+
+  const getUser = async () => {
+    try {
+        const response = await Api.get(`/api/user/profile`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('authTokens').replace(/"/g, '')}`,
+            },
+        });
+        const data = await response.data;
+        return data
+    } catch (error) {
+      window.location.href = '/login';
+    }
+};
 
 
 
@@ -72,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem('authTokens');
+    localStorage.removeItem('user')
     history('/');
   };
 

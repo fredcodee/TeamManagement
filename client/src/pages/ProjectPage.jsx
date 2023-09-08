@@ -3,7 +3,6 @@ import Api from '../Api'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
-import NavBar from '../components/NavBar';
 import PopUp from '../components/PopUp';
 import TicketLists from '../components/TicketLists';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -263,7 +262,6 @@ const ProjectPage = () => {
 
     return (
         <div>
-            <NavBar user={user} />
             {/* for popup for project description*/}
             {showPopUpForProjectDescription && <PopUp
                 content={<>
