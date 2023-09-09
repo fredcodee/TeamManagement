@@ -148,6 +148,17 @@ const demoEnvironment = async (req, res) => {
 }
 
 
+const getDemoAccountCred = async(req, res)=>{
+    try {
+        const account = req.body.accountName
+        const credentials = await appService.getDemoAccountCred(account)
+        res.json(credentials)
+    } catch (error) {
+        errorHandler.errorHandler(error, res) 
+    }
+}
+
+
 module.exports = {
-    health,login,signup,inviteLink, signupWithInviteLink, demoEnvironment}
+    health,login,signup,inviteLink, signupWithInviteLink, demoEnvironment, getDemoAccountCred}
 

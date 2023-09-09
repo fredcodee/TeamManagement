@@ -658,6 +658,33 @@ async function addDemoAccounts(){
 }
 
 
+async function getDemoAccountCred(accountName) {
+    try {
+        const currentAccountNames = ["admin", "projectmanager", "developer", "member"];
+        const accountExists = currentAccountNames.includes(accountName);
+
+        if (!accountExists) {
+            return null; 
+        }
+
+        const getAccount = await User.findOne({ email: `${accountName}@demo.com` });
+        if (!getAccount) {
+            return null;
+        }
+
+        const data = {
+            email: getAccount.email,
+            password: accountName,
+        };
+
+        return data;
+    } catch (error) {
+        throw new Error(`Unable to get demo account credentials: ${error}`);
+    }
+}
+
+
+
 
 
 
@@ -684,5 +711,5 @@ module.exports = {
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
     , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, readNotification, getAllNotifications, deleteNotification,
-    addDemoAccounts
+    addDemoAccounts, getDemoAccountCred
 }
