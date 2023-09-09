@@ -24,20 +24,18 @@ import NavBar from './components/NavBar';
 function App() {
   const [user, setUser] = useState(() =>
   JSON.parse(localStorage.getItem('user')) || false);
-  const token = localStorage.getItem('authTokens') || false
-  const [currentUser , setCurrentUser] = useState([])
-  const [notifications, setNotifications] = useState([])
   const [notification, setNotification] = useState([])
   const [isAlertActive, setIsAlertActive] = useState(false);
 
   useEffect(() => {
   
     socket.on('Notification', (data) => {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const userId = user.id;
-      if (data.userId === userId) {
-        setNotification(data)
-        showAlert()
+      if(user){
+        if (data.userId === user._id) {
+          setNotification(data)
+          console.log(data)
+          showAlert()
+        }
       }
     });
 
@@ -55,19 +53,6 @@ function App() {
   const closeAlert = () => {
     setIsAlertActive(false);
   }
-
-
-const getNotification = async()=>{
-  const response = await Api.get('/api/user/notifications/all',{
-      headers:{
-          Authorization:token.replace(/"/g, '')
-      }
-  })
-
-  const data = await response.data
-  setNotifications(data)
-  console.log(data)
-}
 
   return (
     <>

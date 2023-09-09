@@ -1,6 +1,7 @@
 const errorHandler  = require('../configs/errorHandler')
 const userService = require('../services/userServices')
 const appService = require('../services/appServices')
+const mongoose = require('mongoose')
 
 
 // create Team/organization
@@ -164,7 +165,8 @@ const leaveProject = async (req, res) => {
         const projectMembers = await userService.getAllUsersInProject(projectId);
         const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
         await Promise.all(projectMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
             await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} left a project`,projectLink);}
         }));
         res.json({ message: 'user removed from project successfully' })

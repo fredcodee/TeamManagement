@@ -2,16 +2,38 @@ import React from 'react'
 import logo from "../assets/images/teamlogo.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
-import { useState} from 'react'
+import { useState, useEffect} from 'react'
 import '../assets/styles/notifications.css'
+import Api from '../Api'
 
-const NavBar = ({ user, notifications}) => {
+const NavBar = ({ user}) => {
+    const token = localStorage.getItem('authTokens') || false
+    const [notifications, setNotifications] = useState([])
     const [showNotifications, setShowNotifications] = useState(false);
     const [isBellRed, setIsBellRed] = useState(false);
 
     const toggleNotifications = () => {
         setShowNotifications(!showNotifications);
+        getNotifications()
     }; 
+
+    useEffect(()=>{
+        getNotifications()
+    },[])
+
+    const getNotifications = async()=>{
+        if(token){
+            const response = await Api.get('/api/user/notifications/all',{
+                headers:{
+                    Authorization:token.replace(/"/g, '')
+                }
+            })
+        
+            const data = await response.data
+            setNotifications(data)
+        }
+      }
+    
 
     //logout and delete tokens in local storage
     const handleLogout = () => {
@@ -53,11 +75,19 @@ const NavBar = ({ user, notifications}) => {
                 </nav >
                 {showNotifications && (
                     <div className="notification-dropdown">
-                    <ul>
-                        <li>mike lslls</li>
-                        <li>mike lslls</li>
-                        <li>mike lslls</li>
-                    </ul>
+                        <ul>
+                            {notifications.length > 0 ? (
+                                notifications.map((notification, index) => (
+                                    notification.link !== null?(
+                                        <a key={index} href={notification.link}><li>{notification.notification}</li></a>
+                                    ):(
+                                        <li key={index} className='hover:cursor-auto'>{notification.notification}</li>
+                                    )
+                                ))
+                            ) : (
+                                <li>No notifications</li>
+                            )}
+                        </ul>
                     </div>
                 )}
             </div >

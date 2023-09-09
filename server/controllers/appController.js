@@ -1,6 +1,7 @@
 const errorHandler  = require('../configs/errorHandler')
 const userService = require('../services/userServices')
 const appService = require('../services/appServices')
+const mongoose =  require('mongoose')
 
 const health = async(req, res) => {
     return res.json({ 'status': 'ok' })
@@ -72,7 +73,8 @@ const signupWithInviteLink = async (req, res) => {
         const newUser = await userService.editUserProfile(firstName, lastName, email, password);
         const teamMembers = await userService.getAllUsersInTeam(teamId);
         await Promise.all(teamMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
                 await appService.addNotificationToDbSingle( req, newUser._id, newUser.organization_id, `${firstName} ${lastName} just joined the team`,);}
         }));
         return res.json({ message: 'user is registered successfully' });

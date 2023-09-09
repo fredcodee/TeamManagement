@@ -1,6 +1,7 @@
 const errorHandler = require('../configs/errorHandler')
 const userService = require('../services/userServices')
 const appService = require('../services/appServices')
+const mongoose = require('mongoose')
 
 
 
@@ -144,7 +145,8 @@ const editTeamDetails = async (req, res) => {
         await appService.editOrganizationDetails(teamId, teamName);
         const teamMembers = await userService.getAllUsersInTeam(teamId);
         await Promise.all(teamMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
                 await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} edited team details`,);}
         }));
         
@@ -319,7 +321,8 @@ const editProjectDetails = async (req, res) => {
         const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
         const projectMembers = await userService.getAllUsersInProject(projectId);
         await Promise.all(projectMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
             await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} edited project details`, projectLink);}
         }));
         res.json(project);
@@ -366,7 +369,8 @@ const deleteRole = async (req, res) => {
         await appService.deleteRole(roleId, teamId);
         const teamMembers = await userService.getAllUsersInTeam(teamId);
         await Promise.all(teamMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
                 await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} deleted a role`,);}
         }));
         res.json({ message: 'role deleted successfully' });
@@ -589,7 +593,6 @@ const editTicketDetails = async (req, res) => {
         const userHasPermission = await userService.checkUserPermission(userId, teamId, projectId, "Edit");
         const adminCheck = await userService.checkUserIsAdmin(req.user, teamId, res);
         if (!userHasPermission && !adminCheck) {
-            console.log(userHasPermission)
             return res.status(401).json({ message: 'user does not have permission to edit ticket' });
         }
         //edit ticket details
@@ -637,7 +640,9 @@ const pinAndUnpinTicket = async (req, res) => {
         const projectMembers = await userService.getAllUsersInProject(projectId);
         const projectLink = typeof projectId === 'string' ? `/project-page/${projectId}` : `/project-page/${projectId._id}`;
         await Promise.all(projectMembers?.map(async (member) => {
-            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} ${pinned ? `pinned a ticket`: `unpinned a ticket`}`, projectLink);
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
+            await appService.addNotificationToDbSingle(req, member._id, teamId, `${req.user.firstName} ${req.user.lastName} ${pinned ? `pinned a ticket`: `unpinned a ticket`}`, projectLink);}
         }));
         res.json(ticket);
     }
@@ -702,7 +707,8 @@ const deleteProject = async (req, res) => {
         await appService.deleteProject(projectId);
         const projectMembers = await userService.getAllUsersInProject(projectId);
         await Promise.all(projectMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
             await appService.addNotificationToDbSingle(req,member._id,  teamId, `${req.user.firstName} ${req.user.lastName} deleted a project`,);}
         }));
         res.json({ message: 'project deleted successfully' });
@@ -727,7 +733,8 @@ const deleteTeam = async (req, res) => {
         await appService.deleteOrganization(teamId);
         const teamMembers = await userService.getAllUsersInTeam(teamId);
         await Promise.all(teamMembers?.map(async (member) => {
-            if(member._id !== req.user._id){
+            const memberId = new mongoose.Types.ObjectId(member._id);
+            if(!memberId.equals(req.user._id)){
                 await appService.addNotificationToDbSingle(req,member._id,  teamId, `${req.user.firstName} ${req.user.lastName} deleted the team`)}
         }));
         res.json({ message: 'team deleted successfully' });
