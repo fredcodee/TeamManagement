@@ -19,6 +19,7 @@ import TicketPage from './pages/TicketPage';
 import socket from './Socket'
 import '../src/assets/styles/alerts.css'
 import NavBar from './components/NavBar';
+import LoginDemoAccounts from './pages/LoginDemoAccounts';
 
 
 function App() {
@@ -86,6 +87,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path='/login/demo/accounts' element ={<LoginDemoAccounts />} />
             <Route path="/register" element={<Register />} />
             <Route path="/error" element={<ErrorPage />} />
             <Route element={<JoinInvitedUsers />} path="/join/:id" />

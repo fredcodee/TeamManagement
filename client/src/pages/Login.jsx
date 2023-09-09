@@ -42,7 +42,10 @@ const Login = () => {
               </form>
             </div>
             <div className='text-center'>
-            <p>Don't have an account yet? <span className='text-blue-900'><a href="/register">Sign up</a></span></p>
+            <p className='pb-4'>Don't have an account yet? <span className='text-blue-900'><a href="/register">Sign up</a></span></p>
+            <hr />
+            <p>Or</p>
+            <a href="/login/demo/accounts" className='text-orange-800 hover:text-blue-700'>Demo login (to view app functionalities)</a>
           </div>
 
           </div>
