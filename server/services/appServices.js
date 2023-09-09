@@ -631,6 +631,32 @@ async function deleteNotification_30days() {
 
 }
 
+async function addDemoAccounts(){
+    try{
+        const accounts = [
+            {'email':'admin@demo.com', 'firstName':"Mike", "lastName":"Dean" , "Password":"admin"},
+            {'email':'projectmanager@demo.com', 'firstName':"Sam", "lastName":"Stones" , "Password":"projectmanager"},
+            {'email':'developer@demo.com', 'firstName':"Sarah", "lastName":"Kate" , "Password":"developer"},
+            {'email':'member@demo.com', 'firstName':"Russels", "lastName":"Damie" , "Password":"member"}
+        ]
+
+        const createdAccounts = []
+
+        for(const account of accounts){
+            const registered = await userService.checkIfUserIsRegistered(account.email);
+            if (registered) {
+                return new Error('This email is already registered');
+            }
+            const newUser = await userService.addUserToDb(account.firstName, account.lastName, account.email, account.Password);
+            createdAccounts.push(newUser)
+        }
+        return createdAccounts.length > 0 ? createdAccounts : false
+    }
+    catch(error){
+        throw new Error(`Cant add demo accounts ${error}`)
+    }
+}
+
 
 
 
@@ -658,4 +684,5 @@ module.exports = {
     , addPermissionToRole, getAllRolesWithPermissions, removePermissionFromRole, getAllInvitedUsers, addTicketToProject, editTicketDetails
     , getTicketDetails, getAllTicketsInProject, deleteTicketFromProject, addCommentToTicket, getAllCommentsOnTicket, deleteCommentFromTicket
     , getCommentUserId, deleteProject, deleteOrganization, pinAndUnpinTicket, addNotificationToDbSingle, readNotification, getAllNotifications, deleteNotification,
+    addDemoAccounts
 }

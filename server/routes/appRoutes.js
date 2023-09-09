@@ -7,6 +7,7 @@ router.post('/login', appController.login)
 router.post('/register', appController.signup)
 router.get('/invite/:inviteId', appController.inviteLink)
 router.post('/signup/invite', appController.signupWithInviteLink)
+router.get('/create/demo/environment', appController.demoEnvironment)
 
 
 module.exports = router;

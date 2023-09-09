@@ -102,8 +102,52 @@ const inviteLink = async (req, res) => {
     catch (error) {
         errorHandler.errorHandler(error, res)
     }
-}    
+}
+
+//demo team and account
+const demoEnvironment = async (req, res) => {
+    try {
+        const demoTeam = await appService.createOrganization('DemoTeam')
+        //create demo accounts
+        const demoAccounts= await appService.addDemoAccounts() 
+        //add demo users to the team
+        for(const account of demoAccounts){
+            await appService.addOrganizationToUser(account._id, demoTeam._id);
+        }
+        // create roles in demo team 
+        const roles = ["admin", "project manager", "developer", "member"]
+        const createdRoles = []
+        for (const roleName of roles){
+            const newRole = await appService.createRole(demoTeam._id, roleName);
+            createdRoles.push(newRole)
+        }
+        //add users to the roles
+        for(const account of demoAccounts){
+            if(account.email === 'admin@demo.com'){
+                const role =  createdRoles.find(role => role.name === "admin");
+                await appService.addUserToRole(account._id, role._id, demoTeam._id);
+            }
+            else if(account.email === 'projectmanager@demo.com'){
+                const role =  createdRoles.find(role => role.name === "project manager");
+                await appService.addUserToRole(account._id, role._id, demoTeam._id);
+            }
+            else if(account.email === 'developer@demo.com'){
+                const role =  createdRoles.find(role => role.name === "developer");
+                await appService.addUserToRole(account._id, role._id, demoTeam._id);
+            }
+            else if(account.email === 'member@demo.com'){
+                const role =  createdRoles.find(role => role.name === "member");
+                await appService.addUserToRole(account._id, role._id, demoTeam._id);
+            }  
+        }
+
+        res.json({message:"success"})
+    } catch (error) {
+        errorHandler.errorHandler(error, res)
+    }
+}
+
 
 module.exports = {
-    health,login,signup,inviteLink, signupWithInviteLink}
+    health,login,signup,inviteLink, signupWithInviteLink, demoEnvironment}
 
