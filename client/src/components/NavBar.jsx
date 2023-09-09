@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from "../assets/images/teamlogo.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { useState, useEffect} from 'react'
 import '../assets/styles/notifications.css'
 import Api from '../Api'
@@ -20,6 +20,12 @@ const NavBar = ({ user}) => {
     useEffect(()=>{
         getNotifications()
     },[])
+
+    useEffect(() => {
+        if(notifications > 0){
+        const hasUnreadNotifications = notifications.some(notification => !notification.read);
+        setIsBellRed(hasUnreadNotifications);}
+    }, [notifications]);
 
     const getNotifications = async()=>{
         if(token){
@@ -78,14 +84,22 @@ const NavBar = ({ user}) => {
                         <ul>
                             {notifications.length > 0 ? (
                                 notifications.map((notification, index) => (
-                                    notification.link !== null?(
-                                        <a key={index} href={notification.link}><li>{notification.notification}</li></a>
+                                    notification.read ?(
+                                        notification.link !== null?(
+                                            <a key={index} href={notification.link} className='text-gray-500'><li>{notification.notification}</li></a>
+                                        ):(
+                                            <li key={index} className='hover:cursor-auto text-gray-500'>{notification.notification}</li>
+                                        )
                                     ):(
-                                        <li key={index} className='hover:cursor-auto'>{notification.notification}</li>
+                                        notification.link !== null?(
+                                            <a key={index} href={notification.link} className='text-blue-900'><li>{notification.notification} <span><FontAwesomeIcon icon={faCircle} style={{color: "#25519d", fontSize:'10px'}} /></span></li></a>
+                                        ):(
+                                            <li key={index} className='hover:cursor-auto text-blue-900'>{notification.notification} <span><FontAwesomeIcon icon={faCircle} style={{color: "#25519d",}} /></span></li>
+                                        )
                                     )
                                 ))
                             ) : (
-                                <li>No notifications</li>
+                                <li className='text-gray-500'>No notifications</li>
                             )}
                         </ul>
                     </div>

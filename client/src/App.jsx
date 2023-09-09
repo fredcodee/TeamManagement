@@ -33,7 +33,6 @@ function App() {
       if(user){
         if (data.userId === user._id) {
           setNotification(data)
-          console.log(data)
           showAlert()
         }
       }
