@@ -145,9 +145,9 @@ async function editOrganizationDetails(teamId, name) {
 async function removeUserFromOrganization(userId, organizationId) {
     try {
         await User.findOneAndUpdate({ _id: userId }, { $pull: { organization_id: organizationId } });
-       
+
         await UserRoles.deleteMany({ user_id: userId, organization_id: organizationId });
-        
+
         for (const project of await getAllProjects(organizationId)) {
             await removeUserFromProject(userId, project._id);
         }
@@ -422,7 +422,7 @@ async function getAllTicketsInProject(projectId) {
         const tickets = await Ticket.find({ project_id: projectId }).populate('created_by assigned_to')
         tickets.sort((a, b) => {
             if (a.pinned && !b.pinned) {
-                return -1; 
+                return -1;
             } else if (!a.pinned && b.pinned) {
                 return 1;
             } else {
@@ -512,7 +512,7 @@ async function deleteProject(projectId) {
 async function deleteOrganization(organizationId) {
     try {
         //delete all projects in organization
-        for( const project of await getAllProjects(organizationId)){
+        for (const project of await getAllProjects(organizationId)) {
             await deleteProject(project._id);
         }
         await Role.deleteMany({ organization_id: organizationId });
@@ -529,7 +529,7 @@ async function deleteOrganization(organizationId) {
 
 
 
-async function pinAndUnpinTicket(ticketId, pin){
+async function pinAndUnpinTicket(ticketId, pin) {
     try {
         const ticket = await Ticket.findById(ticketId);
         ticket.pinned = pin;
@@ -543,12 +543,12 @@ async function pinAndUnpinTicket(ticketId, pin){
 
 
 // notification func
-async function addNotificationToDbSingle (req, userId, teamId, notificationMessage, notificationLink){
+async function addNotificationToDbSingle(req, userId, teamId, notificationMessage, notificationLink) {
     try {
         const notification = new Notification({
             user_id: userId,
             teamId: teamId,
-            notification : notificationMessage,
+            notification: notificationMessage,
             link: notificationLink || null
         }
         );
@@ -567,7 +567,7 @@ async function addNotificationToDbSingle (req, userId, teamId, notificationMessa
     }
 }
 
-async function readNotification (NotificationId){
+async function readNotification(NotificationId) {
     try {
         const notification = await Notification.findById(NotificationId);
         notification.read = true;
@@ -597,13 +597,13 @@ async function getAllNotifications(userId) {
                 }
             }
         ]);
+        await deleteNotification_30days()
         return notifications;
     } catch (error) {
         throw new Error(`Can't get all notifications: ${error}`);
     }
 }
 
-//delete notification
 async function deleteNotification(notificationId) {
     try {
         await Notification.findByIdAndDelete(notificationId);
@@ -613,8 +613,23 @@ async function deleteNotification(notificationId) {
     }
 }
 
+async function deleteNotification_30days() {
+    try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+        // Check if the notification's timestamp is older than 30 
+        await Notification.deleteMany({
+            created_at: { $lt: thirtyDaysAgo }
+        });
+        return true
 
+    }
+    catch (error) {
+        throw new Error(`Cant delete notification older then 30 days ${error}`);
+    }
+
+}
 
 
 
