@@ -1,0 +1,53 @@
+/* styles.css */
+
+/* Notification dropdown container */
+.notification-dropdown {
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 200px; /* Adjust as needed */
+    overflow-y: auto; /* Enable vertical scrolling if necessary */
+    width: 270px; /* Adjust the width as needed */
+    z-index: 999; /* Ensure the dropdown is on top of other content */
+  }
+  
+  /* Notification list items */
+  .notification-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .notification-dropdown li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  
+  .notification-dropdown li:last-child {
+    border-bottom: none;
+  }
+  
+  /* Style for hover effect */
+  .notification-dropdown li:hover {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  /* Scrollbar styles (optional) */
+  .notification-dropdown::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .notification-dropdown::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+  }
+  
+  .notification-dropdown::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+  

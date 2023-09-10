@@ -1,0 +1,17 @@
+.alert_wrapper {
+    position: fixed;
+    top: 11%;
+    right: 0; /* Adjust this value to control the distance from the right edge */
+    transform: translate(0%, -50%);
+    background-color: rgba(173, 216, 230, 0.9); /* Light blue background with opacity */
+    color: black; /* Text color in black */
+    padding: 10px; /* Adjust as needed */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Optional: Add a shadow effect */
+    z-index: 999; /* Ensure the alert is above other content */
+  }
+  
+  .alert_item {
+    display: flex;
+    align-items: center;
+  }
+  
