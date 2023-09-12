@@ -39,7 +39,7 @@ app.use(methodOverride());
 app.use(helmet());
 
 // enable CORS - Cross Origin Resource Sharing
-app.use(cors({  origin: allowedOrigins, credentials: true }));
+app.use(cors({origin: allowedOrigins, credentials: true }));
 
 
 // API router
