@@ -3,4 +3,4 @@ const allowedOrigins = [
     process.env.FRONTEND_ORIGIN_PROD,
 ]
 
-module.exports = allowedOrigins;
+export default allowedOrigins;

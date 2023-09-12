@@ -16,7 +16,7 @@ import ErrorPage from './pages/ErrorPage';
 import TeamSettings from './pages/TeamSettings';
 import ProjectPage from './pages/ProjectPage';
 import TicketPage from './pages/TicketPage';
-import socket from './Socket'
+// import socket from './Socket'
 import '../src/assets/styles/alerts.css'
 import NavBar from './components/NavBar';
 import LoginDemoAccounts from './pages/LoginDemoAccounts';
@@ -28,23 +28,23 @@ function App() {
   const [notification, setNotification] = useState([])
   const [isAlertActive, setIsAlertActive] = useState(false);
 
-  useEffect(() => {
+  // useEffect(() => {
   
-    socket.on('Notification', (data) => {
-      if(user){
-        if (data.userId === user._id) {
-          setNotification(data)
-          showAlert()
-        }
-      }
-    });
+  //   socket.on('Notification', (data) => {
+  //     if(user){
+  //       if (data.userId === user._id) {
+  //         setNotification(data)
+  //         showAlert()
+  //       }
+  //     }
+  //   });
 
-    return () => {
-      // Clean up socket event listener when component unmounts
-      socket.off('Notification');
-    };
+  //   return () => {
+  //     // Clean up socket event listener when component unmounts
+  //     socket.off('Notification');
+  //   };
     
-  }, []);
+  // }, []);
 
   const showAlert = () => {
     setIsAlertActive(true);

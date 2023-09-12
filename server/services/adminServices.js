@@ -29,7 +29,6 @@ async function checkOrganizationExistsInDb (name){
     } catch (error) {
         throw new Error(`Organization doesnt exist in the db ${error}`);
     }
-
 }
 
 //add new user to db
